@@ -31,6 +31,7 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:support-vector-drawable:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.wdullaer:materialdatetimepicker:3.2.2' //This is used to display the date and time pickers to the user
     testCompile 'junit:junit:4.12'
 }
 repositories {

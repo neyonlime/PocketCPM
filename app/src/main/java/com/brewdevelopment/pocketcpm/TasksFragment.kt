@@ -8,6 +8,8 @@ import android.view.ViewGroup
 
 /**
  * Created by neyon on 2017-07-27.
+ * This fragment displays the different tasks that have been added by the user
+ * triggered from the navigation drawer, and projects tab when individual project is selected
  */
 
 class TasksFragment: Fragment(){
@@ -24,7 +26,7 @@ class TasksFragment: Fragment(){
             fragment.arguments = args       //no getters or setters thus, setArgument -> .arguments
             return fragment
 
-            //makes call to the super's constructor & i can do processes before call
+            //makes call to the super's constructor &  can do processes before call
 
         }
     }

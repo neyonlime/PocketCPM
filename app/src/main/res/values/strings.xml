@@ -4,6 +4,10 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="task_name_field_label">Name</string>
+    <string name="task_description_field_label">Description</string>
+    <string name="task_start_date_field_label">Start date</string>
+    <string name="task_end_date_field_label">End date</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
