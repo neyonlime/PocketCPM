@@ -32,7 +32,9 @@ class MainActivity : AppCompatActivity() {
         menuList = arrayOf("Tasks","Projects","Diagrams")
         drawerLayout = findViewById(R.id.drawer_layout) as DrawerLayout     //casting is done using the as keyword
         drawerList = findViewById(R.id.left_drawer) as ListView
-        val mAdapter = ArrayAdapter<String>(this, android.R.layout.nav_list_item, menuList)
+        val mAdapter = ArrayAdapter<String>(this, R.layout.nav_list_item, menuList)
+        drawerList.adapter= mAdapter
+
 
 
 
