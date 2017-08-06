@@ -1,12 +1,11 @@
 package com.brewdevelopment.pocketcpm
 
-import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
-import android.widget.ListView
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.widget.ArrayAdapter
+import android.widget.ListView
 
 
 
@@ -30,9 +29,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)        //setting the toolbar and providing functionality to the toolbar
 
         menuList = arrayOf("Tasks","Projects","Diagrams")
+       //val menuList2: Array<Int> = arrayOf(R.drawable.download,R.drawable.sasukepart1,R.drawable.download)
         drawerLayout = findViewById(R.id.drawer_layout) as DrawerLayout     //casting is done using the as keyword
         drawerList = findViewById(R.id.left_drawer) as ListView
-        val mAdapter = ArrayAdapter<String>(this, R.layout.nav_list_item, menuList)
+        val mAdapter: ArrayAdapter<String> = CustomAdapter(this,menuList)
         drawerList.adapter= mAdapter
 
 
