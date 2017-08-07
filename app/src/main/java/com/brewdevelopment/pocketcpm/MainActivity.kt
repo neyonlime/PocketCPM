@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ListView
 
 
@@ -35,6 +37,28 @@ class MainActivity : AppCompatActivity() {
         drawerList = findViewById(R.id.left_drawer) as ListView
 
         drawerList.adapter= CustomAdapter(this) //set the adapter to custom one
+        //this portion holds the events that occur on the click of a drawer list item
+        drawerList.onItemClickListener= AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id:Long ->
+            if(position==0) {
+                drawerLayout.closeDrawers()
+            }
+            if(position==1) {
+                drawerLayout.closeDrawers()
+            }
+            if(position==2) {
+                drawerLayout.closeDrawers()
+            }
+        }
+
+
+
+
+
+        }
+
+
+
+        }
 
 
 
@@ -42,5 +66,5 @@ class MainActivity : AppCompatActivity() {
         //setting up the navigation
 
 
-    }
-}
+
+
