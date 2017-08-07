@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         drawerList = findViewById(R.id.left_drawer) as ListView
 
         drawerList.adapter= CustomAdapter(this) //set the adapter to custom one
-        //this portion holds the events that occur on the click of a drawer list item/
+        //this portion holds the events that occur on the click of a drawer list item//
         drawerList.onItemClickListener= AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id:Long ->
             if(position==0) {
                 drawerLayout.closeDrawers()
