@@ -11,7 +11,7 @@ import android.widget.DatePicker
 import java.util.*
 
 class MainActivity : AppCompatActivity(), AddTaskFragement.AddFragmentEventsListener {
-    override fun onAddTask() {
+    override fun onAddTask(task: Task) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -37,4 +37,5 @@ class MainActivity : AppCompatActivity(), AddTaskFragement.AddFragmentEventsList
         //setting up the navigation
 
     }
+
 }

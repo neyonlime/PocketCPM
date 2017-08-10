@@ -9,9 +9,11 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
+import java.sql.Time
 import java.util.*
 
 /**
@@ -22,8 +24,19 @@ import java.util.*
 
 class AddTaskFragement : Fragment(), TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
 
+    val START_DATE = "start_date"
+    val END_DATE = "end_date"
+    val START_TIME = "start_time"
+    val END_TIME="end_time"
+
+
     lateinit var startDateView: EditText
     lateinit var endDateView: EditText
+    lateinit var taskButton: Button
+
+    lateinit var startTime: String
+    lateinit var endTime: String
+
     lateinit var fragmentEventListener: AddFragmentEventsListener
 
 
@@ -45,20 +58,34 @@ class AddTaskFragement : Fragment(), TimePickerDialog.OnTimeSetListener, DatePic
         var rootView = inflater?.inflate(R.layout.fragement_add_task,container, false)
         startDateView= rootView!!.findViewById(R.id.start_date_field) as EditText
         endDateView = rootView!!.findViewById(R.id.end_date_field) as EditText
+        taskButton = rootView!!.findViewById(R.id.task_button) as Button
 
         startDateView.setOnClickListener{
             //define the date pop up and right after define the time popup
             //we can use 'it' to refer to the calling view
 
             val now: Calendar = Calendar.getInstance()
-            val dpd = DatePickerDialog.newInstance(this, now.get(Calendar.YEAR),now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH))
-            dpd.show(fragmentManager, "Start Date")
+            var dpd = DatePickerDialog.newInstance(this, now.get(Calendar.YEAR),now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH))
+            dpd.show(fragmentManager, START_DATE)
             dpd.setVersion(DatePickerDialog.Version.VERSION_2)
         }
 
         endDateView.setOnClickListener {
             //define the date pop up and right after define the time popup
             //we can use 'it' to refer to the calling view
+
+            val now: Calendar = Calendar.getInstance()
+            var dpd = DatePickerDialog.newInstance(this, now.get(Calendar.YEAR),now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH))
+            dpd.show(fragmentManager, END_DATE)
+            dpd.setVersion(DatePickerDialog.Version.VERSION_2)
+        }
+
+        taskButton.setOnClickListener {
+            //the save button has been clicked, store or append the data
+            //build the task object
+
+            val taskName = (rootView.findViewById(R.id.task_name_field) as EditText).text       //get task name
+            var mTask: Task = Task(taskName as String)
 
         }
         return rootView
@@ -73,29 +100,50 @@ class AddTaskFragement : Fragment(), TimePickerDialog.OnTimeSetListener, DatePic
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        var startDate = "" + dayOfMonth
-        startDate+= "/" + monthOfYear
-        startDate+= "/" + year
 
-        startDateView.text = startDate as Editable      //cast to editable
+        if(view!!.tag == START_DATE){
+            //START date entered
+            var startDate = "" + dayOfMonth
+            startDate+= "/" + monthOfYear
+            startDate+= "/" + year
 
-        //get the start time
-        val now: Calendar = Calendar.getInstance()
-        val dpd = TimePickerDialog.newInstance(this, Calendar.HOUR_OF_DAY, Calendar.MINUTE, true)
-        dpd.show(fragmentManager, "Start Date")
-        dpd.setVersion(TimePickerDialog.Version.VERSION_2)
+            startDateView.text = startDate as Editable      //cast to editable
+
+            //get the start time
+            val now: Calendar = Calendar.getInstance()
+            val dpd = TimePickerDialog.newInstance(this, Calendar.HOUR_OF_DAY, Calendar.MINUTE, true)
+            dpd.show(fragmentManager,START_TIME)
+            dpd.setVersion(TimePickerDialog.Version.VERSION_2)
+        }else if (view!!.tag == END_TIME){
+            //END date entered
+            var endDate = "" + dayOfMonth
+            endDate+= "/" + monthOfYear
+            endDate+= "/" + year
+
+            endDateView.text = endDate as Editable      //cast to editable
+
+            //get the start time
+            val now: Calendar = Calendar.getInstance()
+            val dpd = TimePickerDialog.newInstance(this, Calendar.HOUR_OF_DAY, Calendar.MINUTE, true)
+            dpd.show(fragmentManager,END_TIME)
+            dpd.setVersion(TimePickerDialog.Version.VERSION_2)
+        }
     }
 
     override fun onTimeSet(view: TimePickerDialog?, hourOfDay: Int, minute: Int, second: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        //save the time a create a new task instance
-        
-    }
 
+        if(view!!.tag == START_TIME){
+            //START time entered
+
+        }else if(view!!.tag == END_TIME){
+            //END time entered
+
+        }
+    }
 
     //interface used to communicate with the calling activity
     interface AddFragmentEventsListener{
-        fun onAddTask()
+        fun onAddTask(task: Task)     //callback for when the user has selected to add a task
     }
 
 

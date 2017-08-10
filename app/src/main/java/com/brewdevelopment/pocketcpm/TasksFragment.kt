@@ -25,7 +25,6 @@ class TasksFragment: Fragment(){
             var fragment: TasksFragment = TasksFragment()
             fragment.arguments = args       //no getters or setters thus, setArgument -> .arguments
             return fragment
-
             //makes call to the super's constructor &  can do processes before call
 
         }
