@@ -1,7 +1,7 @@
 package com.brewdevelopment.pocketcpm
 
 /**
- * Created by neyonlimel on 2017-08-15.
+ * Created by neyonlimell on 2017-08-15.
  */
 class Champion(var name: String){
     lateinit var ID: String
