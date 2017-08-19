@@ -1,22 +1,30 @@
 package com.brewdevelopment.pocketcpm
 
+
 import android.app.Fragment
+
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
 
 
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : AppCompatActivity(), AddTaskFragement.AddFragmentEventsListener {
+    override fun onAddTask(task: Task) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+
 
     private lateinit var menuList: Array<String>
     private lateinit var drawerLayout:DrawerLayout
     private lateinit var drawerList:ListView
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {  //question marks denote nullable types
@@ -59,6 +67,7 @@ class MainActivity : AppCompatActivity() {
 
         //setting up the navigation
 
+    }
 
-
+}
 
