@@ -13,8 +13,8 @@ import java.util.*
     var list = ArrayList<my_items>()
     val menuList = arrayOf("Tasks","Projects","Diagrams")
     val menuList2: Array<Int> = arrayOf(R.drawable.download,R.drawable.sasukepart1,R.drawable.download)
+    val context = c
 
-    val  context = c
      //this init function holds a ghetto for loop AKA while loop to fill the array list with the objects
     init{
         var x: Int =0
@@ -56,5 +56,7 @@ import java.util.*
         //
         //return the view we just created
         return CustomView
+
     }
+
 }

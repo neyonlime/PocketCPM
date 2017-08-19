@@ -9,9 +9,12 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="?attr/actionBarSize"
+
             android:id="@+id/content_frame"></FrameLayout>
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
+            android:paddingTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
