@@ -1,5 +1,6 @@
 package com.brewdevelopment.pocketcpm
 
+import android.app.Fragment
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
@@ -29,18 +30,21 @@ class MainActivity : AppCompatActivity() {
         val toolbar: Toolbar
         toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)        //setting the toolbar and providing functionality to the toolbar
-
         menuList = arrayOf("Tasks","Projects","Diagrams")
        //val menuList2: Array<Int> = arrayOf(R.drawable.download,R.drawable.sasukepart1,R.drawable.download)
         drawerLayout = findViewById(R.id.drawer_layout) as DrawerLayout     //casting is done using the as keyword
-
         drawerList = findViewById(R.id.left_drawer) as ListView
-
         drawerList.adapter= CustomAdapter(this) //set the adapter to custom one
         //this portion holds the events that occur on the click of a drawer list item//
         drawerList.onItemClickListener= AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id:Long ->
+
             if(position==0) {
-                drawerLayout.closeDrawers()
+                val fragment : Fragment = TasksFragment.newInstance("hi")
+                //val fm = supportFragmentManager
+                val fm = fragmentManager
+                val transaction = fm.beginTransaction()
+                transaction.replace(R.id.content_frame,fragment)
+                transaction.commit()
             }
             if(position==1) {
                 drawerLayout.closeDrawers()
@@ -50,18 +54,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-
-
-
         }
-
-
-
         }
-
-
-
 
         //setting up the navigation
 
