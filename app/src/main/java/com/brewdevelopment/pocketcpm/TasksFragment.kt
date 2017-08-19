@@ -2,6 +2,8 @@ package com.brewdevelopment.pocketcpm
 
 import android.app.Fragment
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +15,8 @@ import android.view.ViewGroup
  */
 
 class TasksFragment: Fragment(){
+
+    lateinit var recyclerView: RecyclerView
 
     companion object {
         val MESSAGE_KEY: String = "mKey"
@@ -26,12 +30,16 @@ class TasksFragment: Fragment(){
             fragment.arguments = args       //no getters or setters thus, setArgument -> .arguments
             return fragment
             //makes call to the super's constructor &  can do processes before call
-
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater?.inflate(R.layout.fragment_task_list, container, false)
+        val rootView = inflater?.inflate(R.layout.task_list, container, false)
+        recyclerView= rootView?.findViewById(R.id.recycler_view) as RecyclerView
+        recyclerView?.layoutManager= LinearLayoutManager(activity)
+        recyclerView?.adapter= RecyclerAdapter(recyclerView)
         return rootView
     }
+
+
 }
