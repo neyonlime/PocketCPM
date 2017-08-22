@@ -93,9 +93,11 @@ class DBAdapter(dbName: String, context: Context){
                 var taskList = ""
                 for(task in obj.taskList){
                     taskList+=","+task.ID
-                    taskList = taskList.substring(1)
                     Log.i(PROJECT_ADDED, taskList)
                 }
+
+                taskList = taskList.substring(1)
+
                 values.put(DBManager.Contract.ProjectTable.NAME_COLUMN, obj.name)
                 values.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
                 values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTotalTime())
