@@ -12,7 +12,7 @@
         android:layout_height="80dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="10dp"
-        app:srcCompat="@drawable/download" />
+        app:srcCompat="@drawable/collapse_arrow1600" />
 
     <TextView
         android:id="@+id/NavTV"

@@ -1,7 +1,6 @@
 package com.brewdevelopment.pocketcpm
 
 import android.support.v7.widget.RecyclerView
-import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,24 +40,6 @@ class RecyclerAdapter(val recyclerView: RecyclerView) : RecyclerView.Adapter<Rec
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         holder?.item_Title?.text= titles[position]
         holder?.item_Desc?.text= descr[position]
-
-        var mExpandedPosition= position
-        val isExpanded: Boolean = (position === mExpandedPosition)
-        holder?.item_Desc?.setVisibility(if (isExpanded) View.VISIBLE else View.GONE)
-        if(isExpanded){
-           holder?.imageview?.setImageResource(R.drawable.collapse_arrow1600)
-        }
-        else{
-           holder?.imageview?.setImageResource(R.drawable.expand_arrow1600)
-       }
-        holder?.itemView?.isActivated = isExpanded
-        holder?.itemView?.setOnClickListener {
-            mExpandedPosition = if (isExpanded) -1 else position
-
-            TransitionManager.beginDelayedTransition(recyclerView)
-            notifyDataSetChanged()
-        }
-
 
     }
     override fun getItemCount(): Int {
