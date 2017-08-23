@@ -40,4 +40,5 @@ class AddProjectFragment(): Fragment(){
         val nameField = rootView!!.findViewById(R.id.project_name_field)
         return rootView
     }
+
 }
