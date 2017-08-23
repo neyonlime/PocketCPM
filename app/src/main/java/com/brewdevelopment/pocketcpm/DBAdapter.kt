@@ -132,6 +132,30 @@ class DBAdapter(dbName: String, context: Context){
         }
     }
 
+    fun saveTask(project: Project, task: Task){
+        open(WRITE)
+        checkDBState()
+
+        //save task to TaskTable
+        var taskValues = task.attribute
+        task.ID = db.insert(DBManager.Contract.ChampionTable.TABLE_NAME,null,taskValues)
+
+        var taskList = ""
+        for(task in project.taskList){
+            taskList+=","+task.ID
+            Log.i(PROJECT_ADDED, taskList)
+        }
+        taskList = taskList.substring(1)
+
+        var projectValues = ContentValues()
+        projectValues.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
+
+        var selection = DBManager.Contract.ProjectTable.ID + " LIKE ?"
+        var selectionArgs = arrayOf(""+project.ID)
+
+        var count = db.update(DBManager.Contract.ProjectTable.TABLE_NAME, projectValues, selection, selectionArgs)
+    }
+
     //Accessors
     fun getProjects(): ArrayList<Project> {
         open(READ)
@@ -202,6 +226,7 @@ class DBAdapter(dbName: String, context: Context){
         while(cursor.moveToNext()){
             task.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.ID))
             task.attribute.put(Task.NAME_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.NAME_COLUMN)))
+            task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
             task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
             task.attribute.put(Task.START_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.START_COLUMN)))
             task.attribute.put(Task.END_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.END_COLUMN)))
@@ -231,6 +256,7 @@ class DBAdapter(dbName: String, context: Context){
                 val TABLE_NAME = "tasks"
                 val ID: String = "_id"
                 val NAME_COLUMN = "name"
+                val DESCRIPTION_COLUMN = "description"
                 val CHAMPION_COLUMN = "champion"
                 val START_COLUMN = "start"
                 val END_COLUMN = "end"
@@ -273,7 +299,8 @@ class DBAdapter(dbName: String, context: Context){
                 }
                 TaskTable.TABLE_NAME -> {
                     val CREATE_SQL_ENTERIES = "CREATE TABLE if not exist ${TaskTable.TABLE_NAME} (" +
-                            "${TaskTable.ID} INTEGER PRIMARY KEY, ${TaskTable.NAME_COLUMN} TEXT, " +
+                            "${TaskTable.ID} INTEGER PRIMARY KEY, ${TaskTable.NAME_COLUMN} TEXT," +
+                            "${TaskTable.DESCRIPTION_COLUMN} TEXT," +
                             "${TaskTable.CHAMPION_COLUMN} TEXT, ${TaskTable.START_COLUMN} TEXT," +
                             "${TaskTable.END_COLUMN} TEXT, ${TaskTable.PREDECESSOR_COLUMN} TEXT " +
                             "${TaskTable.DEPENDENT_COLUMN} TEXT)"

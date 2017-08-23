@@ -2,6 +2,7 @@ package com.brewdevelopment.pocketcpm
 
 import android.app.Fragment
 import android.content.Context
+import android.nfc.Tag
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -15,30 +16,32 @@ import android.view.ViewGroup
  * triggered from the navigation drawer, and projects tab when individual project is selected
  */
 
-class DisplayFragment: Fragment(){
+class DisplayFragment(): Fragment(){
 
     lateinit var recyclerView: RecyclerView
     lateinit var fragmentEventListener: FragmentEventListener
 
     companion object {
-        val MESSAGE_KEY: String = "mKey"
-        fun newInstance(title: String, list: ArrayList<Task> ): Fragment{//get appropriate arguments that are needed to construct the fragment
+        val PROJECT_KEY: String = "project"
+        val TASK_KEY: String = "task"
+        fun newInstance(projectName: String,list: ArrayList<Task> ): DisplayFragment{//get appropriate arguments that are needed to construct the fragment
             //process and bundle up fragments before adding it to the fragement
             //the arguments will be bundles which will then be passed using setArguments(), to the fragment
+                //no getters or setters thus, setArgument -> .arguments
 
-            var args: Bundle = Bundle()
-            args.putString(MESSAGE_KEY,title)
-            var fragment: DisplayFragment = DisplayFragment()
-            fragment.arguments = args       //no getters or setters thus, setArgument -> .arguments
+            val fragment = DisplayFragment()
+
             return fragment
             //makes call to the super's constructor &  can do processes before call
+
         }
-        fun newInstance(list: ArrayList<Project>){
+        fun newInstance(list: ArrayList<Project>): DisplayFragment{
 
         }
     }
 
     override fun onAttach(context: Context?) {
+
         super.onAttach(context)
         if(!(context is FragmentEventListener)) throw AssertionError()  //if the call activity has implemented AddFragmentEventListener continue
         fragmentEventListener = context as FragmentEventListener

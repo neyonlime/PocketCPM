@@ -3,6 +3,7 @@ package com.brewdevelopment.pocketcpm
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
+import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,18 +15,27 @@ import android.widget.EditText
 
 class AddProjectFragment(): Fragment(){
 
+    private constructor(project: Project): this(){
+        this.project = project
+    }
+
+    private lateinit var project: Project
     lateinit var fragmentEventListener: FragmentEventListener
 
     companion object {
-        fun newInstance(): Fragment{
-            //adding a new project
-            val fragment = AddTaskFragement()
+        val ADD_PROJECT ="add_project"
+        val EDIT_PROJECT = "edit_project"
+
+        fun newAddInstance(): AddProjectFragment{
+
+            val fragment = AddProjectFragment()
             return fragment
+
         }
 
-        fun newInstance(project: Project): Fragment{
+        fun newEditInstance(obj: Project): AddProjectFragment{
             //editing existing project
-            val fragment = AddTaskFragement()
+            val fragment = AddProjectFragment(obj)
             return fragment
         }
     }
@@ -37,8 +47,15 @@ class AddProjectFragment(): Fragment(){
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        var rootView = inflater?.inflate(R.layout.fragement_add_task,container, false)
-        val nameField = rootView!!.findViewById(R.id.project_name_field)
+        var rootView = inflater?.inflate(R.layout.fragment_add_project,container, false)
+        val nameField = rootView!!.findViewById(R.id.project_name_field) as EditText
+
+        if(project !== null){
+            //edit instance
+            nameField.setText(project.name)
+        }
+
+        //add instance
 
         return rootView
     }
