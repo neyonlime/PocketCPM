@@ -36,6 +36,8 @@ class AddTaskFragement : Fragment(), TimePickerDialog.OnTimeSetListener, DatePic
 
 
     companion object {
+        val ADD_TASK = "add_task"
+        val EDIT_TASK = "edit_task"
         fun newInstance(): Fragment{
             //creating a brand NEW task
             var fragment = AddTaskFragement()

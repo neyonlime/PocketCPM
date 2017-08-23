@@ -23,6 +23,7 @@ class Task(){
 
     companion object {
         val NAME_COLUMN = "name"
+        val DESCRIPTION_COLUMN = "description"
         val CHAMPION_COLUMN = "champion"
         val START_COLUMN = "start"
         val END_COLUMN = "end"
