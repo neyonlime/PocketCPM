@@ -7,7 +7,6 @@ import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 
 /**
  * Created by ashkanabedian on 2017-08-21.
@@ -47,6 +46,8 @@ class AddProjectFragment(): Fragment(){
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+
         var rootView = inflater?.inflate(R.layout.fragment_add_project,container, false)
         val nameField = rootView!!.findViewById(R.id.project_name_field) as EditText
 
@@ -56,7 +57,6 @@ class AddProjectFragment(): Fragment(){
         }
 
         //add instance
-
         return rootView
     }
 }

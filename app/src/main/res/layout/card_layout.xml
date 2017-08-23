@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/Card_view"
-    card_view:cardBackgroundColor="#81C784"
+    card_view:cardBackgroundColor="#329ab7"
     card_view:cardCornerRadius="12dp"
     card_view:cardElevation="3dp"
 
@@ -36,8 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/Pic"
-            android:layout_below="@+id/Title"
-            android:visibility="gone" />
+            android:layout_below="@+id/Title" />
 
         <ImageView
             android:id="@+id/Pic"

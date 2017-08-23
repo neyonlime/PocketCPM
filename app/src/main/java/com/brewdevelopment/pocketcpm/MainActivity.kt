@@ -1,6 +1,7 @@
 package com.brewdevelopment.pocketcpm
 
 
+
 import android.app.Fragment
 import android.app.FragmentManager
 import android.content.Context
@@ -12,7 +13,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
@@ -20,32 +20,29 @@ import android.widget.ListView
 
 
 
+
 class MainActivity : AppCompatActivity(), FragmentEventListener {
 
 
+    //val DB1: DBAdapter= DBAdapter("Data",this)
+    var isProj: Boolean= true
     private lateinit var menuList: Array<String>
     private lateinit var drawerLayout:DrawerLayout
     private lateinit var drawerList:ListView
     private lateinit var fab: FloatingActionButton
     private lateinit var dbAdapter: DBAdapter
-
+    private lateinit var  toolbar: Toolbar
     private lateinit var projectList: ArrayList<Project>
-
     private lateinit var selectedProject: Project            //current displayed project
     private lateinit var selectedTask: Task                 //current task
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {  //question marks denote nullable types
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.main_view)
-
-        //new database adapter
-        dbAdapter = DBAdapter("data", this)
-
-
         //setting up the toolbar
-        val toolbar: Toolbar
+
         toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)        //setting the toolbar and providing functionality to the toolbar
         menuList = arrayOf("Dashboard","Projects","Diagrams")
@@ -88,26 +85,25 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         drawerList.onItemClickListener= AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id:Long ->
 
             if(position==0) {
-                //home
+              //home
                 if(fab.isShown) fab.hide()
                 drawerLayout.closeDrawers()
+
             }
             if(position==1) {
-                //Projects
-
                 fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
                 fab.show()
-
-                val fragment = DisplayFragment.newInstance()
-                //val fm = supportFragmentManager
+                isProj=true
+                val fragment = DisplayFragment.newInstance(dbAdapter.getProjects())
                 val fm = fragmentManager
-                val transaction = fm.beginTransaction()
-                transaction.replace(R.id.content_frame, fragment, DisplayFragment.PROJECT_KEY)
+                val transaction = fm.beginTransaction()               
+                transaction.replace(R.id.content_frame,fragment,DisplayFragment.PROJECT_KEY)
+        
                 transaction.commit()
                 drawerLayout.closeDrawers()
             }
             if(position==2) {
-                drawerLayout.closeDrawers()
+
             }
         }
 
@@ -116,6 +112,15 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
     //Fragement communication interface
     override fun onProjectSelect(obj: Project) {
         selectedProject = obj
+        val projName= obj.name
+        toolbar.title=projName
+        DisplayFragment().recyclerView?.adapter= RecyclerAdapter(this,obj)
+        val fragment= DisplayFragment.newInstance(projname,dbAdapter.getTaskList(obj.ID))
+        val fm = fragmentManager
+        val transaction = fm.beginTransaction()
+        transaction.replace(R.id.content_frame,fragment)
+        transaction.commit()
+        isProj=false // IMPORTANT: Whenever we introduce a back button that takes u back to projects, change the isProject
     }
 
     override fun onTaskSelect(obj: Task) {
