@@ -1,48 +1,44 @@
 package com.brewdevelopment.pocketcpm
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 
 
 /**
  * Created by Osama on 2017-08-16.
  */
-class RecyclerAdapter(val recyclerView: RecyclerView) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>()
+class RecyclerAdapter( c: Context,obj:Project) : RecyclerView.Adapter<RecyclerAdapter.viewHolder>()
 {
+    val DB1= DBAdapter("DataCA", c )
+    var list = ArrayList<Task>()
+    init{
+        list=(DB1.getTaskList(obj.ID))
+    }
 
-
-    val titles= arrayOf("hdjuad","djiajhd","hjdaihd", "djhaidhj")
-    val descr=arrayOf("hdjuad","djiajhd","hjdaihd", "djhaidhj")
-    class ViewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
-       val currentItem: Int=0
-
-
-        val  imageview= itemView?.findViewById(R.id.Pic) as ImageView
+    class viewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
+        val currentItem: Int=0
         val item_Title= itemView?.findViewById(R.id.Title) as TextView
         val item_Desc= itemView?.findViewById(R.id.Desc) as TextView
-
-
-
-
-
     }
 
-    override  fun onCreateViewHolder(parent: ViewGroup?, i: Int): ViewHolder {
+    override  fun onCreateViewHolder(parent: ViewGroup?, i: Int): viewHolder {
         val v: View?= LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent,false)
-        val viewHolder: ViewHolder= ViewHolder(v)
+        val viewHolder: viewHolder= viewHolder(v)
         return viewHolder
-
     }
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        holder?.item_Title?.text= titles[position]
-        holder?.item_Desc?.text= descr[position]
 
+    override fun onBindViewHolder(holder: viewHolder?, position: Int) {
+        val temp: Task= list[position]
+        holder?.item_Title?.text= temp.attribute.get(Task.NAME_COLUMN) as String
+        holder?.item_Desc?.text= temp.attribute.get(Task.DESCRIPTION_COLUMN) as String
     }
+
     override fun getItemCount(): Int {
-        return titles.size
+        return list.size
     }
+
 }

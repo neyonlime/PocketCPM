@@ -3,9 +3,7 @@ package com.brewdevelopment.pocketcpm
 
 import android.app.Fragment
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +12,6 @@ import android.widget.Button
 import android.widget.EditText
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
-import java.sql.Time
 import java.util.*
 
 /**
