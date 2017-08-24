@@ -2,7 +2,6 @@ package com.brewdevelopment.pocketcpm
 
 import android.app.Fragment
 import android.content.Context
-import android.nfc.Tag
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -72,7 +71,12 @@ class DisplayFragment(): Fragment(){
                 })
         )
         if(MainActivity().isProj) {
-            recyclerView?.adapter = ProjAdapter(activity)
+            if(ProjAdapter(activity).list.size<1){
+                recyclerView?.adapter = ProjAdapter(activity)
+            }
+            else {
+                recyclerView?.adapter = ProjAdapter(activity)
+            }
         }
         return rootView
     }
