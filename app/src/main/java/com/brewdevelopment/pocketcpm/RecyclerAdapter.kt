@@ -2,6 +2,7 @@ package com.brewdevelopment.pocketcpm
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ class RecyclerAdapter( c: Context,obj:Project) : RecyclerView.Adapter<RecyclerAd
     var list = ArrayList<Task>()
     init{
         list=(DB1.getTaskList(obj.ID))
+        Log.e("ffff","f")
     }
 
     class viewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
@@ -26,7 +28,7 @@ class RecyclerAdapter( c: Context,obj:Project) : RecyclerView.Adapter<RecyclerAd
     }
 
     override  fun onCreateViewHolder(parent: ViewGroup?, i: Int): viewHolder {
-        val v: View?= LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent,false)
+        val v: View? = LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent, false)
         val viewHolder: viewHolder= viewHolder(v)
         return viewHolder
     }

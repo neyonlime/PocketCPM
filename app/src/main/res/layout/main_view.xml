@@ -23,7 +23,7 @@
                 android:id="@+id/floating_action_button"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="16dp"
-                android:src="@drawable/ic_plus"
+                android:src="@drawable/circle"
                 app:layout_anchor="@id/content_frame"
                 app:layout_anchorGravity="bottom|right|end"/>
         </android.support.design.widget.CoordinatorLayout>

@@ -2,11 +2,6 @@ package com.brewdevelopment.pocketcpm
 
 
 
-import android.app.Fragment
-import android.app.FragmentManager
-import android.content.Context
-import android.graphics.drawable.Drawable
-
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
@@ -71,7 +66,6 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                     transaction.replace(R.id.content_frame, mFragment,AddProjectFragment.ADD_PROJECT)
                     fab.hide()
                     transaction.commit()
-
                 }
                 DisplayFragment.TASK_KEY ->{
                     var mFragment = AddTaskFragement()
@@ -96,7 +90,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
             }
             if(position==1) {
-                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
+                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.expand_arrow1600))
                 fab.show()
                 isProj=true
                 val fragment = DisplayFragment.newInstance(dbAdapter.getProjects())
@@ -126,16 +120,15 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
     //Fragement communication interface
     override fun onProjectSelect(obj: Project) {
+        //isProj=false // IMPORTANT: Whenever we introduce a back button that takes u back to projects, change the isProject
         selectedProject = obj
         val projName= obj.name
         toolbar.title=projName
-        DisplayFragment().recyclerView?.adapter= RecyclerAdapter(this,obj)
         val fragment= DisplayFragment.newInstance(projName,dbAdapter.getTaskList(obj.ID))
         val fm = fragmentManager
         val transaction = fm.beginTransaction()
         transaction.replace(R.id.content_frame,fragment)
         transaction.commit()
-        isProj=false // IMPORTANT: Whenever we introduce a back button that takes u back to projects, change the isProject
     }
 
     override fun onTaskSelect(obj: Task) {

@@ -2,7 +2,6 @@ package com.brewdevelopment.pocketcpm
 
 import android.app.Fragment
 import android.content.Context
-import android.nfc.Tag
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -22,6 +21,8 @@ class DisplayFragment(): Fragment(){
 
     lateinit var recyclerView: RecyclerView
     lateinit var fragmentEventListener: FragmentEventListener
+    lateinit var x: Project
+
 
     companion object {
 
@@ -59,21 +60,37 @@ class DisplayFragment(): Fragment(){
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Log.e("WERE HERE","11")
+        var i: Int=0
         val rootView = inflater?.inflate(R.layout.task_list, container, false)
         recyclerView= rootView?.findViewById(R.id.recycler_view) as RecyclerView
-        recyclerView?.layoutManager= LinearLayoutManager(activity)
+
         recyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
-                        val x :Project= ProjAdapter(activity).list[position]
+                        x = ProjAdapter(activity).list[position]
                         fragmentEventListener.onProjectSelect(x)
                         Log.e("@@@@@", "" + position)
                     }
                 })
         )
-        if(MainActivity().isProj) {
-            recyclerView?.adapter = ProjAdapter(activity)
+        val fragment = fragmentManager.findFragmentById(R.id.content_frame)
+        when(fragment.tag) {
+            PROJECT_KEY -> {
+                recyclerView?.adapter = ProjAdapter(activity)
+                i++
+                Log.e("WERE HERE", "55")
+            }
+            TASK_KEY -> {
+                Log.e("WERE HERE", "")
+                recyclerView?.adapter=RecyclerAdapter(activity,x)
+
+            }
+
         }
+
+
+        recyclerView?.layoutManager= LinearLayoutManager(activity)
         return rootView
     }
 

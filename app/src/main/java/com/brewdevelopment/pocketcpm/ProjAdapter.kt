@@ -21,15 +21,19 @@ class ProjAdapter ( c: Context) : RecyclerView.Adapter<ProjAdapter.ViewHolder>()
     }
     class ViewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
         val currentItem: Int=0
-
         val item_Title= itemView?.findViewById(R.id.Title) as TextView
         val item_Desc= itemView?.findViewById(R.id.Desc) as TextView
-
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup?, i: Int): ViewHolder {
-        val v: View? = LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent, false)
+        var v:View?=null
+        if(list.size<1){
+             v=null
+        }
+        else {
+             v = LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent, false)
+        }
         val viewHolder: ViewHolder = ViewHolder(v)
         return viewHolder
     }

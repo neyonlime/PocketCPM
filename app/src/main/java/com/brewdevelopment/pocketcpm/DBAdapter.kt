@@ -5,7 +5,6 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.os.AsyncTask
 import android.provider.BaseColumns
 import android.util.Log
 import java.sql.SQLException
@@ -192,8 +191,8 @@ class DBAdapter(dbName: String, context: Context){
 
         var projections = arrayOf(DBManager.Contract.ProjectTable.ID, DBManager.Contract.ProjectTable.TASK_LIST_COLUMN)
         checkDBState()
-        var selection = DBManager.Contract.ProjectTable.ID
-        val selectionArgs = arrayOf(id as String)
+        var selection = DBManager.Contract.ProjectTable.ID + " = ?"
+        val selectionArgs = arrayOf(id.toString())
 
         var sortOrder = DBManager.Contract.ProjectTable.ID + " DESC"
 
@@ -221,12 +220,12 @@ class DBAdapter(dbName: String, context: Context){
         var projections = arrayOf(DBManager.Contract.TaskTable.ID, DBManager.Contract.TaskTable.NAME_COLUMN,
                                     DBManager.Contract.TaskTable.CHAMPION_COLUMN, DBManager.Contract.TaskTable.START_COLUMN,
                                     DBManager.Contract.TaskTable.END_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
-                                    DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
+                                    DBManager.Contract.TaskTable.END_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN)
 
-        var selection = DBManager.Contract.TaskTable.ID
+        var selection = DBManager.Contract.TaskTable.ID + " = ?"
         var selectionArgs = arrayOf(id)
 
-        var sortOrder = DBManager.Contract.TaskTable.TABLE_NAME + " DESC"
+        var sortOrder = DBManager.Contract.TaskTable.NAME_COLUMN + " DESC"
 
 
         var cursor: Cursor = db.query(DBManager.Contract.TaskTable.TABLE_NAME, projections, selection, selectionArgs, null, null, sortOrder)
@@ -235,12 +234,12 @@ class DBAdapter(dbName: String, context: Context){
         while(cursor.moveToNext()){
             task.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.ID))
             task.attribute.put(Task.NAME_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.NAME_COLUMN)))
-            task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
+          //  task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
             task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
             task.attribute.put(Task.START_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.START_COLUMN)))
             task.attribute.put(Task.END_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.END_COLUMN)))
             task.attribute.put(Task.PREDECESSOR_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN)))
-            task.attribute.put(Task.DEPENDENT_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN)))
+            //task.attribute.put(Task.DEPENDENT_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN)))
         }
 
         return task
@@ -311,7 +310,7 @@ class DBAdapter(dbName: String, context: Context){
                             "${TaskTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ${TaskTable.NAME_COLUMN} TEXT," +
                             "${TaskTable.DESCRIPTION_COLUMN} TEXT," +
                             "${TaskTable.CHAMPION_COLUMN} TEXT, ${TaskTable.START_COLUMN} TEXT," +
-                            "${TaskTable.END_COLUMN} TEXT, ${TaskTable.PREDECESSOR_COLUMN} TEXT " +
+                            "${TaskTable.END_COLUMN} TEXT, ${TaskTable.PREDECESSOR_COLUMN} TEXT," +
                             "${TaskTable.DEPENDENT_COLUMN} TEXT)"
                     db!!.execSQL(CREATE_SQL_ENTERIES)
                 }
