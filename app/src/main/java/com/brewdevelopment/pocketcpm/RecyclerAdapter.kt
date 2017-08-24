@@ -26,13 +26,7 @@ class RecyclerAdapter( c: Context,obj:Project) : RecyclerView.Adapter<RecyclerAd
     }
 
     override  fun onCreateViewHolder(parent: ViewGroup?, i: Int): viewHolder {
-        var v: View?= null
-        if(list.size<1){
-            v=null
-        }
-        else {
-            v = LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent, false)
-        }
+        val v: View? = LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent, false)
         val viewHolder: viewHolder= viewHolder(v)
         return viewHolder
     }

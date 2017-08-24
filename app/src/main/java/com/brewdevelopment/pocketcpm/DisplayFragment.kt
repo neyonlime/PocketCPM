@@ -61,30 +61,27 @@ class DisplayFragment(): Fragment(){
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater?.inflate(R.layout.task_list, container, false)
         recyclerView= rootView?.findViewById(R.id.recycler_view) as RecyclerView
-        recyclerView?.layoutManager= LinearLayoutManager(activity)
+
         recyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
                         x = ProjAdapter(activity).list[position]
-
                         fragmentEventListener.onProjectSelect(x)
-
                         Log.e("@@@@@", "" + position)
                     }
                 })
         )
         if(MainActivity().isProj) {
-            if(ProjAdapter(activity).list.size<1){
-                recyclerView?.adapter = ProjAdapter(activity)
-            }
-            else {
-                recyclerView?.adapter = ProjAdapter(activity)
-            }
+
+            recyclerView?.adapter = ProjAdapter(activity)
+
 
         }
         else{
+
             recyclerView?.adapter= RecyclerAdapter(activity,x)
         }
+        recyclerView?.layoutManager= LinearLayoutManager(activity)
         return rootView
     }
 
