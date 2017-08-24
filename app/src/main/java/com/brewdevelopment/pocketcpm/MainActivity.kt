@@ -66,7 +66,6 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                     transaction.replace(R.id.content_frame, mFragment,AddProjectFragment.ADD_PROJECT)
                     fab.hide()
                     transaction.commit()
-
                 }
                 DisplayFragment.TASK_KEY ->{
                     var mFragment = AddTaskFragement()
@@ -124,13 +123,13 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         selectedProject = obj
         val projName= obj.name
         toolbar.title=projName
-        DisplayFragment().recyclerView?.adapter= RecyclerAdapter(this,obj)
         val fragment= DisplayFragment.newInstance(projName,dbAdapter.getTaskList(obj.ID))
         val fm = fragmentManager
         val transaction = fm.beginTransaction()
         transaction.replace(R.id.content_frame,fragment)
-        transaction.commit()
+
         isProj=false // IMPORTANT: Whenever we introduce a back button that takes u back to projects, change the isProject
+        transaction.commit()
     }
 
     override fun onTaskSelect(obj: Task) {

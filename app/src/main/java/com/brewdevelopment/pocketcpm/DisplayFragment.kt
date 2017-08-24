@@ -21,6 +21,7 @@ class DisplayFragment(): Fragment(){
 
     lateinit var recyclerView: RecyclerView
     lateinit var fragmentEventListener: FragmentEventListener
+    lateinit var x: Project
 
     companion object {
 
@@ -64,8 +65,10 @@ class DisplayFragment(): Fragment(){
         recyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
-                        val x :Project= ProjAdapter(activity).list[position]
+                        x = ProjAdapter(activity).list[position]
+
                         fragmentEventListener.onProjectSelect(x)
+
                         Log.e("@@@@@", "" + position)
                     }
                 })
@@ -77,6 +80,10 @@ class DisplayFragment(): Fragment(){
             else {
                 recyclerView?.adapter = ProjAdapter(activity)
             }
+
+        }
+        else{
+            recyclerView?.adapter= RecyclerAdapter(activity,x)
         }
         return rootView
     }
