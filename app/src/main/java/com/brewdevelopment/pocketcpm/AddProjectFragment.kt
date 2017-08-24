@@ -7,6 +7,8 @@ import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 
 /**
  * Created by ashkanabedian on 2017-08-21.
@@ -18,7 +20,7 @@ class AddProjectFragment(): Fragment(){
         this.project = project
     }
 
-    private lateinit var project: Project
+    private var project: Project? = null
     lateinit var fragmentEventListener: FragmentEventListener
 
     companion object {
@@ -50,10 +52,16 @@ class AddProjectFragment(): Fragment(){
 
         var rootView = inflater?.inflate(R.layout.fragment_add_project,container, false)
         val nameField = rootView!!.findViewById(R.id.project_name_field) as EditText
+        val button = rootView!!.findViewById(R.id.project_save_button) as Button
+
+        button.setOnClickListener{
+            var project = Project("" + nameField.text)
+            fragmentEventListener.onAdd(project)
+        }
 
         if(project !== null){
             //edit instance
-            nameField.setText(project.name)
+            nameField.setText(project!!.name)
         }
 
         //add instance

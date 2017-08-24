@@ -48,6 +48,14 @@ class ProjAdapter ( c: Context) : RecyclerView.Adapter<ProjAdapter.ViewHolder>()
 }
 
 class RecyclerItemClickListener(context: Context, private val mListener: OnItemClickListener?) : RecyclerView.OnItemTouchListener {
+    override fun onTouchEvent(rv: RecyclerView?, e: MotionEvent?) {
+
+    }
+
+    override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+
+    }
+
     interface OnItemClickListener {
         fun onItemClick(view: View, position: Int)
     }
@@ -70,11 +78,7 @@ class RecyclerItemClickListener(context: Context, private val mListener: OnItemC
         return false
     }
 
-    override fun onTouchEvent(view: RecyclerView, motionEvent: MotionEvent) {}
 
-    override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-
-    }
 }
 
 

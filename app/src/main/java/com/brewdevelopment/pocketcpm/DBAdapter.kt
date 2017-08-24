@@ -15,8 +15,9 @@ import java.sql.SQLException
  */
 class DBAdapter(dbName: String, context: Context){
 
+    private var db: SQLiteDatabase
     companion object {
-        private lateinit var db: SQLiteDatabase
+
         private lateinit var mDBManager: com.brewdevelopment.pocketcpm.DBAdapter.DBManager
 
         val READ = "read"               //only for reading
@@ -27,23 +28,23 @@ class DBAdapter(dbName: String, context: Context){
     }
     
     init {
-        mDBManager = DBManager(context, "pocketcpm")        //instance of database manager
+        mDBManager = DBManager(context, "pocketcpm.db")        //instance of database manager
+        db = mDBManager.writableDatabase
     }
 
     //used to open the database
+
     @Throws(SQLException::class)
-    fun open(request: String){
+    fun open(){
         //open the data base
-        if(!db.isOpen && db !== null){
-            OpenDatabaseTask().execute(request)
-        }else if(db.isReadOnly&&request == WRITE && db.isOpen){
-            db.close()
-            OpenDatabaseTask().execute(request)
+        if(!db.isOpen){
+            db = mDBManager.writableDatabase
         }
     }
 
 
     //ASYNC TASK
+    /*
     private class OpenDatabaseTask: AsyncTask<String, Boolean, Boolean>() {
         override fun doInBackground(vararg params: String?): Boolean {
             for(request in params){
@@ -68,7 +69,7 @@ class DBAdapter(dbName: String, context: Context){
         override fun onPostExecute(result: Boolean?) {
             super.onPostExecute(result)
         }
-    }
+    }*/
 
     //deletes the specified table
     fun deleteTable(tbName: String){
@@ -87,7 +88,7 @@ class DBAdapter(dbName: String, context: Context){
         when(obj){
             is Project -> {
                 //save a project
-                open(WRITE)             //opens the database
+                //open(WRITE)             //opens the database
                 checkDBState()          //checks that the database is open and ready for print
                 var values = ContentValues()
                 var taskList = ""
@@ -96,17 +97,18 @@ class DBAdapter(dbName: String, context: Context){
                     Log.i(PROJECT_ADDED, taskList)
                 }
 
-                taskList = taskList.substring(1)
-
+                if(taskList.length > 1){
+                    taskList = taskList.substring(1)
+                }
+1
                 values.put(DBManager.Contract.ProjectTable.NAME_COLUMN, obj.name)
                 values.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
                 values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTotalTime())
                 obj.ID = db.insert(DBManager.Contract.ProjectTable.TABLE_NAME, null, values)
-
             }
             is Task -> {
                 //save task
-                open(WRITE)
+                //open(WRITE)
                 checkDBState()
                 var values = obj.attribute
                 obj.ID = db.insert(DBManager.Contract.TaskTable.TABLE_NAME, null,values)
@@ -114,13 +116,15 @@ class DBAdapter(dbName: String, context: Context){
             }
             is Champion -> {
                 //save champion
-                open(WRITE)
+                //open(WRITE)
                 checkDBState()
                 var taskList = ""
                 for(task in obj.assignedTasks){
                     taskList += "," + task.ID               //id1,id2,id3, ...
                 }
-                taskList = taskList.substring(1)            //gets rid of the first comma
+                if(taskList.length > 1){
+                    taskList = taskList.substring(1)
+                }
 
                 var values = ContentValues()
                 values.put(DBManager.Contract.ChampionTable.NAME_COLUMN, obj.name)
@@ -131,9 +135,12 @@ class DBAdapter(dbName: String, context: Context){
             else -> {}
         }
     }
+    fun close(){
+        if(db !== null && db.isOpen) db.close()
+    }
 
     fun saveTask(project: Project, task: Task){
-        open(WRITE)
+        //open(WRITE)
         checkDBState()
 
         //save task to TaskTable
@@ -145,7 +152,9 @@ class DBAdapter(dbName: String, context: Context){
             taskList+=","+task.ID
             Log.i(PROJECT_ADDED, taskList)
         }
-        taskList = taskList.substring(1)
+        if(taskList.length > 1){
+            taskList = taskList.substring(1)
+        }
 
         var projectValues = ContentValues()
         projectValues.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
@@ -158,7 +167,7 @@ class DBAdapter(dbName: String, context: Context){
 
     //Accessors
     fun getProjects(): ArrayList<Project> {
-        open(READ)
+        //open(READ)
 
         var projections = arrayOf(DBManager.Contract.ProjectTable.ID, DBManager.Contract.ProjectTable.NAME_COLUMN)
         checkDBState()
@@ -179,7 +188,7 @@ class DBAdapter(dbName: String, context: Context){
     }
 
     fun getTaskList(id: Long): ArrayList<Task> {
-        open(READ)
+        //open(READ)
 
         var projections = arrayOf(DBManager.Contract.ProjectTable.ID, DBManager.Contract.ProjectTable.TASK_LIST_COLUMN)
         checkDBState()
@@ -248,8 +257,8 @@ class DBAdapter(dbName: String, context: Context){
                 val TABLE_NAME = "projects"
                 val ID: String = "_id"
                 val NAME_COLUMN = "name"
-                val TASK_LIST_COLUMN = "task list"
-                val TOTAL_TIME_COLUMN = "total time"
+                val TASK_LIST_COLUMN = "tasklist"
+                val TOTAL_TIME_COLUMN = "totaltime"
             }
 
             object TaskTable{
@@ -292,14 +301,14 @@ class DBAdapter(dbName: String, context: Context){
         fun createTable(db: SQLiteDatabase?, table: String){
             when (table){
                 ProjectTable.TABLE_NAME -> {
-                    val CREATE_SQL_ENTERIES = "CREATE TABLE if not exist ${ProjectTable.TABLE_NAME} (" +
-                            "${ProjectTable.ID} INTEGER PRIMARY KEY, ${ProjectTable.NAME_COLUMN} TEXT, " +
+                    val CREATE_SQL_ENTERIES = "CREATE TABLE IF  NOT EXISTS ${ProjectTable.TABLE_NAME}(" +
+                            "${ProjectTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ${ProjectTable.NAME_COLUMN} TEXT," +
                             "${ProjectTable.TASK_LIST_COLUMN} TEXT, ${ProjectTable.TOTAL_TIME_COLUMN} FLOAT)"
                     db!!.execSQL(CREATE_SQL_ENTERIES)
                 }
                 TaskTable.TABLE_NAME -> {
-                    val CREATE_SQL_ENTERIES = "CREATE TABLE if not exist ${TaskTable.TABLE_NAME} (" +
-                            "${TaskTable.ID} INTEGER PRIMARY KEY, ${TaskTable.NAME_COLUMN} TEXT," +
+                    val CREATE_SQL_ENTERIES = "CREATE TABLE IF  NOT EXISTS ${TaskTable.TABLE_NAME}(" +
+                            "${TaskTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ${TaskTable.NAME_COLUMN} TEXT," +
                             "${TaskTable.DESCRIPTION_COLUMN} TEXT," +
                             "${TaskTable.CHAMPION_COLUMN} TEXT, ${TaskTable.START_COLUMN} TEXT," +
                             "${TaskTable.END_COLUMN} TEXT, ${TaskTable.PREDECESSOR_COLUMN} TEXT " +
@@ -308,8 +317,8 @@ class DBAdapter(dbName: String, context: Context){
                 }
 
                 ChampionTable.TABLE_NAME -> {
-                    val CREATE_SQL_ENTERIES = "CREATE TABLE if not exist ${ChampionTable.TABLE_NAME} (" +
-                            "${ChampionTable.ID} INTEGER PRIMARY KEY, ${ChampionTable.NAME_COLUMN} TEXT, " +
+                    val CREATE_SQL_ENTERIES = "CREATE TABLE IF  NOT EXISTS ${ChampionTable.TABLE_NAME} (" +
+                            "${ChampionTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ${ChampionTable.NAME_COLUMN} TEXT, " +
                             "${ChampionTable.TASKS_COLUMN} TEXT)"
                     db!!.execSQL(CREATE_SQL_ENTERIES)
                 }

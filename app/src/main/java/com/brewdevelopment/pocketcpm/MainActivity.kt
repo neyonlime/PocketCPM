@@ -33,8 +33,10 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
     private lateinit var dbAdapter: DBAdapter
     private lateinit var  toolbar: Toolbar
     private lateinit var projectList: ArrayList<Project>
-    private lateinit var selectedProject: Project            //current displayed project
-    private lateinit var selectedTask: Task                 //current task
+
+        lateinit var selectedProject: Project            //current displayed project
+        lateinit var selectedTask: Task                 //current task
+
 
 
 
@@ -50,6 +52,8 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         drawerLayout = findViewById(R.id.drawer_layout) as DrawerLayout     //casting is done using the as keyword
         drawerList = findViewById(R.id.left_drawer) as ListView
 
+        dbAdapter = DBAdapter("data", this)
+        projectList = ArrayList()
 
 
         //FAB
@@ -80,6 +84,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
             }
         }
 
+
         drawerList.adapter= CustomAdapter(this) //set the adapter to custom one
         //this portion holds the events that occur on the click of a drawer list item//
         drawerList.onItemClickListener= AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id:Long ->
@@ -109,13 +114,23 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
     }
 
+    override fun onPause() {
+        super.onPause()
+        dbAdapter.close()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dbAdapter.open()
+    }
+
     //Fragement communication interface
     override fun onProjectSelect(obj: Project) {
         selectedProject = obj
         val projName= obj.name
         toolbar.title=projName
         DisplayFragment().recyclerView?.adapter= RecyclerAdapter(this,obj)
-        val fragment= DisplayFragment.newInstance(projname,dbAdapter.getTaskList(obj.ID))
+        val fragment= DisplayFragment.newInstance(projName,dbAdapter.getTaskList(obj.ID))
         val fm = fragmentManager
         val transaction = fm.beginTransaction()
         transaction.replace(R.id.content_frame,fragment)
