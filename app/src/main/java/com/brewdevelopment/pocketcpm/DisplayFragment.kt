@@ -23,6 +23,7 @@ class DisplayFragment(): Fragment(){
     lateinit var fragmentEventListener: FragmentEventListener
     lateinit var x: Project
 
+
     companion object {
 
         val PROJECT_KEY: String = "project"
@@ -59,6 +60,8 @@ class DisplayFragment(): Fragment(){
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Log.e("WERE HERE","11")
+        var i: Int=0
         val rootView = inflater?.inflate(R.layout.task_list, container, false)
         recyclerView= rootView?.findViewById(R.id.recycler_view) as RecyclerView
 
@@ -71,16 +74,22 @@ class DisplayFragment(): Fragment(){
                     }
                 })
         )
-        if(MainActivity().isProj) {
+        val fragment = fragmentManager.findFragmentById(R.id.content_frame)
+        when(fragment.tag) {
+            PROJECT_KEY -> {
+                recyclerView?.adapter = ProjAdapter(activity)
+                i++
+                Log.e("WERE HERE", "55")
+            }
+            TASK_KEY -> {
+                Log.e("WERE HERE", "")
+                recyclerView?.adapter=RecyclerAdapter(activity,x)
 
-            recyclerView?.adapter = ProjAdapter(activity)
-
+            }
 
         }
-        else{
 
-            recyclerView?.adapter= RecyclerAdapter(activity,x)
-        }
+
         recyclerView?.layoutManager= LinearLayoutManager(activity)
         return rootView
     }

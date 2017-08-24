@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
     //Fragement communication interface
     override fun onProjectSelect(obj: Project) {
-        isProj=false // IMPORTANT: Whenever we introduce a back button that takes u back to projects, change the isProject
+        //isProj=false // IMPORTANT: Whenever we introduce a back button that takes u back to projects, change the isProject
         selectedProject = obj
         val projName= obj.name
         toolbar.title=projName
@@ -128,7 +128,6 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         val fm = fragmentManager
         val transaction = fm.beginTransaction()
         transaction.replace(R.id.content_frame,fragment)
-
         transaction.commit()
     }
 
