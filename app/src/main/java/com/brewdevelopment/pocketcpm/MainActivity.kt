@@ -8,12 +8,11 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
-
-
-
+import android.widget.Toast
 
 
 class MainActivity : AppCompatActivity(), FragmentEventListener {
@@ -68,7 +67,8 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                     transaction.commit()
                 }
                 DisplayFragment.TASK_KEY ->{
-                    var mFragment = AddTaskFragement()
+                    var taskList = dbAdapter.getTaskList(selectedProject.ID)
+                    var mFragment = AddTaskFragement.newInstance(taskList)
                     val fm = fragmentManager
                     val transaction = fm.beginTransaction()
                     transaction.replace(R.id.content_frame, mFragment, AddTaskFragement.ADD_TASK)
@@ -90,10 +90,10 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
             }
             if(position==1) {
-                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.expand_arrow1600))
+                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
                 fab.show()
                 isProj=true
-                val fragment = DisplayFragment.newInstance(dbAdapter.getProjects())
+                val fragment = ProjectDisplayFragment.newInstance(dbAdapter.getProjects())
                 val fm = fragmentManager
                 val transaction = fm.beginTransaction()               
                 transaction.replace(R.id.content_frame,fragment,DisplayFragment.PROJECT_KEY)
@@ -109,13 +109,24 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
     }
 
     override fun onPause() {
+        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT)
         super.onPause()
         dbAdapter.close()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
     override fun onResume() {
+        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT)
         super.onResume()
         dbAdapter.open()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        dbAdapter.close()
     }
 
     //Fragement communication interface
@@ -124,10 +135,10 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         selectedProject = obj
         val projName= obj.name
         toolbar.title=projName
-        val fragment= DisplayFragment.newInstance(projName,dbAdapter.getTaskList(obj.ID))
+        val fragment= TaskDisplayFragment.newInstance(dbAdapter.getTaskList(obj.ID))
         val fm = fragmentManager
         val transaction = fm.beginTransaction()
-        transaction.replace(R.id.content_frame,fragment)
+        transaction.replace(R.id.content_frame,fragment,TaskDisplayFragment.TASK_KEY)
         transaction.commit()
     }
 
@@ -140,10 +151,23 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
             is Project -> {
                 dbAdapter.save(obj)
                 projectList.add(obj)
+                selectedProject = obj
+
+                Toast.makeText(this,"Project Saved", Toast.LENGTH_SHORT)
+                val fragment = AddTaskFragement.newInstance(dbAdapter.getTaskList(selectedProject.ID))
+                val fm = fragmentManager
+                val transaction = fm.beginTransaction()
+                transaction.replace(R.id.content_frame, fragment, AddTaskFragement.ADD_TASK)
+                transaction.commit()
             }
             is Task -> {
+                Log.d("add_task", "Project(${selectedProject.ID}): ${selectedProject.taskList.size}")
                 selectedProject.taskList.add(obj)
+                Log.d("add_task", "Project After(${selectedProject.ID}): ${selectedProject.taskList.size}")
                 dbAdapter.saveTask(selectedProject, obj)
+            }
+            is Champion ->{
+                dbAdapter.save(obj)
             }
         }
     }

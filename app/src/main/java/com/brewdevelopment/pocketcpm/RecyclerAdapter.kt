@@ -12,17 +12,11 @@ import android.widget.TextView
 /**
  * Created by Osama on 2017-08-16.
  */
-class RecyclerAdapter( c: Context,obj:Project) : RecyclerView.Adapter<RecyclerAdapter.viewHolder>()
+class RecyclerAdapter( context: Context,var list: ArrayList<Task>) : RecyclerView.Adapter<RecyclerAdapter.viewHolder>()
 {
-    val DB1= DBAdapter("DataCA", c )
-    var list = ArrayList<Task>()
-    init{
-        list=(DB1.getTaskList(obj.ID))
-        Log.e("ffff","f")
-    }
 
     class viewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
-        val currentItem: Int=0
+        //val currentItem: Int=0
         val item_Title= itemView?.findViewById(R.id.Title) as TextView
         val item_Desc= itemView?.findViewById(R.id.Desc) as TextView
     }

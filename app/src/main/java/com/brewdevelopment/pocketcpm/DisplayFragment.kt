@@ -21,7 +21,7 @@ class DisplayFragment(): Fragment(){
 
     lateinit var recyclerView: RecyclerView
     lateinit var fragmentEventListener: FragmentEventListener
-    lateinit var x: Project
+    lateinit var prorject: Project
 
 
     companion object {
@@ -33,7 +33,6 @@ class DisplayFragment(): Fragment(){
             //the arguments will be bundles which will then be passed using setArguments(), to the fragment
             var args: Bundle = Bundle()
             args.putSerializable("lstTask", list as Serializable)
-            val lstObj = args.getSerializable("lstTask") as ArrayList<Task>
             var fragment: DisplayFragment = DisplayFragment()
             fragment.arguments = args       //no getters or setters thus, setArgument -> .arguments
             return fragment
@@ -51,7 +50,7 @@ class DisplayFragment(): Fragment(){
             //makes call to the super's constructor &  can do processes before call
         }
     }
-
+/*
     override fun onAttach(context: Context?) {
 
         super.onAttach(context)
@@ -68,8 +67,8 @@ class DisplayFragment(): Fragment(){
         recyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
-                        x = ProjAdapter(activity).list[position]
-                        fragmentEventListener.onProjectSelect(x)
+                        prorject = ProjAdapter(activity).list[position]
+                        fragmentEventListener.onProjectSelect(prorject)
                         Log.e("@@@@@", "" + position)
                     }
                 })
@@ -77,22 +76,21 @@ class DisplayFragment(): Fragment(){
         val fragment = fragmentManager.findFragmentById(R.id.content_frame)
         when(fragment.tag) {
             PROJECT_KEY -> {
-                recyclerView?.adapter = ProjAdapter(activity)
+                recyclerView.adapter = ProjAdapter(activity)
                 i++
                 Log.e("WERE HERE", "55")
             }
             TASK_KEY -> {
                 Log.e("WERE HERE", "")
-                recyclerView?.adapter=RecyclerAdapter(activity,x)
+                recyclerView.adapter=RecyclerAdapter(activity,)
 
             }
 
         }
 
-
-        recyclerView?.layoutManager= LinearLayoutManager(activity)
+        recyclerView.layoutManager= LinearLayoutManager(activity)
         return rootView
     }
 
-
+*/
 }

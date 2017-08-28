@@ -9,16 +9,9 @@ import android.widget.TextView
  * Created by Osama on 2017-08-22.
  */
 
-class ProjAdapter ( c: Context) : RecyclerView.Adapter<ProjAdapter.ViewHolder>() {
+class ProjAdapter ( c: Context, var list: ArrayList<Project>) : RecyclerView.Adapter<ProjAdapter.ViewHolder>() {
 
 
-    val DB1 = DBAdapter("DataCA", c)
-
-    var list = ArrayList<Project>()
-
-    init {
-        list = (DB1.getProjects())
-    }
     class ViewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
         val currentItem: Int=0
         val item_Title= itemView?.findViewById(R.id.Title) as TextView

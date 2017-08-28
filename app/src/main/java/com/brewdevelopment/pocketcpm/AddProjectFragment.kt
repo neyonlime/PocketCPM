@@ -56,6 +56,7 @@ class AddProjectFragment(): Fragment(){
 
         button.setOnClickListener{
             var project = Project("" + nameField.text)
+            nameField.setText("")
             fragmentEventListener.onAdd(project)
         }
 
