@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
@@ -8,12 +9,10 @@
         android:paddingTop="30dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp">
-
         <android.support.design.widget.TextInputLayout
             android:id="@+id/task_name_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
             <EditText
                 android:id="@+id/task_name_field"
                 android:layout_width="match_parent"
@@ -21,15 +20,12 @@
                 android:ems="10"
                 android:hint="@string/task_name_field_label" />
         </android.support.design.widget.TextInputLayout>
-
         <LinearLayout
             android:id="@+id/task_date_container"
             android:layout_marginTop="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-
-
             <EditText
                     android:id="@+id/start_date_field"
                     android:layout_width="match_parent"
@@ -37,8 +33,6 @@
                     android:ems="10"
                     android:hint="@string/task_start_date_field_label"
                     android:layout_weight="0.5"/>
-
-
             <EditText
                     android:id="@+id/end_date_field"
                     android:layout_width="match_parent"
@@ -46,16 +40,12 @@
                     android:ems="10"
                     android:hint="@string/task_end_date_field_label"
                     android:layout_weight="0.5"/>
-
-
         </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="16dp">
-
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -65,7 +55,6 @@
                     android:id="@+id/champion_name_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-
                     <EditText
                         android:id="@+id/champion_name_field"
                         android:layout_width="match_parent"
@@ -74,17 +63,13 @@
                         android:hint="@string/task_champion_field_label"/>
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
-
             <Spinner
                 android:layout_width="200dp"
                 android:layout_height="50dp"
                 android:layout_weight="0.5"
                 android:id="@+id/predecessor_spinner"
                 android:layout_marginStart="4dp"></Spinner>
-
         </LinearLayout>
-
-
         <android.support.design.widget.TextInputLayout
             android:id="@+id/task_description_input"
             android:layout_width="match_parent"
@@ -98,14 +83,12 @@
                 android:ems="130"
                 android:hint="@string/task_description_field_label" />
         </android.support.design.widget.TextInputLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
             android:gravity="center_horizontal">
-
             <Button
                 android:layout_width="100dp"
                 android:layout_height="50dp"
@@ -114,7 +97,35 @@
                 android:elevation="4dp"/>
         </LinearLayout>
 
+        <LinearLayout
+            xmlns:tools="http://schemas.android.com/tools"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
+
+            <android.support.design.widget.CoordinatorLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:clickable="true"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+            <android.support.v7.widget.RecyclerView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/recycler_view2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:clickable="true"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        </LinearLayout>
     </LinearLayout>
-
 </FrameLayout>
