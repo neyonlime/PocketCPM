@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
             //define the on click action
             val fragment = fragmentManager.findFragmentById(R.id.content_frame)
             when(fragment.tag){
-                DisplayFragment.PROJECT_KEY ->{
+                ProjectDisplayFragment.PROJECT_KEY ->{
                     //add new project
                     var mFragment = AddProjectFragment.newAddInstance()
                     val fm = fragmentManager
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                     fab.hide()
                     transaction.commit()
                 }
-                DisplayFragment.TASK_KEY ->{
+                TaskDisplayFragment.TASK_KEY ->{
                     var taskList = dbAdapter.getTaskList(selectedProject.ID)
                     var mFragment = AddTaskFragement.newInstance(taskList)
                     val fm = fragmentManager
@@ -90,13 +90,13 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
             }
             if(position==1) {
-                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
+                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_check))
                 fab.show()
                 isProj=true
                 val fragment = ProjectDisplayFragment.newInstance(dbAdapter.getProjects())
                 val fm = fragmentManager
                 val transaction = fm.beginTransaction()               
-                transaction.replace(R.id.content_frame,fragment,DisplayFragment.PROJECT_KEY)
+                transaction.replace(R.id.content_frame,fragment,ProjectDisplayFragment.PROJECT_KEY)
         
                 transaction.commit()
                 drawerLayout.closeDrawers()

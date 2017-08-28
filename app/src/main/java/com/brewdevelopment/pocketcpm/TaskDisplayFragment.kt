@@ -3,6 +3,7 @@ package com.brewdevelopment.pocketcpm
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,12 +23,12 @@ class TaskDisplayFragment(): Fragment() {
 
         val TASK_KEY: String = "task"
         val TASK_LIST = "taskList"
-        fun newInstance(list: ArrayList<Task>): DisplayFragment {//get appropriate arguments that are needed to construct the fragment
+        fun newInstance(list: ArrayList<Task>): TaskDisplayFragment {//get appropriate arguments that are needed to construct the fragment
             //process and bundle up fragments before adding it to the fragement
             //the arguments will be bundles which will then be passed using setArguments(), to the fragment
             var args: Bundle = Bundle()
             args.putSerializable(TASK_LIST, list as Serializable)
-            var fragment: DisplayFragment = DisplayFragment()
+            var fragment= TaskDisplayFragment()
             fragment.arguments = args       //no getters or setters thus, setArgument -> .arguments
             return fragment
             //makes call to the super's constructor &  can do processes before call
@@ -42,6 +43,7 @@ class TaskDisplayFragment(): Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        Log.e("@@@@@", "JSIAJISOJIAOJSIOAS")
         val rootView = inflater?.inflate(R.layout.task_list, container, false)
         recyclerView= rootView?.findViewById(R.id.task_recycler_view) as RecyclerView
         var list = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(TASK_LIST) as ArrayList <Task>
@@ -56,6 +58,8 @@ class TaskDisplayFragment(): Fragment() {
                 })
         )
         recyclerView.adapter=RecyclerAdapter(activity, list)
+        recyclerView.layoutManager= LinearLayoutManager(activity)
+
         return rootView
     }
 }
