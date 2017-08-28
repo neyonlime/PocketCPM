@@ -9,12 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
+import java.util.*
 
 /**
  * Created by ashkanabedian on 2017-08-21.
  */
 
-class AddProjectFragment(): Fragment(){
+class AddProjectFragment(): Fragment(), DatePickerDialog.OnDateSetListener{
 
     private constructor(project: Project): this(){
         this.project = project
@@ -22,6 +24,7 @@ class AddProjectFragment(): Fragment(){
 
     private var project: Project? = null
     lateinit var fragmentEventListener: FragmentEventListener
+    lateinit private var startDateView: EditText
 
     companion object {
         val ADD_PROJECT ="add_project"
@@ -48,14 +51,25 @@ class AddProjectFragment(): Fragment(){
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-
         var rootView = inflater?.inflate(R.layout.fragment_add_project,container, false)
         val nameField = rootView!!.findViewById(R.id.project_name_field) as EditText
         val button = rootView!!.findViewById(R.id.project_save_button) as Button
+        startDateView = rootView!!.findViewById(R.id.start_date_field) as EditText
+
+        startDateView.setOnClickListener{
+            val now = Calendar.getInstance()
+            val dpd = DatePickerDialog.newInstance(
+                    this,
+                    now.get(Calendar.YEAR),
+                    now.get(Calendar.MONTH),
+                    now.get(Calendar.DAY_OF_MONTH)
+            )
+            dpd.show(fragmentManager, "Start Date")
+        }
 
         button.setOnClickListener{
             var project = Project("" + nameField.text)
+            project.start = startDateView.text.toString()
             nameField.setText("")
             fragmentEventListener.onAdd(project)
         }
@@ -67,5 +81,13 @@ class AddProjectFragment(): Fragment(){
 
         //add instance
         return rootView
+    }
+
+    override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
+        var startDate = "" + dayOfMonth
+        startDate+= "/" + monthOfYear
+        startDate+= "/" + year
+
+        startDateView.setText(startDate)
     }
 }

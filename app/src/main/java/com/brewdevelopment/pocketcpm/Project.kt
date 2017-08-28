@@ -9,6 +9,7 @@ class Project(){
     lateinit var name: String
     var ID: Long = -1       //if id == -1 then the project has not been added to the database
     var taskList: ArrayList<Task>
+    var start: String
 
     constructor(name: String): this(){
         this.name = name
@@ -16,10 +17,8 @@ class Project(){
 
     init {
         taskList = ArrayList()
+        start = ""
     }
-
-
-
 
     //Helper
     fun getTotalTime(): Float{

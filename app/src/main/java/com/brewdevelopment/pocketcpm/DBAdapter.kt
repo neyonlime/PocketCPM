@@ -44,35 +44,6 @@ class DBAdapter(dbName: String, context: Context){
         }
     }
 
-
-    //ASYNC TASK
-    /*
-    private class OpenDatabaseTask: AsyncTask<String, Boolean, Boolean>() {
-        override fun doInBackground(vararg params: String?): Boolean {
-            for(request in params){
-                if(request == com.brewdevelopment.pocketcpm.DBAdapter.WRITE){
-                    //get readable database
-                    db = mDBManager.writableDatabase
-                    if(db.isOpen){
-                        return true // was opened
-                    }
-
-                }else if(request == com.brewdevelopment.pocketcpm.DBAdapter.READ){
-                    //get writeable database
-                    db = mDBManager.readableDatabase
-                    if(db.isOpen){
-                       return true //was opened
-                    }
-                }
-            }
-            return false    //was not opened
-        }
-
-        override fun onPostExecute(result: Boolean?) {
-            super.onPostExecute(result)
-        }
-    }*/
-
     //deletes the specified table
     fun deleteTable(tbName: String){
         val SQL_DELETE_ENTRIES: String =
@@ -106,8 +77,9 @@ class DBAdapter(dbName: String, context: Context){
 
                     //METHOD 2...
                     update(obj)
-
+                    return
                 }
+
 
                 var values = ContentValues()
                 var taskList = ""
@@ -121,9 +93,12 @@ class DBAdapter(dbName: String, context: Context){
                 }
 
                 values.put(DBManager.Contract.ProjectTable.NAME_COLUMN, obj.name)
+                values.put(DBManager.Contract.ProjectTable.START_COLUMN, obj.start)
                 values.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
                 values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTotalTime())
                 obj.ID = db.insert(DBManager.Contract.ProjectTable.TABLE_NAME, null, values)
+
+                Log.d("add_project", "project: ID:${obj.ID}, project_start: start:${obj.start}, project_tasks: ${taskList}")
             }
             is Task -> {
                 //save task
@@ -232,8 +207,8 @@ class DBAdapter(dbName: String, context: Context){
     fun getAllTasks(): ArrayList<Task>{
         var projections = arrayOf(DBManager.Contract.TaskTable.ID, DBManager.Contract.TaskTable.NAME_COLUMN,
                 DBManager.Contract.TaskTable.DESCRIPTION_COLUMN, DBManager.Contract.TaskTable.CHAMPION_COLUMN,
-                DBManager.Contract.TaskTable.START_COLUMN, DBManager.Contract.TaskTable.END_COLUMN,
-                DBManager.Contract.TaskTable.PREDECESSOR_COLUMN, DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
+                DBManager.Contract.TaskTable.DURATION_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
+                DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
 
         var sortOrder = DBManager.Contract.TaskTable.NAME_COLUMN + " DESC"
         var cursor: Cursor = db.query(DBManager.Contract.TaskTable.TABLE_NAME, projections, null, null, null, null, sortOrder)
@@ -245,8 +220,7 @@ class DBAdapter(dbName: String, context: Context){
             task.attribute.put(Task.NAME_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.NAME_COLUMN)))
             task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
             task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
-            task.attribute.put(Task.START_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.START_COLUMN)))
-            task.attribute.put(Task.END_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.END_COLUMN)))
+            task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
             task.attribute.put(Task.PREDECESSOR_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN)))
             task.attribute.put(Task.DEPENDENT_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN)))
             taskList.add(task)
@@ -290,7 +264,7 @@ class DBAdapter(dbName: String, context: Context){
     //gets a project form the database given the id
     fun getProjectByID(ID: Long): Project{
         //search database for the current project and return it
-        var projections = arrayOf(DBManager.Contract.ProjectTable.ID, DBManager.Contract.ProjectTable.NAME_COLUMN, DBManager.Contract.ProjectTable.TASK_LIST_COLUMN)
+        var projections = arrayOf(DBManager.Contract.ProjectTable.ID, DBManager.Contract.ProjectTable.NAME_COLUMN, DBManager.Contract.ProjectTable.START_COLUMN, DBManager.Contract.ProjectTable.TASK_LIST_COLUMN)
         var selection = DBManager.Contract.ProjectTable.ID + " = ?"
         var selectionArgs = arrayOf(ID.toString())
 
@@ -302,9 +276,11 @@ class DBAdapter(dbName: String, context: Context){
         while(cursor.moveToNext()){
             var name = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.ProjectTable.NAME_COLUMN))
             var ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.ProjectTable.ID))
+            var start = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.ProjectTable.START_COLUMN))
             project.taskList = getTaskList(project.ID)
             project.name = name
             project.ID = ID
+            project.start = start
         }
         return project
     }
@@ -313,12 +289,10 @@ class DBAdapter(dbName: String, context: Context){
     fun getTaskById(id: String): Task?{
         checkDBState()
 
-
-
         var projections = arrayOf(DBManager.Contract.TaskTable.ID, DBManager.Contract.TaskTable.NAME_COLUMN,
                 DBManager.Contract.TaskTable.DESCRIPTION_COLUMN, DBManager.Contract.TaskTable.CHAMPION_COLUMN,
-                DBManager.Contract.TaskTable.START_COLUMN, DBManager.Contract.TaskTable.END_COLUMN,
-                DBManager.Contract.TaskTable.PREDECESSOR_COLUMN, DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
+                DBManager.Contract.TaskTable.DURATION_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
+                DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
 
         var selection = DBManager.Contract.TaskTable.ID + " = ?"
         var selectionArgs = arrayOf(id)
@@ -334,8 +308,7 @@ class DBAdapter(dbName: String, context: Context){
             task.attribute.put(Task.NAME_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.NAME_COLUMN)))
             task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
             task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
-            task.attribute.put(Task.START_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.START_COLUMN)))
-            task.attribute.put(Task.END_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.END_COLUMN)))
+            task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
             task.attribute.put(Task.PREDECESSOR_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN)))
             task.attribute.put(Task.DEPENDENT_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN)))
         }
@@ -387,13 +360,11 @@ class DBAdapter(dbName: String, context: Context){
                 var values = obj.attribute      //sets the attributes of the task that is going to be safe
                 var selection = "${DBManager.Contract.TaskTable.NAME_COLUMN}=? and ${DBManager.Contract.TaskTable.DESCRIPTION_COLUMN}=? and " +
                         "${DBManager.Contract.TaskTable.CHAMPION_COLUMN}=? and " +
-                        "${DBManager.Contract.TaskTable.START_COLUMN}=? and " +
-                        "${DBManager.Contract.TaskTable.END_COLUMN}=? and " +
+                        "${DBManager.Contract.TaskTable.DURATION_COLUMN}=? and " +
                         "${DBManager.Contract.TaskTable.PREDECESSOR_COLUMN}=? and ${DBManager.Contract.TaskTable.DEPENDENT_COLUMN}=?"
 
                 var selectionArgs = arrayOf(DBManager.Contract.TaskTable.NAME_COLUMN, DBManager.Contract.TaskTable.DESCRIPTION_COLUMN,
-                                            DBManager.Contract.TaskTable.CHAMPION_COLUMN, DBManager.Contract.TaskTable.START_COLUMN,
-                                            DBManager.Contract.TaskTable.END_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
+                                            DBManager.Contract.TaskTable.CHAMPION_COLUMN, DBManager.Contract.TaskTable.DURATION_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
                                             DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
                 var count = db.update(DBManager.Contract.TaskTable.TABLE_NAME, values, selection, selectionArgs) //update the task
             }
@@ -431,6 +402,7 @@ class DBAdapter(dbName: String, context: Context){
                 val TABLE_NAME = "projects"
                 val ID: String = "_id"
                 val NAME_COLUMN = "name"
+                val START_COLUMN = "start"
                 val TASK_LIST_COLUMN = "tasklist"
                 val TOTAL_TIME_COLUMN = "totaltime"
             }
@@ -441,8 +413,7 @@ class DBAdapter(dbName: String, context: Context){
                 val NAME_COLUMN = "name"
                 val DESCRIPTION_COLUMN = "description"
                 val CHAMPION_COLUMN = "champion"
-                val START_COLUMN = "start"
-                val END_COLUMN = "end"
+                val DURATION_COLUMN = "duration"
                 val PREDECESSOR_COLUMN = "predecessor"
                 val DEPENDENT_COLUMN = "dependent"
             }
@@ -476,7 +447,7 @@ class DBAdapter(dbName: String, context: Context){
             when (table){
                 ProjectTable.TABLE_NAME -> {
                     val CREATE_SQL_ENTERIES = "CREATE TABLE IF  NOT EXISTS ${ProjectTable.TABLE_NAME}(" +
-                            "${ProjectTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ${ProjectTable.NAME_COLUMN} TEXT," +
+                            "${ProjectTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ${ProjectTable.NAME_COLUMN} TEXT, ${ProjectTable.START_COLUMN} TEXT, " +
                             "${ProjectTable.TASK_LIST_COLUMN} TEXT, ${ProjectTable.TOTAL_TIME_COLUMN} FLOAT)"
                     db!!.execSQL(CREATE_SQL_ENTERIES)
                 }
@@ -484,8 +455,8 @@ class DBAdapter(dbName: String, context: Context){
                     val CREATE_SQL_ENTERIES = "CREATE TABLE IF  NOT EXISTS ${TaskTable.TABLE_NAME}(" +
                             "${TaskTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ${TaskTable.NAME_COLUMN} TEXT," +
                             "${TaskTable.DESCRIPTION_COLUMN} TEXT," +
-                            "${TaskTable.CHAMPION_COLUMN} TEXT, ${TaskTable.START_COLUMN} TEXT," +
-                            "${TaskTable.END_COLUMN} TEXT, ${TaskTable.PREDECESSOR_COLUMN} TEXT," +
+                            "${TaskTable.CHAMPION_COLUMN} TEXT, ${TaskTable.DURATION_COLUMN} TEXT, " +
+                            "${TaskTable.PREDECESSOR_COLUMN} TEXT," +
                             "${TaskTable.DEPENDENT_COLUMN} TEXT)"
                     db!!.execSQL(CREATE_SQL_ENTERIES)
                 }

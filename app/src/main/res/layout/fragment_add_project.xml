@@ -19,6 +19,15 @@
             android:ems="10"
             android:hint="@string/task_name_field_label" />
 
+        <EditText
+            android:id="@+id/start_date_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:ems="10"
+            android:hint="@string/task_start_date_field_label"
+            android:inputType="none"/>
+
         <Button
             android:layout_width="100dp"
             android:layout_height="50dp"
