@@ -72,8 +72,11 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
                         Pred = PredAdapter(activity, predList).list[position]
                         list.add(Pred)
                         predList.remove(Pred)
-                        recyclerView2.removeViewAt(position)
-                        recyclerView.addView(view)
+                        mAdapter2.notifyDataSetChanged()
+                        recyclerView.swapAdapter(mAdapter, false)
+                        recyclerView2.swapAdapter(mAdapter2, false)
+                        mAdapter.notifyDataSetChanged()
+
                         mAdapter2.notifyItemRemoved(position)
                         mAdapter2.notifyItemRangeChanged(position, predList.size)
                         recyclerView.invalidate()
@@ -88,8 +91,10 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
                         task1 = TaskAdapter(activity, list).list[position]
                         predList.add(task1)
                         list.remove(task1)
-                        recyclerView.removeViewAt(position)
-                        recyclerView2.addView(view)
+                        recyclerView.swapAdapter(mAdapter, false)
+                        recyclerView2.swapAdapter(mAdapter2, false)
+
+
                         mAdapter.notifyItemRemoved(position)
                         mAdapter.notifyItemRangeChanged(position, list.size)
                         recyclerView2.invalidate()
