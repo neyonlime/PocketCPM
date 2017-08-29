@@ -23,8 +23,8 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
     lateinit var recyclerView: RecyclerView
     lateinit var recyclerView2: RecyclerView
     lateinit var task1: Task
-    lateinit var task2: Task
-     var list2= ArrayList<Task>()
+    lateinit var Pred: Task
+     var predList= ArrayList<Task>()
 
     lateinit private var taskButton: Button
     lateinit private var selectedPredTask: Task             //predecessor task
@@ -61,22 +61,21 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
         val duration = rootView.findViewById(R.id.duration_field) as EditText
         recyclerView= rootView?.findViewById(R.id.recycler_view1) as RecyclerView
         recyclerView2=rootView?.findViewById(R.id.recycler_view2) as RecyclerView
-         var list = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(ALL_LIST) as ArrayList <Task>
+        var list = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(ALL_LIST) as ArrayList <Task>
         var mAdapter= TaskAdapter(activity,list)
-        var mAdapter2= PredAdapter(activity,list2)
+        var mAdapter2= PredAdapter(activity,predList)
 
 
         recyclerView2.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
-                        task2 = PredAdapter(activity, list2).list[position]
-                        list.add(task2)
-                        list2.remove(task2)
+                        Pred = PredAdapter(activity, predList).list[position]
+                        list.add(Pred)
+                        predList.remove(Pred)
                         recyclerView2.removeViewAt(position)
+                        recyclerView.addView(view)
                         mAdapter2.notifyItemRemoved(position)
-                        mAdapter2.notifyItemRangeChanged(position, list2.size)
-                        mAdapter2.notifyDataSetChanged()
-                        mAdapter.notifyDataSetChanged()
+                        mAdapter2.notifyItemRangeChanged(position, predList.size)
                         recyclerView.invalidate()
                         Log.e("@@@@@", "" + position)
                     }
@@ -87,29 +86,24 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
                         task1 = TaskAdapter(activity, list).list[position]
-                        list2.add(task1)
+                        predList.add(task1)
                         list.remove(task1)
                         recyclerView.removeViewAt(position)
+                        recyclerView2.addView(view)
                         mAdapter.notifyItemRemoved(position)
                         mAdapter.notifyItemRangeChanged(position, list.size)
-                        mAdapter.notifyDataSetChanged()
-                        mAdapter2.notifyDataSetChanged()
                         recyclerView2.invalidate()
                         Log.e("@@@@@", "" + position)
                     }
                 })
         )
-        mAdapter2.notifyDataSetChanged()
-            recyclerView2.adapter = PredAdapter(activity, list2)
-        mAdapter2.notifyDataSetChanged()
-            recyclerView2.layoutManager = LinearLayoutManager(activity)
+        recyclerView2.adapter = PredAdapter(activity, predList)
+        recyclerView2.layoutManager = LinearLayoutManager(activity)
         recyclerView2.invalidate()
 
 
-        mAdapter.notifyDataSetChanged()
-            recyclerView.adapter = TaskAdapter(activity, list)
-        mAdapter.notifyDataSetChanged()
-            recyclerView.layoutManager = LinearLayoutManager(activity)
+        recyclerView.adapter = TaskAdapter(activity, list)
+        recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.invalidate()
 
 
@@ -136,9 +130,8 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
         taskButton.setOnClickListener {
             //the save button has been clicked, store or append the data
             //build the task object
-            list2.remove(Task())
             var task = Task()
-            task.setPred(list2)
+            task.setPred(predList)
             task.attribute.put(Task.NAME_COLUMN, taskName.text.toString())
             task.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
             task.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())

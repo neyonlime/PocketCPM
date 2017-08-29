@@ -7,8 +7,8 @@ import android.content.ContentValues
  * OBJECT/ a task is something that the user wishes to complete, the have relationships between eachother
  */
 class Task(){
-    private lateinit var pred: ArrayList<Task>    //the task preceding the current
-    private lateinit var depend: ArrayList<Task>   //the task depending on the current
+    private  var pred: ArrayList<Task>    //the task preceding the current
+    private  var depend: ArrayList<Task>   //the task depending on the current
 
     fun getPred(): ArrayList<Task> {
         return  pred
@@ -25,6 +25,8 @@ class Task(){
 
     init {
         attribute = ContentValues()
+        pred= ArrayList()
+        depend= ArrayList()
     }
 
     fun getDuration(): Float{
