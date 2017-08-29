@@ -10,6 +10,15 @@ class Task(){
     private lateinit var pred: ArrayList<Task>    //the task preceding the current
     private lateinit var depend: ArrayList<Task>   //the task depending on the current
 
+    fun getPred(): ArrayList<Task> {
+        return  pred
+    }
+    fun setPred(list: ArrayList<Task>){
+        for(task in list){
+            addPred(task)
+        }
+    }
+
     private val EMPTY: Long = -1
     var ID: Long = EMPTY                           //-1 means not added to database
     var attribute: ContentValues       //this is already parcelable

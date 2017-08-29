@@ -2,7 +2,6 @@ package com.brewdevelopment.pocketcpm
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,10 +30,12 @@ class RecyclerAdapter( context: Context,var list: ArrayList<Task>) : RecyclerVie
         val temp: Task= list[position]
         holder?.item_Title?.text= temp.attribute.get(Task.NAME_COLUMN) as String
         holder?.item_Desc?.text= temp.attribute.get(Task.DESCRIPTION_COLUMN) as String
+
     }
 
     override fun getItemCount(): Int {
         return list.size
+
     }
 
 }
