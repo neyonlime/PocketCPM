@@ -24,7 +24,7 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
     lateinit var recyclerView2: RecyclerView
     lateinit var task1: Task
     lateinit var Pred: Task
-     var predList= ArrayList<Task>()
+
 
     lateinit private var taskButton: Button
     lateinit private var selectedPredTask: Task             //predecessor task
@@ -53,6 +53,14 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        var predList = ArrayList<Task>()
+        if(editTask==null) {
+             predList = ArrayList<Task>()
+        }
+        else{
+            predList= fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(EDIT_TASK) as ArrayList <Task>
+        }
+
         var rootView = inflater?.inflate(R.layout.fragement_add_task,container, false)
         val taskName = rootView!!.findViewById(R.id.task_name_field) as EditText
         val championName = rootView!!.findViewById(R.id.champion_name_field) as EditText
@@ -76,7 +84,6 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
                         recyclerView.swapAdapter(mAdapter, false)
                         recyclerView2.swapAdapter(mAdapter2, false)
                         mAdapter.notifyDataSetChanged()
-
                         mAdapter2.notifyItemRemoved(position)
                         mAdapter2.notifyItemRangeChanged(position, predList.size)
                         recyclerView.invalidate()
@@ -142,6 +149,7 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
             task.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())
             task.addPred(selectedPredTask)
 
+
             if(validateTask(task)){
                 //all information about the task is valid
                 //then save the task to database
@@ -156,6 +164,7 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
                     fragmentEventListener.onAdd(task)
                 }
             }
+            list.add(task)
         }
         return rootView
     }

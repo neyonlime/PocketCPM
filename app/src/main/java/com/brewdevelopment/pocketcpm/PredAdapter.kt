@@ -22,12 +22,14 @@ class PredAdapter(context: Context, var list: ArrayList<Task>) : RecyclerView.Ad
         val v: View? = LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent, false)
         val viewHolder: ViewHolder= ViewHolder(v)
         return viewHolder
+
     }
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val temp: Task= list[position]
         holder?.item_Title?.text= temp.attribute.get(Task.NAME_COLUMN) as String
         holder?.item_Desc?.visibility= View.GONE
+
     }
 
     override fun getItemCount(): Int {
