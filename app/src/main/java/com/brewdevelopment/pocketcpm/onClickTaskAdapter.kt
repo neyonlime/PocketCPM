@@ -12,7 +12,7 @@ import android.widget.TextView
  */
 class onClickTaskAdapter(context: Context) : RecyclerView.Adapter<onClickTaskAdapter.viewHolder>() {
     var list= ArrayList<mCrit>()
-    val menuList = arrayOf("Early Start","Early Finish","Late Start", "Late Finish", "Slack Time")
+    val menuList = arrayOf("Early Start","Early Finish","Late Start", "Late Finish", "Slack Time", "Critical?")
     val menuList2 = ArrayList<String>()
     val task: Task = AddTaskFragement().getTask()
     lateinit var arr: Array<String>
@@ -21,13 +21,21 @@ class onClickTaskAdapter(context: Context) : RecyclerView.Adapter<onClickTaskAda
     lateinit var lateS: String
     lateinit var lateF: String
     lateinit var slack: String
+    lateinit var crit: String
     init{
         var dur= task.getDuration()
+
         val ES: Int =0
         val EF= ES+dur
         val LS: Int=0
         val LF= LS+ dur
         val SK= LF-EF
+        if(SK.equals(0)){
+            crit= "Yes"
+        }
+        else if(SK>0){
+            crit= "No"
+        }
         earlyS= ES.toString()
         earlyF= EF.toString()
         lateF= LF.toString()
@@ -38,8 +46,9 @@ class onClickTaskAdapter(context: Context) : RecyclerView.Adapter<onClickTaskAda
         menuList2.add(lateS)
         menuList2.add(lateF)
         menuList2.add(slack)
+        menuList2.add(crit)
         arr= menuList2.toArray(arr)
-        for(i in 0..4){
+        for(i in 0..5){
             list.add(mCrit(menuList[i],arr[i]))
         }
     }
