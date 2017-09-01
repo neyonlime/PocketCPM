@@ -24,7 +24,7 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
     lateinit var recyclerView2: RecyclerView
     lateinit var task1: Task
     lateinit var Pred: Task
-
+    private lateinit var task: Task
 
     lateinit private var taskButton: Button
     lateinit private var selectedPredTask: Task             //predecessor task
@@ -142,7 +142,7 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
         taskButton.setOnClickListener {
             //the save button has been clicked, store or append the data
             //build the task object
-            var task = Task()
+            task = Task()
             task.setPred(predList)
             task.attribute.put(Task.NAME_COLUMN, taskName.text.toString())
             task.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
@@ -167,6 +167,9 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemClickListener {
             list.add(task)
         }
         return rootView
+    }
+    fun getTask(): Task{
+        return this.task
     }
 
     //handle the user selection of predecessor task
