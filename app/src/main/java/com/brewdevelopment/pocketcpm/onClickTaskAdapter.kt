@@ -77,6 +77,7 @@ class onClickTaskAdapter(context: Context) : RecyclerView.Adapter<onClickTaskAda
     }
 }
 class mCrit(topic:String?, Val:String?) {
+
     var topic: String?
     var  Val: String?
 
@@ -92,7 +93,6 @@ class CritCalc(task: Task){
     var EF: Int=0
     var task: Task
     var max: Int =0
-
     init{
         this.task=task
         if(task.getPred().size==0) {
@@ -127,11 +127,4 @@ class CritCalc(task: Task){
 
         return ES
     }
-
-
-
-
-
-
-
 }
