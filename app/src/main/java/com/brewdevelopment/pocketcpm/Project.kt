@@ -20,13 +20,21 @@ class Project(){
         start = ""
     }
 
-    //Helper
-    fun getTotalTime(): Float{
-        var totalTime: Float = 0f
-        for(task in taskList){
-            totalTime+= task.getDuration()
+    fun getTOC(): Int{
+        return 0
+    }
+
+    fun getTaskList(): String{
+        var taskList = ""
+        for(task in this.taskList){
+            taskList+="," + task.ID
         }
-        return totalTime
+
+        if(taskList.length > 0){
+            taskList = taskList.substring(1)
+        }
+
+        return taskList
     }
     fun getTOC(): Int{
         var max: Int = CritCalc(taskList[0]).getEarlyFinish()
@@ -37,5 +45,8 @@ class Project(){
         }
         return max
     }
+
+
+
 
 }

@@ -7,17 +7,10 @@ import android.content.ContentValues
  * OBJECT/ a task is something that the user wishes to complete, the have relationships between eachother
  */
 class Task(){
-    private  var pred: ArrayList<Task>    //the task preceding the current
-    private  var depend: ArrayList<Task>   //the task depending on the current
+    private var pred: ArrayList<Task>    //the task preceding the current
+    private var depend: ArrayList<Task>   //the task depending on the current
+    private var champion: Champion
 
-    fun getPred(): ArrayList<Task> {
-        return  pred
-    }
-    fun setPred(list: ArrayList<Task>){
-        for(task in list){
-            addPred(task)
-        }
-    }
 
     private val EMPTY: Long = -1
     var ID: Long = EMPTY                           //-1 means not added to database
@@ -25,16 +18,13 @@ class Task(){
 
     init {
         attribute = ContentValues()
-        pred= ArrayList()
-        depend= ArrayList()
-    }
 
-    fun getDuration(): Float{
-        var duration: Float = 0f
-        //find duration
-        return  duration
+        pred = ArrayList()
+        depend = ArrayList()
+        champion = Champion()
 
     }
+
 
     companion object {
         val NAME_COLUMN = "name"
@@ -45,7 +35,7 @@ class Task(){
         val DEPENDENT_COLUMN = "dependent"
     }
 
-    fun addPred(task: Task){
+    private fun addPred(task: Task){
         if(task.ID != EMPTY){
             pred.add(task)
             attribute.put(PREDECESSOR_COLUMN, getPredList())
@@ -98,5 +88,27 @@ class Task(){
     fun removeDependent(task: Task){
         depend.remove(task)
         attribute.put(DEPENDENT_COLUMN, getDependList())
+    }
+
+    fun getPred(): ArrayList<Task>{
+        return pred
+    }
+
+    fun getDepend(): ArrayList<Task>{
+        return depend
+    }
+
+    fun setPred(list: ArrayList<Task>){
+        for(task in list){
+            addPred(task)
+        }
+    }
+
+    fun setChampion(champion: Champion){
+        this.champion = champion
+    }
+
+    fun getChampion(index: Int): Champion{
+        return champion
     }
 }

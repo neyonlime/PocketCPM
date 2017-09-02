@@ -34,10 +34,9 @@ class ProjAdapter ( c: Context, var list: ArrayList<Project>) : RecyclerView.Ada
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val temp: Project = list[position]
         holder?.item_Title?.text = temp.name
-        holder?.item_Desc?.text= temp.getTotalTime().toString()
+        holder?.item_Desc?.text= temp.getTOC().toString()
 
     }
-
 
     override fun getItemCount(): Int {
         return list.size

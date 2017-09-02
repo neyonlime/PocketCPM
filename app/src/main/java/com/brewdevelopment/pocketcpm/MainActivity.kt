@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
                 TaskDisplayFragment.TASK_KEY ->{
                     var taskList = dbAdapter.getTaskList(selectedProject.ID)
-                    var mFragment = AddTaskFragement.newInstance(taskList)
+                    var mFragment = AddTaskFragement.newInstance(taskList,dbAdapter.getChampionList(DBAdapter.ALL))
                     val fm = fragmentManager
                     val transaction = fm.beginTransaction()
                     transaction.replace(R.id.content_frame, mFragment, AddTaskFragement.ADD_TASK)
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
             }
             if(position==1) {
-                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_check))
+                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
                 fab.show()
                 isProj=true
                 val fragment = ProjectDisplayFragment.newInstance(dbAdapter.getProjects())
@@ -139,7 +139,11 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         selectedProject = obj
         val projName= obj.name
         toolbar.title=projName
-        val fragment= TaskDisplayFragment.newInstance(dbAdapter.getTaskList(obj.ID))
+        selectedProject.taskList = dbAdapter.getTaskList(selectedProject.ID)
+
+        Log.d("get_tasks", "MainActivity/${dbAdapter.getTaskList(selectedProject.ID).size}")
+
+        val fragment= TaskDisplayFragment.newInstance(selectedProject.taskList)
         val fm = fragmentManager
         val transaction = fm.beginTransaction()
         transaction.replace(R.id.content_frame,fragment,TaskDisplayFragment.TASK_KEY)
@@ -158,16 +162,16 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 selectedProject = obj
 
                 Toast.makeText(this,"Project Saved", Toast.LENGTH_SHORT)
-                val fragment = AddTaskFragement.newInstance(dbAdapter.getTaskList(selectedProject.ID))
+                val fragment = AddTaskFragement.newInstance(dbAdapter.getTaskList(selectedProject.ID), dbAdapter.getChampionList(DBAdapter.ALL))
                 val fm = fragmentManager
                 val transaction = fm.beginTransaction()
                 transaction.replace(R.id.content_frame, fragment, AddTaskFragement.ADD_TASK)
                 transaction.commit()
             }
             is Task -> {
-                Log.d("add_task", "Project(${selectedProject.ID}): ${selectedProject.taskList.size}")
+                Log.d("add_task", "MainActivity/Project(${selectedProject.ID}): ${selectedProject.taskList.size}")
                 selectedProject.taskList.add(obj)
-                Log.d("add_task", "Project After(${selectedProject.ID}): ${selectedProject.taskList.size}")
+                Log.d("add_task", "MainActivity/Project After(${selectedProject.ID}): ${selectedProject.taskList.size}")
                 dbAdapter.saveTask(selectedProject, obj)
             }
             is Champion ->{
@@ -176,8 +180,43 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         }
     }
 
-    override fun onEdit(obj: Any) {
+    override fun onUpdate(obj: Any) {
+        when(obj){
+            is Project ->{
+                dbAdapter.save(obj)
+            }
+            is Task -> {
+                Log.d("add_task", "calling to update task: ${obj.ID}")
+                dbAdapter.saveTask(selectedProject, obj)
+            }
+            is Champion -> {
+                dbAdapter.save(obj)
+            }
+        }
+    }
 
+    override fun onEdit(obj: Any) {
+        when(obj){
+            is Project -> {}
+            is Task -> {
+                //open the fragement to edit the task
+                var taskList = dbAdapter.getTaskList(selectedProject.ID)
+
+                //fill the task's champion list
+                //for if we ever want to add multiple champions for one task
+                var champion = dbAdapter.getChampionByID(obj.attribute.get(Task.CHAMPION_COLUMN).toString())
+                if(champion !== null){
+                    obj.setChampion(champion)
+                }
+
+                var mFragment = AddTaskFragement.newInstance(obj, taskList, dbAdapter.getChampionList(DBAdapter.ALL))
+                val fm = fragmentManager
+                val transaction = fm.beginTransaction()
+                transaction.replace(R.id.content_frame, mFragment, AddTaskFragement.EDIT_TASK)
+                fab.hide()
+                transaction.commit()
+            }
+        }
     }
 
 }

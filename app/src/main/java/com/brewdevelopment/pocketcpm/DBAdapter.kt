@@ -19,6 +19,7 @@ class DBAdapter(dbName: String, context: Context){
     private var db: SQLiteDatabase
     companion object {
 
+        val ALL = "all"
         private lateinit var mDBManager: com.brewdevelopment.pocketcpm.DBAdapter.DBManager
 
         val READ = "read"               //only for reading
@@ -77,6 +78,9 @@ class DBAdapter(dbName: String, context: Context){
 
                     //METHOD 2...
                     update(obj)
+
+                    Log.d("add_project", "project: ${obj.ID}, tasks: ${obj.getTaskList()}")
+
                     return
                 }
 
@@ -95,7 +99,7 @@ class DBAdapter(dbName: String, context: Context){
                 values.put(DBManager.Contract.ProjectTable.NAME_COLUMN, obj.name)
                 values.put(DBManager.Contract.ProjectTable.START_COLUMN, obj.start)
                 values.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
-                values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTotalTime())
+                values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTOC())
                 obj.ID = db.insert(DBManager.Contract.ProjectTable.TABLE_NAME, null, values)
 
                 Log.d("add_project", "project: ID:${obj.ID}, project_start: start:${obj.start}, project_tasks: ${taskList}")
@@ -115,49 +119,49 @@ class DBAdapter(dbName: String, context: Context){
                 //save champion
                 //open(WRITE)
                 checkDBState()
-                var taskList = ""
-                for(task in obj.assignedTasks){
-                    taskList += "," + task.ID               //id1,id2,id3, ...
-                }
-                if(taskList.length > 1){
-                    taskList = taskList.substring(1)
+
+                if(obj.ID != EMPTY){
+                    //exists in system and needs to be updated
+                    update(obj)
+                    return
                 }
 
                 var values = ContentValues()
                 values.put(DBManager.Contract.ChampionTable.NAME_COLUMN, obj.name)
-                values.put(DBManager.Contract.ChampionTable.TASKS_COLUMN, taskList)
+                values.put(DBManager.Contract.ChampionTable.TASKS_COLUMN, obj.getTaskList())
 
                 obj.ID = db.insert(DBManager.Contract.ChampionTable.TABLE_NAME,null,values)
+                Log.d("add_champion", "adding champion ${obj.ID}, name:${obj.name}")
             }
             else -> {}
         }
     }
+
+    //closes the database
     fun close(){
         if(db !== null && db.isOpen) db.close()
     }
-
 
     //Appends a task to the respective project
     fun saveTask(project: Project, task: Task){
         //open(WRITE)
         checkDBState()
 
-
         if(task.ID != EMPTY){
             //update the task information
             //the id is already added to a project so that doesnt ned to be updated unless the task is deleted
-            Log.d("add_task", "updating: Task: ${task.attribute.get(Task.NAME_COLUMN)} to Project: ${project.name}, ${project.ID}")
+            Log.d("add_task", "DBAdapter/saveTask()/updating: Task: ${task.attribute.get(Task.NAME_COLUMN)} to Project: ${project.name}, ${project.ID}")
             update(task)
             return
         }
 
-        Log.d("add_task", "adding: Task: ${task.attribute.get(Task.NAME_COLUMN)} to Project: ${project.name}, ${project.ID}")
+        Log.d("add_task", "DBAdapter/saveTask()/adding: Task: ${task.attribute.get(Task.NAME_COLUMN)} to Project: ${project.name}, ${project.ID}")
 
         //save task to TaskTable
         var taskValues = task.attribute
         task.ID = db.insert(DBManager.Contract.TaskTable.TABLE_NAME,null,taskValues)
 
-        Log.d("add_task", "task: ${task.ID} added! size: ${DatabaseUtils.queryNumEntries(db, DBManager.Contract.TaskTable.TABLE_NAME)}")
+        Log.d("add_task", "DBAdapter/saveTask()/task: ${task.ID} added! size: ${DatabaseUtils.queryNumEntries(db, DBManager.Contract.TaskTable.TABLE_NAME)}")
 
         //save the task to the project table
         var taskList = ""
@@ -170,7 +174,7 @@ class DBAdapter(dbName: String, context: Context){
             taskList = taskList.substring(1)
         }
 
-        Log.d("add_task", "project tasks: ${taskList}||Size: ${project.taskList.size}")
+        Log.d("add_task", "DBAdapter/saveTask()/project tasks: ${taskList}||Size: ${project.taskList.size}")
 
         var projectValues = ContentValues()
         projectValues.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
@@ -248,7 +252,7 @@ class DBAdapter(dbName: String, context: Context){
         cursor.close()
         var ids = taskIds.split(',')       //array of the ids (String)
 
-        Log.d("add_task", "ids: ${ids.size}")
+        Log.d("add_task", "DBAdapter/getTasklist()/Size of taskList: ${ids.size}")
 
         var taskList = ArrayList<Task>()
         for(id in ids){
@@ -321,8 +325,42 @@ class DBAdapter(dbName: String, context: Context){
     }
 
     //gets a champion from the database given the id
-    fun getChampionByID(ID: Long){
+    fun getChampionByID(ID: String): Champion?{
+        var projection = arrayOf(DBManager.Contract.ChampionTable.ID,DBManager.Contract.ChampionTable.NAME_COLUMN, DBManager.Contract.ChampionTable.TASKS_COLUMN)
 
+        var selection = "${DBManager.Contract.ChampionTable.ID}=?"
+        var selectionArgs = arrayOf(ID)
+
+        var cursor: Cursor  = db.query(DBManager.Contract.ChampionTable.TABLE_NAME, projection, selection, selectionArgs, null, null, null)
+        var champion = Champion()
+        while(cursor.moveToNext()){
+            champion.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.ChampionTable.ID))
+            champion.name = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.ChampionTable.NAME_COLUMN))
+            var  taskList = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.ChampionTable.TASKS_COLUMN)).split(',')
+            for(id in taskList){
+                var temp = getTaskById(id)
+                if(temp !== null){
+                    champion.assignedTasks.add(temp)
+                }
+            }
+        }
+        if(champion.ID != EMPTY){return champion}
+        else{return null}
+    }
+
+    fun getChampionList(id: String): ArrayList<Champion>{
+        when(id){
+            ALL -> {
+                var projection = arrayOf(DBManager.Contract.ChampionTable.ID)
+                var cursor: Cursor = db.query(DBManager.Contract.ChampionTable.TABLE_NAME, projection, null, null,null, null, null)
+                var championList = ArrayList<Champion>()
+                while(cursor.moveToNext()){
+                    championList.add(getChampionByID("${cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.ChampionTable.ID))}")!!)
+                }
+                return championList
+            }
+        }
+        return ArrayList()
     }
 
     //helper
@@ -334,7 +372,7 @@ class DBAdapter(dbName: String, context: Context){
             is Project -> {
                 var values = ContentValues()
                 values.put(DBManager.Contract.ProjectTable.NAME_COLUMN, obj.name)
-                values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTotalTime())
+                values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTOC())
 
                 var taskList = ""
                 for(task in obj.taskList){
@@ -366,11 +404,15 @@ class DBAdapter(dbName: String, context: Context){
                 var selectionArgs = arrayOf(DBManager.Contract.TaskTable.NAME_COLUMN, DBManager.Contract.TaskTable.DESCRIPTION_COLUMN,
                                             DBManager.Contract.TaskTable.CHAMPION_COLUMN, DBManager.Contract.TaskTable.DURATION_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
                                             DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
-                var count = db.update(DBManager.Contract.TaskTable.TABLE_NAME, values, selection, selectionArgs) //update the task
+                var count = db.update(DBManager.Contract.TaskTable.TABLE_NAME, values, "${DBManager.Contract.TaskTable.ID}=?", arrayOf(obj.ID.toString())) //update the task
+
+                Log.d("edit_task", "updated Task: ${obj.ID} with attributes: name: ${obj.attribute.get(Task.NAME_COLUMN)} || name in database: ${getTaskById(obj.ID.toString())!!.attribute.get(Task.NAME_COLUMN)}")
             }
             is Champion -> {
                 var values = ContentValues()
                 values.put(DBManager.Contract.ChampionTable.NAME_COLUMN, obj.name)
+
+
 
                 //build the task list
                 var taskList=""
@@ -383,8 +425,10 @@ class DBAdapter(dbName: String, context: Context){
 
                 values.put(DBManager.Contract.ChampionTable.TASKS_COLUMN, taskList)
 
-                var selection = "${DBManager.Contract.ChampionTable.NAME_COLUMN}=? and ${DBManager.Contract.ChampionTable.TASKS_COLUMN}=?"
-                var selectionArgs = arrayOf(DBManager.Contract.ChampionTable.NAME_COLUMN, DBManager.Contract.ChampionTable.TASKS_COLUMN)
+                Log.d("add_champion", "updating champion ${obj.ID}|| newName: ${obj.name}, taskList: ${taskList}")
+
+                var selection = "${DBManager.Contract.ChampionTable.ID} =?"
+                var selectionArgs = arrayOf(obj.ID.toString())
 
                 var count = db.update(DBManager.Contract.ChampionTable.TABLE_NAME, values, selection, selectionArgs)
             }

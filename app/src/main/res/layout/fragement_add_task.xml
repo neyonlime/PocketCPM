@@ -9,19 +9,6 @@
         android:paddingStart="20dp"
         android:paddingEnd="20dp">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/task_name_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/task_name_field"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/task_name_field_label" />
-        </android.support.design.widget.TextInputLayout>
-
         <LinearLayout
             android:id="@+id/task_date_container"
             android:layout_marginTop="16dp"
@@ -30,9 +17,26 @@
             android:orientation="horizontal">
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/task_name_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:layout_marginEnd="4dp">
+
+                <EditText
+                    android:id="@+id/task_name_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/task_name_field_label" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
                 android:id="@+id/duration_name_input"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:layout_marginStart="4dp">
 
                 <EditText
                     android:id="@+id/duration_field"
@@ -55,27 +59,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:layout_marginEnd="4dp">
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/champion_name_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                android:layout_marginEnd="4dp"
+                android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/champion_name_field"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/task_champion_field_label"/>
-                </android.support.design.widget.TextInputLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/task_champion_field_label"
+                    android:layout_marginBottom="8dp"
+                    android:textSize="16sp"/>
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.5"
+                    android:id="@+id/champion_dropdown"
+                    android:layout_marginEnd="4dp"></Spinner>
             </LinearLayout>
 
-            <Spinner
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                android:layout_weight="0.5"
-                android:id="@+id/predecessor_spinner"
-                android:layout_marginStart="4dp"></Spinner>
 
         </LinearLayout>
 
@@ -107,6 +107,7 @@
                 android:layout_height="50dp"
                 android:elevation="4dp"
                 android:text="@string/task_add_button_label" />
+          
         </LinearLayout>
 
         <LinearLayout
@@ -165,6 +166,7 @@
                     app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
             </RelativeLayout>
+
         </LinearLayout>
 
 
