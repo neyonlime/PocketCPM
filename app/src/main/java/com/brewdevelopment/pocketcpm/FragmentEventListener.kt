@@ -8,5 +8,6 @@ interface FragmentEventListener {
     fun onEdit(obj:Any)       //needs to have an id that is > -1
     fun onProjectSelect(obj: Project)
     fun onTaskSelect(obj: Task)
+    fun onUpdate(obj: Any)
 
 }

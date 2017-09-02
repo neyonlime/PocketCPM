@@ -7,8 +7,9 @@ import android.content.ContentValues
  * OBJECT/ a task is something that the user wishes to complete, the have relationships between eachother
  */
 class Task(){
-    private lateinit var pred: ArrayList<Task>    //the task preceding the current
-    private lateinit var depend: ArrayList<Task>   //the task depending on the current
+    private var pred: ArrayList<Task>    //the task preceding the current
+    private var depend: ArrayList<Task>   //the task depending on the current
+    private var champion: Champion
 
     private val EMPTY: Long = -1
     var ID: Long = EMPTY                           //-1 means not added to database
@@ -16,14 +17,11 @@ class Task(){
 
     init {
         attribute = ContentValues()
+        pred = ArrayList()
+        depend = ArrayList()
+        champion = Champion()
     }
 
-    fun getDuration(): Float{
-        var duration: Float = 0f
-        //find duration
-        return  duration
-
-    }
 
     companion object {
         val NAME_COLUMN = "name"
@@ -87,5 +85,27 @@ class Task(){
     fun removeDependent(task: Task){
         depend.remove(task)
         attribute.put(DEPENDENT_COLUMN, getDependList())
+    }
+
+    fun getPred(): ArrayList<Task>{
+        return pred
+    }
+
+    fun getDepend(): ArrayList<Task>{
+        return depend
+    }
+
+    fun setPred(list: ArrayList<Task>){
+        for(task in list){
+            addPred(task)
+        }
+    }
+
+    fun setChampion(champion: Champion){
+        this.champion = champion
+    }
+
+    fun getChampion(index: Int): Champion{
+        return champion
     }
 }

@@ -60,6 +60,8 @@ class TaskDisplayFragment(): Fragment() {
         recyclerView.adapter=RecyclerAdapter(activity, list)
         recyclerView.layoutManager= LinearLayoutManager(activity)
 
+
+
         return rootView
     }
 }
