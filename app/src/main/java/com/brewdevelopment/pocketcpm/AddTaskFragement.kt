@@ -4,19 +4,18 @@ package com.brewdevelopment.pocketcpm
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
-import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
 import java.io.Serializable
+
 import java.util.*
 import kotlin.collections.ArrayList
 import android.widget.ArrayAdapter
-
-
 
 /**
  * Created by neyon on 2017-07-29.
@@ -24,7 +23,14 @@ import android.widget.ArrayAdapter
  * gets passed the Activity of the task that called the fragment if it is being called for an edit
  */
 
-class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener {
+
+class AddTaskFragement : Fragment(), AdapterView.OnItemSelectedListener  {
+    lateinit var recyclerView: RecyclerView
+    lateinit var recyclerView2: RecyclerView
+    lateinit var task1: Task
+    lateinit var Pred: Task
+    private lateinit var task: Task
+
 
     lateinit private var taskButton: Button
     lateinit private var selectedPredTask: Task             //predecessor task
@@ -70,14 +76,78 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        var predList = ArrayList<Task>()
+        if(editTask===null) {
+             predList = ArrayList<Task>()
+        }
+        else{
+            predList= fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(EDIT_TASK) as ArrayList <Task> //CHANGE
+        }
+
         var rootView = inflater?.inflate(R.layout.fragement_add_task,container, false)
         val taskName = rootView!!.findViewById(R.id.task_name_field) as EditText
         val championDropdown = rootView!!.findViewById(R.id.champion_dropdown) as Spinner
         val description = rootView.findViewById(R.id.description_field) as EditText
         val duration = rootView.findViewById(R.id.duration_field) as EditText
+
+        recyclerView= rootView?.findViewById(R.id.recycler_view1) as RecyclerView
+        recyclerView2=rootView?.findViewById(R.id.recycler_view2) as RecyclerView
+        var list = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(ALL_LIST) as ArrayList <Task>
+        var mAdapter= TaskAdapter(activity,list)
+        var mAdapter2= PredAdapter(activity,predList)
+      
+        recyclerView2.adapter = PredAdapter(activity, predList)
+        recyclerView2.layoutManager = LinearLayoutManager(activity)
+        recyclerView2.invalidate()
+        recyclerView.adapter = TaskAdapter(activity, list)
+        recyclerView.layoutManager = LinearLayoutManager(activity)
+        recyclerView.invalidate()
+
+
+        selectedPredTask = Task() 
+
+
+        recyclerView2.addOnItemTouchListener(
+                RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
+                    override fun onItemClick(view: View, position: Int) {
+                        Pred = PredAdapter(activity, predList).list[position]
+                        list.add(Pred)
+                        predList.remove(Pred)
+                        mAdapter2.notifyDataSetChanged()
+                        recyclerView.swapAdapter(mAdapter, false)
+                        recyclerView2.swapAdapter(mAdapter2, false)
+                        mAdapter.notifyDataSetChanged()
+                        mAdapter2.notifyItemRemoved(position)
+                        mAdapter2.notifyItemRangeChanged(position, predList.size)
+                        recyclerView.invalidate()
+                        Log.e("@@@@@", "" + position)
+                    }
+                })
+        )
+        //her*esas
+        recyclerView.addOnItemTouchListener(
+                RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
+                    override fun onItemClick(view: View, position: Int) {
+                        task1 = TaskAdapter(activity, list).list[position]
+                        predList.add(task1)
+                        list.remove(task1)
+                        recyclerView.swapAdapter(mAdapter, false)
+                        recyclerView2.swapAdapter(mAdapter2, false)
+                        mAdapter.notifyItemRemoved(position)
+                        mAdapter.notifyItemRangeChanged(position, list.size)
+                        recyclerView2.invalidate()
+                        Log.e("@@@@@", "" + position)
+                    }
+                })
+        )
+                                                         //the task that is being added to the predecessor
+
+        //get the tasks from bundle
+        var tasks: ArrayList<Task> = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(ALL_LIST) as ArrayList<Task>
+
         selectedChampion = Champion()
         taskButton = rootView!!.findViewById(R.id.task_button) as Button
-        selectedPredTask = Task()//the task that is being added to the predecessor
+
 
         championList = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(ALL_CHAMPIONS) as ArrayList<Champion>
         //make a string of all the names
@@ -116,12 +186,13 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener {
         taskButton.setOnClickListener {
             //the save button has been clicked, store or append the data
             //build the task object
+
             if(editTask !== null){
                 //edit
                 editTask!!.attribute.put(Task.NAME_COLUMN, taskName.text.toString())
+                editTask!!.setPred(predList)
                 editTask!!.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
                 editTask!!.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())
-                editTask!!.addPred(selectedPredTask)
 
                 if(validateTask(editTask!!)){
                     fragmentEventListener.onUpdate(editTask!!)
@@ -139,9 +210,9 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener {
             }else if(editTask === null){
                 var task = Task()
                 task.attribute.put(Task.NAME_COLUMN, taskName.text.toString())
+                task.setPred(predList)
                 task.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
                 task.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())
-                task.addPred(selectedPredTask)
                 var champion = selectedChampion
                 if(champion.ID != EMPTY ){
                     task.setChampion(champion)
@@ -153,11 +224,11 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener {
                     fragmentEventListener.onAdd(task)
                 }
             }
-
+            list.add(task)
         }
         return rootView
     }
-
+    
     fun getChampionPosition(champion: Champion): Int{
         for(i in 0..championList.size){
             if(champion.ID == championList.get(i).ID){

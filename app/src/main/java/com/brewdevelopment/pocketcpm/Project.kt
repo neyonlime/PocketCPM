@@ -36,6 +36,15 @@ class Project(){
 
         return taskList
     }
+    fun getTOC(): Int{
+        var max: Int = CritCalc(taskList[0]).getEarlyFinish()
+        for (i in 0..taskList.size){
+            if(CritCalc(taskList[i]).getEarlyFinish()>max) {
+                max = CritCalc(taskList[i]).getEarlyFinish()
+            }
+        }
+        return max
+    }
 
 
 

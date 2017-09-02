@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
             //define the on click action
             val fragment = fragmentManager.findFragmentById(R.id.content_frame)
             when(fragment.tag){
+
                 ProjectDisplayFragment.PROJECT_KEY ->{
                     //add new project
                     var mFragment = AddProjectFragment.newAddInstance()
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                     fab.hide()
                     transaction.commit()
                 }
+
                 TaskDisplayFragment.TASK_KEY ->{
                     var taskList = dbAdapter.getTaskList(selectedProject.ID)
                     var mFragment = AddTaskFragement.newInstance(taskList,dbAdapter.getChampionList(DBAdapter.ALL))
@@ -74,10 +76,12 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                     transaction.replace(R.id.content_frame, mFragment, AddTaskFragement.ADD_TASK)
                     fab.hide()
                     transaction.commit()
-                }
-            }
-        }
 
+                }
+
+            }
+
+        }
 
         drawerList.adapter= CustomAdapter(this) //set the adapter to custom one
         //this portion holds the events that occur on the click of a drawer list item//

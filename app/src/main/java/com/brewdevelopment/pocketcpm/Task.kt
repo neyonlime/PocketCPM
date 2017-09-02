@@ -11,15 +11,18 @@ class Task(){
     private var depend: ArrayList<Task>   //the task depending on the current
     private var champion: Champion
 
+
     private val EMPTY: Long = -1
     var ID: Long = EMPTY                           //-1 means not added to database
     var attribute: ContentValues       //this is already parcelable
 
     init {
         attribute = ContentValues()
+
         pred = ArrayList()
         depend = ArrayList()
         champion = Champion()
+
     }
 
 
@@ -32,7 +35,7 @@ class Task(){
         val DEPENDENT_COLUMN = "dependent"
     }
 
-    fun addPred(task: Task){
+    private fun addPred(task: Task){
         if(task.ID != EMPTY){
             pred.add(task)
             attribute.put(PREDECESSOR_COLUMN, getPredList())

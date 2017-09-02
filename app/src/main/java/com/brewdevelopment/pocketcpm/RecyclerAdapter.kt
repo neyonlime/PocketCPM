@@ -2,7 +2,6 @@ package com.brewdevelopment.pocketcpm
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -36,6 +35,7 @@ class RecyclerAdapter( var context: Context,var list: ArrayList<Task>) : Recycle
         holder?.item_Title?.text= temp.attribute.get(Task.NAME_COLUMN) as String
         holder?.item_Desc?.text= temp.attribute.get(Task.DESCRIPTION_COLUMN) as String
 
+
         var fragmentEventlistener = context as FragmentEventListener
 
         //onClick listener for the options menu
@@ -60,11 +60,11 @@ class RecyclerAdapter( var context: Context,var list: ArrayList<Task>) : Recycle
                 true
             }
         }
-
     }
 
     override fun getItemCount(): Int {
         return list.size
+
     }
 
 }
