@@ -20,9 +20,6 @@ class Project(){
         start = ""
     }
 
-    fun getTOC(): Int{
-        return 0
-    }
 
     fun getTaskList(): String{
         var taskList = ""
@@ -37,13 +34,18 @@ class Project(){
         return taskList
     }
     fun getTOC(): Int{
-        var max: Int = CritCalc(taskList[0]).getEarlyFinish()
-        for (i in 0..taskList.size){
-            if(CritCalc(taskList[i]).getEarlyFinish()>max) {
-                max = CritCalc(taskList[i]).getEarlyFinish()
-            }
+        if(taskList.size==0){
+            return 0
         }
-        return max
+        else {
+            var max: Int = CritCalc(taskList[0],this ).getEarlyFinish()
+            for (i in 0..taskList.size) {
+                if (CritCalc(taskList[i],this).getEarlyFinish() > max) {
+                    max = CritCalc(taskList[i],this).getEarlyFinish()
+                }
+            }
+            return max
+        }
     }
 
 

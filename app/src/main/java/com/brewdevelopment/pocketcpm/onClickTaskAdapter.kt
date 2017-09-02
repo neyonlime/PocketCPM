@@ -10,11 +10,12 @@ import android.widget.TextView
 /**
  * Created by Osama on 2017-08-31.
  */
-class onClickTaskAdapter(context: Context) : RecyclerView.Adapter<onClickTaskAdapter.viewHolder>() {
+class onClickTaskAdapter(context: Context, task: Task, project: Project) : RecyclerView.Adapter<onClickTaskAdapter.viewHolder>() {
     var list= ArrayList<mCrit>()
     val menuList = arrayOf("Early Start","Early Finish","Late Start", "Late Finish", "Slack Time", "Critical?")
     val menuList2 = ArrayList<String>()
-    val task: Task = AddTaskFragement().getTask()
+    lateinit var task: Task
+    lateinit var project: Project
     lateinit var arr: Array<String>
     lateinit var earlyS: String
     lateinit var earlyF: String
@@ -30,12 +31,13 @@ class onClickTaskAdapter(context: Context) : RecyclerView.Adapter<onClickTaskAda
     var dur: Int =0
     var max: Int =0
     init{
-
-        earlyS= CritCalc(task).getEarlyStart().toString()
-        earlyF= CritCalc(task).getEarlyFinish().toString()
-        lateF= CritCalc(task).getLateFinish().toString()
-        lateS= CritCalc(task).getLateStart().toString()
-        if(CritCalc(task).getLateFinish()-CritCalc(task).getEarlyFinish()==0){
+        this.task=task
+        this.project= project
+        earlyS= CritCalc(task,project).getEarlyStart().toString()
+        earlyF= CritCalc(task,project).getEarlyFinish().toString()
+        lateF= CritCalc(task,project).getLateFinish().toString()
+        lateS= CritCalc(task,project).getLateStart().toString()
+        if(CritCalc(task,project).getLateFinish()-CritCalc(task,project).getEarlyFinish()==0){
             slack= "Yes"
         }
         else{
@@ -56,6 +58,7 @@ class onClickTaskAdapter(context: Context) : RecyclerView.Adapter<onClickTaskAda
         //val currentItem: Int=0
         val item_Title= itemView?.findViewById(R.id.Title) as TextView
         val item_Desc= itemView?.findViewById(R.id.Desc) as TextView
+
     }
 
     override  fun onCreateViewHolder(parent: ViewGroup?, i: Int): viewHolder {
@@ -86,30 +89,45 @@ class mCrit(topic:String?, Val:String?) {
         this.Val=Val
     }
 }
-class CritCalc(task: Task){
+class CritCalc(task: Task, project: Project){
     var ES: Int=0
     var LS: Int=0
     var LF: Int=0
     var EF: Int=0
     var task: Task
+    var project: Project
     var max: Int =0
+    var min: Int=0
     init{
+        this.project= project
         this.task=task
         if(task.getPred().size==0) {
             ES  = 0
         }
         else if(task.getPred().size!=0){
-            max=CritCalc(task.getPred()[0]).getLateFinish()
+            max=CritCalc(task.getPred()[0],project).getLateFinish()
             for (i in 0..task.getPred().size){
-                if(CritCalc(task.getPred()[i]).getLateFinish()>max) {
-                    max = CritCalc(task.getPred()[i]).getLateFinish()
+                if(CritCalc(task.getPred()[i],project).getLateFinish()>max) {
+                    max = CritCalc(task.getPred()[i],project).getLateFinish()
                 }
             }
             ES=max
         }
-        LF??
-        LS= LF-task.getDuration().toInt()
-        EF= ES+task.getDuration().toInt()
+///////////////////////////////////////////////////////////////////////////////////
+        if(task.getDepend().size==0) {
+            LF= project.getTOC()
+        }
+        else if(task.getPred().size!=0){
+            min=CritCalc(task.getDepend()[0],project).getLateStart()
+            for (i in 0..task.getDepend().size){
+                if(CritCalc(task.getDepend()[i],project).getLateStart()<min) {
+                    min = CritCalc(task.getPred()[i],project).getLateFinish()
+                }
+            }
+            LF=min
+        }
+        LS= LF-task.attribute.get(Task.DURATION_COLUMN).toString().toInt()
+        EF= ES+task.attribute.get(Task.DURATION_COLUMN).toString().toInt()
     }
     fun getLateFinish():Int{
 

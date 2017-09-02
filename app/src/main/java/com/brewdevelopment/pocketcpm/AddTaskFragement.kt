@@ -13,10 +13,6 @@ import android.view.ViewGroup
 import android.widget.*
 import java.io.Serializable
 
-import java.util.*
-import kotlin.collections.ArrayList
-import android.widget.ArrayAdapter
-
 /**
  * Created by neyon on 2017-07-29.
  * this fragment handels adding new tasks
@@ -24,14 +20,11 @@ import android.widget.ArrayAdapter
  */
 
 
-class AddTaskFragement : Fragment(), AdapterView.OnItemSelectedListener  {
+class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
     lateinit var recyclerView: RecyclerView
     lateinit var recyclerView2: RecyclerView
     lateinit var task1: Task
     lateinit var Pred: Task
-    private lateinit var task: Task
-
-
     lateinit private var taskButton: Button
     lateinit private var selectedPredTask: Task             //predecessor task
     lateinit var fragmentEventListener: FragmentEventListener
@@ -77,6 +70,7 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemSelectedListener  {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var predList = ArrayList<Task>()
+
         if(editTask===null) {
              predList = ArrayList<Task>()
         }
@@ -143,7 +137,7 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemSelectedListener  {
                                                          //the task that is being added to the predecessor
 
         //get the tasks from bundle
-        var tasks: ArrayList<Task> = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(ALL_LIST) as ArrayList<Task>
+
 
         selectedChampion = Champion()
         taskButton = rootView!!.findViewById(R.id.task_button) as Button
@@ -181,7 +175,7 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemSelectedListener  {
         }
 
         //get the tasks from bundle
-        var tasks: ArrayList<Task> = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(ALL_LIST) as ArrayList<Task>
+
 
         taskButton.setOnClickListener {
             //the save button has been clicked, store or append the data
@@ -222,9 +216,11 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemSelectedListener  {
                     //all information about the task is valid
                     //then save the task to database
                     fragmentEventListener.onAdd(task)
+
                 }
+                list.add(task)
             }
-            list.add(task)
+
         }
         return rootView
     }
