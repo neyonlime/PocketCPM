@@ -22,25 +22,25 @@ class onClickTaskAdapter(context: Context) : RecyclerView.Adapter<onClickTaskAda
     lateinit var lateF: String
     lateinit var slack: String
     lateinit var crit: String
+    var ES: Int= 0
+    var LS: Int= 0
+    var LF: Int= 0
+    var EF: Int= 0
+    var SK : Int= 0
+    var dur: Int =0
+    var max: Int =0
     init{
-        var dur= task.getDuration()
 
-        val ES: Int =0
-        val EF= ES+dur
-        val LS: Int=0
-        val LF= LS+ dur
-        val SK= LF-EF
-        if(SK.equals(0)){
-            crit= "Yes"
+        earlyS= CritCalc(task).getEarlyStart().toString()
+        earlyF= CritCalc(task).getEarlyFinish().toString()
+        lateF= CritCalc(task).getLateFinish().toString()
+        lateS= CritCalc(task).getLateStart().toString()
+        if(CritCalc(task).getLateFinish()-CritCalc(task).getEarlyFinish()==0){
+            slack= "Yes"
         }
-        else if(SK>0){
-            crit= "No"
+        else{
+            slack= "No"
         }
-        earlyS= ES.toString()
-        earlyF= EF.toString()
-        lateF= LF.toString()
-        lateS= LS.toString()
-        slack= SK.toString()
         menuList2.add(earlyS)
         menuList2.add(earlyF)
         menuList2.add(lateS)
@@ -84,4 +84,54 @@ class mCrit(topic:String?, Val:String?) {
         this.topic=topic
         this.Val=Val
     }
+}
+class CritCalc(task: Task){
+    var ES: Int=0
+    var LS: Int=0
+    var LF: Int=0
+    var EF: Int=0
+    var task: Task
+    var max: Int =0
+
+    init{
+        this.task=task
+        if(task.getPred().size==0) {
+            ES  = 0
+        }
+        else if(task.getPred().size!=0){
+            max=CritCalc(task.getPred()[0]).getLateFinish()
+            for (i in 0..task.getPred().size){
+                if(CritCalc(task.getPred()[i]).getLateFinish()>max) {
+                    max = CritCalc(task.getPred()[i]).getLateFinish()
+                }
+            }
+            ES=max
+        }
+        LF??
+        LS= LF-task.getDuration().toInt()
+        EF= ES+task.getDuration().toInt()
+    }
+    fun getLateFinish():Int{
+
+        return LF
+    }
+    fun getEarlyFinish():Int{
+
+        return EF
+    }
+    fun getLateStart():Int{
+
+        return LS
+    }
+    fun getEarlyStart():Int{
+
+        return ES
+    }
+
+
+
+
+
+
+
 }
