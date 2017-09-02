@@ -105,10 +105,10 @@ class CritCalc(task: Task, project: Project){
             ES  = 0
         }
         else if(task.getPred().size!=0){
-            max=CritCalc(task.getPred()[0],project).getLateFinish()
+            max=CritCalc(task.getPred()[0],project).getEarlyFinish()
             for (i in 0..task.getPred().size){
-                if(CritCalc(task.getPred()[i],project).getLateFinish()>max) {
-                    max = CritCalc(task.getPred()[i],project).getLateFinish()
+                if(CritCalc(task.getPred()[i],project).getEarlyFinish()>max) {
+                    max = CritCalc(task.getPred()[i],project).getEarlyFinish()
                 }
             }
             ES=max
@@ -121,7 +121,7 @@ class CritCalc(task: Task, project: Project){
             min=CritCalc(task.getDepend()[0],project).getLateStart()
             for (i in 0..task.getDepend().size){
                 if(CritCalc(task.getDepend()[i],project).getLateStart()<min) {
-                    min = CritCalc(task.getPred()[i],project).getLateFinish()
+                    min = CritCalc(task.getPred()[i],project).getLateStart()
                 }
             }
             LF=min
@@ -130,19 +130,15 @@ class CritCalc(task: Task, project: Project){
         EF= ES+task.attribute.get(Task.DURATION_COLUMN).toString().toInt()
     }
     fun getLateFinish():Int{
-
         return LF
     }
     fun getEarlyFinish():Int{
-
         return EF
     }
     fun getLateStart():Int{
-
         return LS
     }
     fun getEarlyStart():Int{
-
         return ES
     }
 }
