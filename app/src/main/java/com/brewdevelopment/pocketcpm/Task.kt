@@ -105,6 +105,12 @@ class Task(){
         }
     }
 
+    fun setDepend(list: ArrayList<Task>){
+        for(task in list){
+            addDependent(task)
+        }
+    }
+
     fun setChampion(champion: Champion){
         this.champion = champion
     }

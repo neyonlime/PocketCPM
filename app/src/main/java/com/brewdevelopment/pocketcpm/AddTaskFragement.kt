@@ -136,9 +136,8 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
         )
                                                          //the task that is being added to the predecessor
 
+
         //get the tasks from bundle
-
-
         selectedChampion = Champion()
         taskButton = rootView!!.findViewById(R.id.task_button) as Button
 
@@ -175,8 +174,6 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
         }
 
         //get the tasks from bundle
-
-
         taskButton.setOnClickListener {
             //the save button has been clicked, store or append the data
             //build the task object
@@ -208,6 +205,10 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
                     Log.e("Pred", i.attribute.get(Task.NAME_COLUMN).toString())
                 }
                 task.setPred(predList)
+                for(task in predList){
+                    //update the predecessor tasks to rewrite their dependents
+                    fragmentEventListener.onUpdate(task)
+                }
                 task.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
                 task.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())
                 var champion = selectedChampion
