@@ -28,8 +28,8 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
     private lateinit var  toolbar: Toolbar
     private lateinit var projectList: ArrayList<Project>
 
-        lateinit var selectedProject: Project            //current displayed project
-        lateinit var selectedTask: Task                 //current task
+    lateinit var selectedProject: Project            //current displayed project
+    lateinit var selectedTask: Task                 //current task
 
 
 

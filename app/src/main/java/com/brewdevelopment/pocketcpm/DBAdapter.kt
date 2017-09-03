@@ -307,14 +307,35 @@ class DBAdapter(dbName: String, context: Context){
         var cursor: Cursor = db.query(DBManager.Contract.TaskTable.TABLE_NAME, projections, selection, selectionArgs, null, null, sortOrder)
 
         var task = Task()
+
         while(cursor.moveToNext()){
             task.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.ID))
             task.attribute.put(Task.NAME_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.NAME_COLUMN)))
             task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
             task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
             task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
-            task.attribute.put(Task.PREDECESSOR_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN)))
-            task.attribute.put(Task.DEPENDENT_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN)))
+
+            //fill a predecessor arraylist
+            var predList = ArrayList<Task>()
+            var preds =  cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN)).split(',')
+            for(predID in preds){
+                var temp = getTaskById(predID)
+                if(temp !== null){
+                    predList.add(temp)
+                }
+            }
+            task.setPred(predList)
+
+            //fill a dependent arraylist
+            var dependList = ArrayList<Task>()
+            var dependents = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN)).split(',')
+            for(dependID in dependents){
+                var temp = getTaskById(dependID)
+                if(temp !== null){
+                    dependList.add(temp)
+                }
+            }
+            task.setDepend(dependList)
         }
 
         if(task.ID != EMPTY){
