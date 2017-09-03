@@ -59,6 +59,7 @@ class Task(){
             list += "," + task.ID
         }
 
+
         if(list.isNotEmpty()){
             list = list.substring(1)
         }

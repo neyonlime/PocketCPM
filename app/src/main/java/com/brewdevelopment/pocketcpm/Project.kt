@@ -42,8 +42,4 @@ class Project(){
         }
         return max
     }
-
-
-
-
 }
