@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
 import android.util.Log
 import java.sql.SQLException
-import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Created by neyonlime on 2017-08-16.
@@ -317,7 +316,11 @@ class DBAdapter(dbName: String, context: Context){
 
             //fill a predecessor arraylist
             var predList = ArrayList<Task>()
-            var preds =  cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN)).split(',')
+            var idList =  cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN))
+            var preds= listOf("")
+            if(idList!==null) {
+                 preds = idList.split(',')
+            }
             for(predID in preds){
                 var temp = getTaskById(predID)
                 if(temp !== null){
@@ -328,7 +331,11 @@ class DBAdapter(dbName: String, context: Context){
 
             //fill a dependent arraylist
             var dependList = ArrayList<Task>()
-            var dependents = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN)).split(',')
+            var idListd =  cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN))
+            var dependents = listOf("")
+            if(idListd!==null) {
+                dependents = idListd.split(',')
+            }
             for(dependID in dependents){
                 var temp = getTaskById(dependID)
                 if(temp !== null){
