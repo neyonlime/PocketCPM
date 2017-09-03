@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 
 /**
  * Created by Osama on 2017-09-01.
@@ -19,9 +20,12 @@ class TaskViewFragment(): Fragment() {
     lateinit var item: mCrit
     private lateinit var task: Task
     private lateinit var project: Project
+    lateinit var champTxt: TextView
+    lateinit var dTxt: TextView
 init{
     task= Task()
     project=Project()
+
 }
     constructor(task: Task, project: Project):this(){
         this.task = task
@@ -50,9 +54,11 @@ init{
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        Log.e("@@@@@", "JSIAJISOJIAOJSIOAS")
-
         val rootView = inflater?.inflate(R.layout.task_on_click_view, container, false)
+        champTxt= rootView?.findViewById(R.id.Champ) as TextView
+        dTxt= rootView?.findViewById(R.id.Desc) as TextView
+        champTxt.text= task.attribute.get(Task.DESCRIPTION_COLUMN).toString()
+        dTxt.text= task.attribute.get(Task.PREDECESSOR_COLUMN).toString()
         recyclerView= rootView?.findViewById(R.id.task_recycler_view) as RecyclerView
         recyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {

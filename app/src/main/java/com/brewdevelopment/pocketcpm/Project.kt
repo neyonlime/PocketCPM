@@ -11,6 +11,7 @@ class Project(){
     var taskList: ArrayList<Task>
     var start: String
 
+
     constructor(name: String): this(){
         this.name = name
     }
@@ -34,18 +35,12 @@ class Project(){
         return taskList
     }
     fun getTOC(): Int{
-        if(taskList.size==0){
-            return 0
+        var max= 0
+        for(i in taskList){
+            if(CritCalc(i, Project(this.name)).getEarlyFinish()>0){
+            max=CritCalc(i,Project(this.name)).getEarlyFinish()}
         }
-        else {
-            var max: Int = CritCalc(taskList[0],this ).getEarlyFinish()
-            for (i in 0..taskList.size) {
-                if (CritCalc(taskList[i],this).getEarlyFinish() > max) {
-                    max = CritCalc(taskList[i],this).getEarlyFinish()
-                }
-            }
-            return max
-        }
+        return max
     }
 
 

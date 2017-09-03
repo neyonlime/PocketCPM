@@ -204,6 +204,9 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
             }else if(editTask === null){
                 var task = Task()
                 task.attribute.put(Task.NAME_COLUMN, taskName.text.toString())
+                for(i in predList){
+                    Log.e("Pred", i.attribute.get(Task.NAME_COLUMN).toString())
+                }
                 task.setPred(predList)
                 task.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
                 task.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())

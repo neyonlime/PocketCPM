@@ -2,6 +2,7 @@ package com.brewdevelopment.pocketcpm
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,7 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
     val menuList2 = ArrayList<String>()
     lateinit var task: Task
     lateinit var project: Project
-    lateinit var arr: Array<String>
+
     lateinit var earlyS: String
     lateinit var earlyF: String
     lateinit var lateS: String
@@ -33,15 +34,17 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
     init{
         this.task=task
         this.project= project
+
         earlyS= CritCalc(task,project).getEarlyStart().toString()
         earlyF= CritCalc(task,project).getEarlyFinish().toString()
         lateF= CritCalc(task,project).getLateFinish().toString()
         lateS= CritCalc(task,project).getLateStart().toString()
+        slack=(CritCalc(task,project).getLateFinish()-CritCalc(task,project).getEarlyFinish()).toString()
         if(CritCalc(task,project).getLateFinish()-CritCalc(task,project).getEarlyFinish()==0){
-            slack= "Yes"
+            crit= "Yes"
         }
         else{
-            slack= "No"
+            crit= "No"
         }
         menuList2.add(earlyS)
         menuList2.add(earlyF)
@@ -49,9 +52,9 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
         menuList2.add(lateF)
         menuList2.add(slack)
         menuList2.add(crit)
-        arr= menuList2.toArray(arr)
+
         for(i in 0..5){
-            list.add(mCrit(menuList[i],arr[i]))
+            list.add(mCrit(menuList[i],menuList2[i]))
         }
     }
     class viewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
@@ -89,45 +92,49 @@ class mCrit(topic:String?, Val:String?) {
         this.Val=Val
     }
 }
-class CritCalc(task: Task, project: Project){
+class CritCalc(task: Task, project2: Project){
     var ES: Int=0
     var LS: Int=0
     var LF: Int=0
     var EF: Int=0
     var task: Task
-    var project: Project
+    var project2: Project
     var max: Int =0
     var min: Int=0
     init{
-        this.project= project
+        this.project2= project2
         this.task=task
-        if(task.getPred().size==0) {
-            ES  = 0
-        }
-        else if(task.getPred().size!=0){
-            max=CritCalc(task.getPred()[0],project).getEarlyFinish()
-            for (i in 0..task.getPred().size){
-                if(CritCalc(task.getPred()[i],project).getEarlyFinish()>max) {
-                    max = CritCalc(task.getPred()[i],project).getEarlyFinish()
+
+        //if(task.getPred().size==0) { ///if it has no preds then Early start is 0
+       //     ES  = 0
+       // }
+         if(task.getPred().isEmpty()){ // if it does have preds then get the max early finish of its preds and thats the early start of this one
+             Log.e("getPred", "entered")
+
+            for (i in task.getPred()){
+                if(CritCalc(i,project2).getEarlyFinish()>max) {
+                    max = CritCalc(i,project2).getEarlyFinish()
+                    Log.e("getPred", max.toString())
                 }
             }
+
             ES=max
         }
 ///////////////////////////////////////////////////////////////////////////////////
-        if(task.getDepend().size==0) {
-            LF= project.getTOC()
+        if(task.getDepend().size==0) {// if no successors then the late finish is the time of completion of project
+            LF= project2.getTOC()
         }
-        else if(task.getPred().size!=0){
-            min=CritCalc(task.getDepend()[0],project).getLateStart()
+        else if(task.getDepend().size!=0){// if it does have successor then the late finish is the smallest late start of its successors
+            min=Double.POSITIVE_INFINITY.toInt()
             for (i in 0..task.getDepend().size){
-                if(CritCalc(task.getDepend()[i],project).getLateStart()<min) {
-                    min = CritCalc(task.getPred()[i],project).getLateStart()
+                if(CritCalc(task.getDepend()[i],project2).getLateStart()<min) {
+                    min = CritCalc(task.getDepend()[i],project2).getLateStart()
                 }
             }
             LF=min
         }
-        LS= LF-task.attribute.get(Task.DURATION_COLUMN).toString().toInt()
-        EF= ES+task.attribute.get(Task.DURATION_COLUMN).toString().toInt()
+        LS= LF-task.attribute.get(Task.DURATION_COLUMN).toString().toInt() //late start is late finish minus duration
+        EF= ES+task.attribute.get(Task.DURATION_COLUMN).toString().toInt() //early finish is early start plus duration
     }
     fun getLateFinish():Int{
         return LF
@@ -141,4 +148,12 @@ class CritCalc(task: Task, project: Project){
     fun getEarlyStart():Int{
         return ES
     }
+    fun isCrit():Boolean{
+        var v: Boolean= false
+        if(CritCalc(task,project2).getLateFinish()-CritCalc(task,project2).getEarlyFinish()==0){
+            v=true
+        }
+        return v
+    }
+
 }
