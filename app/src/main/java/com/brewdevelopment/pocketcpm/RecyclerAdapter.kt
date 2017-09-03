@@ -4,7 +4,6 @@ import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -41,7 +40,7 @@ class RecyclerAdapter( var context: Context,var list: ArrayList<Task>) : Recycle
 
         //onClick listener for the options menu
         holder?.options!!.setOnClickListener{
-            Log.d("edit_task", "edit task Clicked")
+            //Log.d("edit_task", "edit task Clicked")
             val menu: PopupMenu = PopupMenu(context, holder.options)
             menu.menuInflater.inflate(R.menu.task_options, menu.menu)
             menu.show()

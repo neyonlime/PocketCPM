@@ -34,11 +34,12 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {  //question marks denote nullable types
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_view)
         //setting up the toolbar
-
+        selectedProject= Project()
         toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)        //setting the toolbar and providing functionality to the toolbar
         menuList = arrayOf("Dashboard","Projects","Diagrams")
@@ -94,7 +95,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
             }
             if(position==1) {
-                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
+                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_check))
                 fab.show()
                 isProj=true
                 val fragment = ProjectDisplayFragment.newInstance(dbAdapter.getProjects())
@@ -152,6 +153,15 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
     override fun onTaskSelect(obj: Task) {
         selectedTask = obj
+
+        val taskName: String = obj.attribute.get(Task.NAME_COLUMN).toString()
+        toolbar.title=taskName
+        Log.d("get_tasks", "MainActivity/${dbAdapter.getTaskList(selectedProject.ID).size}")
+        val fragment= TaskViewFragment.newInstance(selectedTask, selectedProject)
+        val fm = fragmentManager
+        val transaction = fm.beginTransaction()
+        transaction.replace(R.id.content_frame,fragment)
+        transaction.commit()
     }
 
     override fun onAdd(obj: Any) {
