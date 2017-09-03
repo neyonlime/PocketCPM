@@ -286,6 +286,7 @@ class DBAdapter(dbName: String, context: Context){
             project.ID = ID
             project.start = start
         }
+        cursor.close()
         return project
     }
 
@@ -317,7 +318,11 @@ class DBAdapter(dbName: String, context: Context){
 
             //fill a predecessor arraylist
             var predList = ArrayList<Task>()
-            var preds =  cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN)).split(',')
+            var idList=  cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN))
+            var preds = listOf("")
+            if(idList.trim().length > 0){
+                preds = idList.split(',')
+            }
             for(predID in preds){
                 var temp = getTaskById(predID)
                 if(temp !== null){
@@ -337,6 +342,7 @@ class DBAdapter(dbName: String, context: Context){
             }
             task.setDepend(dependList)
         }
+        cursor.close()
 
         if(task.ID != EMPTY){
             return task
