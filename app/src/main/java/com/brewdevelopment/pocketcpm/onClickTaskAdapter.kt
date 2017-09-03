@@ -33,12 +33,12 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
     init{
         this.task=task
         this.project= project
-        earlyS= CritCalc(task,project).getEarlyStart().toString()
-        earlyF= CritCalc(task,project).getEarlyFinish().toString()
-        lateF= CritCalc(task,project).getLateFinish().toString()
-        lateS= CritCalc(task,project).getLateStart().toString()
-        slack=(CritCalc(task,project).getLateFinish()-CritCalc(task,project).getEarlyFinish()).toString()
-        if(CritCalc(task,project).getLateFinish()-CritCalc(task,project).getEarlyFinish()==0){
+        earlyS= CritCalc(task,project).getEarlyStart(task).toString()
+        earlyF= CritCalc(task,project).getEarlyFinish(task).toString()
+        lateF= CritCalc(task,project).getLateFinish(task).toString()
+        lateS= CritCalc(task,project).getLateStart(task).toString()
+        slack=(CritCalc(task,project).getLateFinish(task)-CritCalc(task,project).getEarlyFinish(task)).toString()
+        if(CritCalc(task,project).getLateFinish(task)-CritCalc(task,project).getEarlyFinish(task)==0){
             crit= "Yes"
         }
         else{
@@ -97,59 +97,61 @@ class CritCalc(task: Task, project2: Project){
     var EF: Int=0
     var task: Task
     var project2: Project
-    var max: Int =0
-    var min: Int=0
+
+
     init{
         this.project2= project2
         this.task=task
-
-        if(task.getPred().isEmpty()) { ///if it has no preds then Early start is 0
-            ES  = 0
-        }
-         else if(!task.getPred().isEmpty()){ // if it does have preds then get the max early finish of its preds and thats the early start of this one
-            for (i in task.getPred()){
-                if(CritCalc(i,project2).getEarlyFinish()>max) {
-                    max = CritCalc(i,project2).getEarlyFinish()
-                    Log.e("getPred", max.toString())
-                }
-            }
-
-            ES=max
-        }
 ///////////////////////////////////////////////////////////////////////////////////
-        if(task.getDepend().size==0) {// if no successors then the late finish is the time of completion of project
-            LF= project2.getTOC()
-        }
-        else if(task.getDepend().size!=0){// if it does have successor then the late finish is the smallest late start of its successors
-            min=Double.POSITIVE_INFINITY.toInt()
-            for (i in 0..task.getDepend().size){
-                if(CritCalc(task.getDepend()[i],project2).getLateStart()<min) {
-                    min = CritCalc(task.getDepend()[i],project2).getLateStart()
-                }
-            }
-            LF=min
-        }
-        LS= LF-task.attribute.get(Task.DURATION_COLUMN).toString().toInt() //late start is late finish minus duration
-        EF= ES+task.attribute.get(Task.DURATION_COLUMN).toString().toInt() //early finish is early start plus duration
     }
-    fun getLateFinish():Int{
+    fun getLateFinish(task:Task):Int{
+        if (task.getDepend()!==null) {
+            if (task.getDepend().size == 0) {// if no successors then the late finish is the time of completion of project
+                LF = project2.getTOC()
+            } else if (task.getDepend().size != 0) {// if it does have successor then the late finish is the smallest late start of its successors
+                var min = Double.POSITIVE_INFINITY.toInt()
+                for (i in 0..task.getDepend().size) {
+                    var y= getLateStart(task.getDepend()[i])
+                    if (y < min) {
+                        min = y
+                    }
+                }
+                LF = min
+            }
+        }
         return LF
     }
-    fun getEarlyFinish():Int{
+    fun getEarlyFinish(task:Task):Int{
+        EF= getEarlyStart(task)+task.attribute.get(Task.DURATION_COLUMN).toString().toInt() //early finish is early start plus duration
         return EF
     }
-    fun getLateStart():Int{
+    fun getLateStart(task:Task):Int{
+        LS= getEarlyFinish(task)-task.attribute.get(Task.DURATION_COLUMN).toString().toInt() //late start is late finish minus duration
         return LS
     }
-    fun getEarlyStart():Int{
+    fun getEarlyStart(task: Task):Int{
+        if (task.getPred()!==null) {
+            if (task.getPred().isEmpty()) { ///if it has no preds then Early start is 0
+                ES = 0
+            } else if (!task.getPred().isEmpty()) { // if it does have preds then get the max early finish of its preds and thats the early start of this one
+                var max: Int =0
+                for (i in task.getPred()) {
+                    if (getEarlyFinish(i) > max) {
+                        max = getEarlyFinish(i)
+                        Log.e("getPred", max.toString())
+                    }
+                }
+                ES = max
+            }
+        }
         return ES
     }
-    fun isCrit():Boolean{
+   /* fun isCrit():Boolean{
         var v: Boolean= false
-        if(CritCalc(task,project2).getLateFinish()-CritCalc(task,project2).getEarlyFinish()==0){
+        if(CritCalc(task,Project(":(")).getLateFinish()-CritCalc(task,project2).getEarlyFinish()==0){
             v=true
         }
         return v
-    }
+    }*/
 
 }
