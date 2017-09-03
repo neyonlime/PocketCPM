@@ -17,7 +17,6 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
     val menuList2 = ArrayList<String>()
     lateinit var task: Task
     lateinit var project: Project
-
     lateinit var earlyS: String
     lateinit var earlyF: String
     lateinit var lateS: String
@@ -34,7 +33,6 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
     init{
         this.task=task
         this.project= project
-
         earlyS= CritCalc(task,project).getEarlyStart().toString()
         earlyF= CritCalc(task,project).getEarlyFinish().toString()
         lateF= CritCalc(task,project).getLateFinish().toString()
@@ -105,12 +103,10 @@ class CritCalc(task: Task, project2: Project){
         this.project2= project2
         this.task=task
 
-        //if(task.getPred().size==0) { ///if it has no preds then Early start is 0
-       //     ES  = 0
-       // }
-         if(task.getPred().isEmpty()){ // if it does have preds then get the max early finish of its preds and thats the early start of this one
-             Log.e("getPred", "entered")
-
+        if(task.getPred().isEmpty()) { ///if it has no preds then Early start is 0
+            ES  = 0
+        }
+         else if(!task.getPred().isEmpty()){ // if it does have preds then get the max early finish of its preds and thats the early start of this one
             for (i in task.getPred()){
                 if(CritCalc(i,project2).getEarlyFinish()>max) {
                     max = CritCalc(i,project2).getEarlyFinish()
