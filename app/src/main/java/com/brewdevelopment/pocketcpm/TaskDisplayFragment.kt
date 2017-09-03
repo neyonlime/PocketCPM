@@ -38,7 +38,7 @@ class TaskDisplayFragment(): Fragment() {
     override fun onAttach(context: Context?) {
 
         super.onAttach(context)
-        if(!(context is FragmentEventListener)) throw AssertionError()  //if the call activity has implemented AddFragmentEventListener continue
+        if(!(context is FragmentEventListener)) throw AssertionError() //if the call activity has implemented AddFragmentEventListener continue
         fragmentEventListener = context
     }
 
@@ -46,12 +46,13 @@ class TaskDisplayFragment(): Fragment() {
         Log.e("@@@@@", "JSIAJISOJIAOJSIOAS")
         val rootView = inflater?.inflate(R.layout.task_list, container, false)
         recyclerView= rootView?.findViewById(R.id.task_recycler_view) as RecyclerView
-        var list = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(TASK_LIST) as ArrayList <Task>
+        val list = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(TASK_LIST) as ArrayList <Task>
 
         recyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
                         task = RecyclerAdapter(activity, list).list[position]
+
                         fragmentEventListener.onTaskSelect(task)
                         Log.e("@@@@@", "" + position)
                     }
