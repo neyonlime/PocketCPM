@@ -24,7 +24,7 @@ import android.widget.ArrayAdapter
  */
 
 
-class AddTaskFragement : Fragment(), AdapterView.OnItemSelectedListener  {
+class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
     lateinit var recyclerView: RecyclerView
     lateinit var recyclerView2: RecyclerView
     lateinit var task1: Task
@@ -142,8 +142,7 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemSelectedListener  {
         )
                                                          //the task that is being added to the predecessor
 
-        //get the tasks from bundle
-        var tasks: ArrayList<Task> = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(ALL_LIST) as ArrayList<Task>
+
 
         selectedChampion = Champion()
         taskButton = rootView!!.findViewById(R.id.task_button) as Button
@@ -180,9 +179,6 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemSelectedListener  {
 
         }
 
-        //get the tasks from bundle
-        var tasks: ArrayList<Task> = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(ALL_LIST) as ArrayList<Task>
-
         taskButton.setOnClickListener {
             //the save button has been clicked, store or append the data
             //build the task object
@@ -211,6 +207,10 @@ class AddTaskFragement : Fragment(), AdapterView.OnItemSelectedListener  {
                 var task = Task()
                 task.attribute.put(Task.NAME_COLUMN, taskName.text.toString())
                 task.setPred(predList)
+                for(task in predList){
+                    //update the predecessor tasks to rewrite their dependents
+                    fragmentEventListener.onUpdate(task)
+                }
                 task.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
                 task.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())
                 var champion = selectedChampion

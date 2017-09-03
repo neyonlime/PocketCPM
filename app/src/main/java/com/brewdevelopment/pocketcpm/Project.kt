@@ -20,9 +20,6 @@ class Project(){
         start = ""
     }
 
-    fun getTOC(): Int{
-        return 0
-    }
 
     fun getTaskList(): String{
         var taskList = ""
@@ -45,8 +42,4 @@ class Project(){
         }
         return max
     }
-
-
-
-
 }
