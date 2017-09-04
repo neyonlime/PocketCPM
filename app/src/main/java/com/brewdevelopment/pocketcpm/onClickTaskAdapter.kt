@@ -106,12 +106,15 @@ class CritCalc(task: Task, project2: Project){
     }
     fun getLateFinish(task:Task):Int{
         if (task.getDepend()!==null) {
-            if (task.getDepend().size == 0) {// if no successors then the late finish is the time of completion of project
+            if (task.getDepend().isEmpty()) {// if no successors then the late finish is the time of completion of project
                 LF = project2.getTOC()
-            } else if (task.getDepend().size != 0) {// if it does have successor then the late finish is the smallest late start of its successors
+
+                Log.d("add_dependent", "${LF}")
+
+            }else if (!task.getDepend().isEmpty()) {// if it does have successor then the late finish is the smallest late start of its successors
                 var min = Double.POSITIVE_INFINITY.toInt()
-                for (i in 0..task.getDepend().size) {
-                    var y= getLateStart(task.getDepend()[i])
+                for (i in task.getDepend()) {
+                    var y= getLateStart(i)
                     if (y < min) {
                         min = y
                     }
@@ -126,7 +129,7 @@ class CritCalc(task: Task, project2: Project){
         return EF
     }
     fun getLateStart(task:Task):Int{
-        LS= getEarlyFinish(task)-task.attribute.get(Task.DURATION_COLUMN).toString().toInt() //late start is late finish minus duration
+        LS= getLateFinish(task)-task.attribute.get(Task.DURATION_COLUMN).toString().toInt() //late start is late finish minus duration
         return LS
     }
     fun getEarlyStart(task: Task):Int{

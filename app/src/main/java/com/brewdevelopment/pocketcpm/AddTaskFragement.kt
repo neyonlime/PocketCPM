@@ -204,6 +204,7 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
                 for(i in predList){
                     Log.e("Pred", i.attribute.get(Task.NAME_COLUMN).toString())
                 }
+                fragmentEventListener.onAdd(task)
                 task.setPred(predList)
                 for(task in predList){
                     //update the predecessor tasks to rewrite their dependents
@@ -219,7 +220,7 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
                 if(validateTask(task)) {
                     //all information about the task is valid
                     //then save the task to database
-                    fragmentEventListener.onAdd(task)
+                    fragmentEventListener.onUpdate(task)
 
                 }
                 list.add(task)

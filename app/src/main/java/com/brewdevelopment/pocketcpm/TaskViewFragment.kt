@@ -61,7 +61,7 @@ init{
             champTxt.text = task.attribute.get(Task.DESCRIPTION_COLUMN).toString()
         }
         if(task.attribute.get(Task.PREDECESSOR_COLUMN)!==null) {
-            dTxt.text = task.attribute.get(Task.PREDECESSOR_COLUMN).toString()
+            dTxt.text = task.getDependList()
         }
         recyclerView= rootView?.findViewById(R.id.task_recycler_view) as RecyclerView
         recyclerView.addOnItemTouchListener(

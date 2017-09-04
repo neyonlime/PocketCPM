@@ -19,6 +19,8 @@ class DBAdapter(dbName: String, context: Context){
     companion object {
 
         val ALL = "all"
+        val RETRIEVE_RELATION = "relation"
+        val RETRIEVE = "retrieve"
         private lateinit var mDBManager: com.brewdevelopment.pocketcpm.DBAdapter.DBManager
 
         val READ = "read"               //only for reading
@@ -206,31 +208,6 @@ class DBAdapter(dbName: String, context: Context){
         return projects
     }
 
-    //pulls all the tasks from the database
-    fun getAllTasks(): ArrayList<Task>{
-        var projections = arrayOf(DBManager.Contract.TaskTable.ID, DBManager.Contract.TaskTable.NAME_COLUMN,
-                DBManager.Contract.TaskTable.DESCRIPTION_COLUMN, DBManager.Contract.TaskTable.CHAMPION_COLUMN,
-                DBManager.Contract.TaskTable.DURATION_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
-                DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
-
-        var sortOrder = DBManager.Contract.TaskTable.NAME_COLUMN + " DESC"
-        var cursor: Cursor = db.query(DBManager.Contract.TaskTable.TABLE_NAME, projections, null, null, null, null, sortOrder)
-
-        var taskList = ArrayList<Task>()
-        while(cursor.moveToNext()){
-            var task = Task()
-            task.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.ID))
-            task.attribute.put(Task.NAME_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.NAME_COLUMN)))
-            task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
-            task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
-            task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
-            task.attribute.put(Task.PREDECESSOR_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN)))
-            task.attribute.put(Task.DEPENDENT_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN)))
-            taskList.add(task)
-        }
-        return taskList
-    }
-
     fun getTaskList(id: Long): ArrayList<Task> {
         //open(READ)
 
@@ -313,44 +290,98 @@ class DBAdapter(dbName: String, context: Context){
             task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
             task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
             task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
+            val idList =  cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN))
+            val idListDependent = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN))
 
-            //fill a predecessor arraylist
-            var predList = ArrayList<Task>()
-            var idList =  cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN))
-            var preds= listOf("")
-            if(idList!==null) {
-                 preds = idList.split(',')
+            if(idList !== null){
+                task.setPred(getPredecessors(idList))
             }
-            for(predID in preds){
-                var temp = getTaskById(predID)
-                if(temp !== null){
-                    predList.add(temp)
-                }
+            if(idListDependent !== null){
+                task.setDepend(getDependents(idListDependent))
             }
-            task.setPred(predList)
-
-            //fill a dependent arraylist
-            var dependList = ArrayList<Task>()
-            var idListd =  cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN))
-            var dependents = listOf("")
-            if(idListd!==null) {
-                dependents = idListd.split(',')
-            }
-            for(dependID in dependents){
-                var temp = getTaskById(dependID)
-                if(temp !== null){
-                    dependList.add(temp)
-                }
-            }
-            task.setDepend(dependList)
         }
 
         if(task.ID != EMPTY){
+            Log.d("add_dependent", "returning task: ${task.ID} || predecessor: ${task.getPredList()} || dependent: ${task.getDependList()}")
             return task
         }else{
             return null
         }
     }
+
+    fun getPredecessors(list: String): ArrayList<Task>{
+        //get the array from the list
+        val preds = list.split(',')
+        var predList = ArrayList<Task>()
+        if(preds.size > 0){
+            for(predID in preds){
+                //find a task based on the ID
+                val projections = arrayOf(DBManager.Contract.TaskTable.ID, DBManager.Contract.TaskTable.NAME_COLUMN,
+                        DBManager.Contract.TaskTable.DESCRIPTION_COLUMN, DBManager.Contract.TaskTable.CHAMPION_COLUMN,
+                        DBManager.Contract.TaskTable.DURATION_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
+                        DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
+
+                val selection = DBManager.Contract.TaskTable.ID + " = ?"
+                val selectionArgs = arrayOf(predID)
+
+                val sortOrder = DBManager.Contract.TaskTable.NAME_COLUMN + " DESC"
+
+
+                val cursor: Cursor = db.query(DBManager.Contract.TaskTable.TABLE_NAME, projections, selection, selectionArgs, null, null, sortOrder)
+
+                val task = Task()
+                while(cursor.moveToNext()){
+                    task.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.ID))
+                    task.attribute.put(Task.NAME_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.NAME_COLUMN)))
+                    task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
+                    task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
+                    task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
+                }
+                if(task.ID != EMPTY){
+                    predList.add(task)
+                }
+            }
+        }
+        return predList
+    }
+
+    fun getDependents(list: String): ArrayList<Task>{
+        val depends = list.split(',')
+        var dependList = ArrayList<Task>()
+        if(depends.size > 0){
+            for(dependID in depends){
+                //find a task based on the ID
+                val projections = arrayOf(DBManager.Contract.TaskTable.ID, DBManager.Contract.TaskTable.NAME_COLUMN,
+                        DBManager.Contract.TaskTable.DESCRIPTION_COLUMN, DBManager.Contract.TaskTable.CHAMPION_COLUMN,
+                        DBManager.Contract.TaskTable.DURATION_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
+                        DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
+
+                val selection = DBManager.Contract.TaskTable.ID + " = ?"
+                val selectionArgs = arrayOf(dependID)
+
+                val sortOrder = DBManager.Contract.TaskTable.NAME_COLUMN + " DESC"
+
+
+                val cursor: Cursor = db.query(DBManager.Contract.TaskTable.TABLE_NAME, projections, selection, selectionArgs, null, null, sortOrder)
+
+                val task = Task()
+                while(cursor.moveToNext()){
+                    task.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.ID))
+                    task.attribute.put(Task.NAME_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.NAME_COLUMN)))
+                    task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
+                    task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
+                    task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
+                }
+                if(task.ID != EMPTY){
+                    dependList.add(task)
+                }
+            }
+        }
+        return dependList
+    }
+
+
+
 
     //gets a champion from the database given the id
     fun getChampionByID(ID: String): Champion?{
@@ -434,7 +465,7 @@ class DBAdapter(dbName: String, context: Context){
                                             DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
                 var count = db.update(DBManager.Contract.TaskTable.TABLE_NAME, values, "${DBManager.Contract.TaskTable.ID}=?", arrayOf(obj.ID.toString())) //update the task
 
-                Log.d("edit_task", "updated Task: ${obj.ID} with attributes: name: ${obj.attribute.get(Task.NAME_COLUMN)} || name in database: ${getTaskById(obj.ID.toString())!!.attribute.get(Task.NAME_COLUMN)}")
+                //Log.d("edit_task", "updated Task: ${obj.ID} with attributes: name: ${obj.attribute.get(Task.NAME_COLUMN)} || name in database: ${getTaskById(obj.ID.toString())!!.attribute.get(Task.NAME_COLUMN)}")
             }
             is Champion -> {
                 var values = ContentValues()
