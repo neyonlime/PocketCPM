@@ -1,6 +1,7 @@
 package com.brewdevelopment.pocketcpm
 
 import android.content.ContentValues
+import android.util.Log
 
 /**
  * Created by neyon on 2017-07-20.
@@ -39,7 +40,9 @@ class Task(){
         if(task.ID != EMPTY){
             pred.add(task)
             attribute.put(PREDECESSOR_COLUMN, getPredList())
+            Log.d("add_dependent", "adding dependent ${this.ID} as dependent on ${task.ID}}")
             task.addDependent(this)
+            Log.d("add_dependent", "${this.ID} added as dependent to ${task.ID}, the dependent list: ${task.getDependList()}")
         }else{
             attribute.put(PREDECESSOR_COLUMN, "")
         }

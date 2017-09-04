@@ -31,10 +31,6 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
     lateinit var selectedProject: Project            //current displayed project
     lateinit var selectedTask: Task                 //current task
 
-
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {  //question marks denote nullable types
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_view)
@@ -142,7 +138,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         toolbar.title=projName
         selectedProject.taskList = dbAdapter.getTaskList(selectedProject.ID)
 
-        Log.d("get_tasks", "MainActivity/${dbAdapter.getTaskList(selectedProject.ID).size}")
+        //Log.d("get_tasks", "MainActivity/${dbAdapter.getTaskList(selectedProject.ID).size}")
 
         val fragment= TaskDisplayFragment.newInstance(selectedProject.taskList)
         val fm = fragmentManager
@@ -156,7 +152,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
         val taskName: String = obj.attribute.get(Task.NAME_COLUMN).toString()
         toolbar.title=taskName
-        Log.d("get_tasks", "MainActivity/${dbAdapter.getTaskList(selectedProject.ID).size}")
+        //Log.d("get_tasks", "MainActivity/${dbAdapter.getTaskList(selectedProject.ID).size}")
         val fragment= TaskViewFragment.newInstance(selectedTask, selectedProject)
         val fm = fragmentManager
         val transaction = fm.beginTransaction()
