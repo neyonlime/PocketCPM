@@ -102,8 +102,8 @@ class CritCalc(task: Task, project2: Project){
     init{
         this.project2= project2
         this.task=task
-///////////////////////////////////////////////////////////////////////////////////
     }
+
     fun getLateFinish(task:Task):Int{
         if (task.getDepend()!==null) {
             if (task.getDepend().size == 0) {// if no successors then the late finish is the time of completion of project
@@ -126,7 +126,7 @@ class CritCalc(task: Task, project2: Project){
         return EF
     }
     fun getLateStart(task:Task):Int{
-        LS= getEarlyFinish(task)-task.attribute.get(Task.DURATION_COLUMN).toString().toInt() //late start is late finish minus duration
+        LS= getLateFinish(task)-task.attribute.get(Task.DURATION_COLUMN).toString().toInt() //late start is late finish minus duration
         return LS
     }
     fun getEarlyStart(task: Task):Int{

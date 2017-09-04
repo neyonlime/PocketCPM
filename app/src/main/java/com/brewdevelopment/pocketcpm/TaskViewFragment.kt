@@ -74,7 +74,6 @@ init{
         )
         recyclerView.adapter=onClickTaskAdapter(activity,task, project)
         recyclerView.layoutManager= LinearLayoutManager(activity)
-
         return rootView
     }
 }
