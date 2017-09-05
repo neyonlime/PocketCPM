@@ -100,7 +100,7 @@ class DBAdapter(dbName: String, context: Context){
                 values.put(DBManager.Contract.ProjectTable.NAME_COLUMN, obj.name)
                 values.put(DBManager.Contract.ProjectTable.START_COLUMN, obj.start)
                 values.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
-                values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTOC())
+                values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTOC(obj))
                 obj.ID = db.insert(DBManager.Contract.ProjectTable.TABLE_NAME, null, values)
 
                 Log.d("add_project", "project: ID:${obj.ID}, project_start: start:${obj.start}, project_tasks: ${taskList}")
@@ -431,7 +431,7 @@ class DBAdapter(dbName: String, context: Context){
             is Project -> {
                 var values = ContentValues()
                 values.put(DBManager.Contract.ProjectTable.NAME_COLUMN, obj.name)
-                values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTOC())
+                values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTOC(obj))
 
                 var taskList = ""
                 for(task in obj.taskList){

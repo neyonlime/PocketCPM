@@ -149,7 +149,6 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
     override fun onTaskSelect(obj: Task) {
         selectedTask = obj
-
         val taskName: String = obj.attribute.get(Task.NAME_COLUMN).toString()
         toolbar.title=taskName
         //Log.d("get_tasks", "MainActivity/${dbAdapter.getTaskList(selectedProject.ID).size}")

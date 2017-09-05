@@ -224,6 +224,13 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
 
                 }
                 list.add(task)
+                list.addAll(predList)
+                predList.clear()
+                taskName.text.clear()
+                description.text.clear()
+                duration.text.clear()
+                recyclerView.swapAdapter(mAdapter, false)
+                recyclerView2.swapAdapter(mAdapter2, false)
             }
 
         }

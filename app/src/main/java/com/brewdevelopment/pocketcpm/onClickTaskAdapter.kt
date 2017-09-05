@@ -33,12 +33,13 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
     init{
         this.task=task
         this.project= project
-        earlyS= CritCalc(task,project).getEarlyStart(task).toString()
-        earlyF= CritCalc(task,project).getEarlyFinish(task).toString()
-        lateF= CritCalc(task,project).getLateFinish(task).toString()
-        lateS= CritCalc(task,project).getLateStart(task).toString()
-        slack=(CritCalc(task,project).getLateFinish(task)-CritCalc(task,project).getEarlyFinish(task)).toString()
-        if(CritCalc(task,project).getLateFinish(task)-CritCalc(task,project).getEarlyFinish(task)==0){
+        val CC=CritCalc(task,project)
+        earlyS= CC.getEarlyStart(task).toString()
+        earlyF= CC.getEarlyFinish(task).toString()
+        lateF= CC.getLateFinish(task).toString()
+        lateS= CC.getLateStart(task).toString()
+        slack=(CC.getLateFinish(task)-CC.getEarlyFinish(task)).toString()
+        if(CC.getLateFinish(task)-CC.getEarlyFinish(task)==0){
             crit= "Yes"
         }
         else{
@@ -97,31 +98,45 @@ class CritCalc(task: Task, project2: Project){
     var EF: Int=0
     var task: Task
     var project2: Project
+    lateinit var list: ArrayList<Task>
 
 
     init{
         this.project2= project2
         this.task=task
+        list=project2.getTasks()
     }
-
+    fun getById(id:Long): Task{
+        var x:Task= Task()
+        for(i in list){
+            if(i.ID== id){
+                x=i
+            }
+        }
+        return x
+    }
     fun getLateFinish(task:Task):Int{
-        if (task.getDepend()!==null) {
+
             if (task.getDepend().isEmpty()) {// if no successors then the late finish is the time of completion of project
-                LF = project2.getTOC()
+                LF = project2.getTOC(project2)
 
                 Log.d("add_dependent", "${LF}")
 
-            }else if (!task.getDepend().isEmpty()) {// if it does have successor then the late finish is the smallest late start of its successors
-                var min = Double.POSITIVE_INFINITY.toInt()
-                for (i in task.getDepend()) {
-                    var y= getLateStart(i)
-                    if (y < min) {
-                        min = y
+            }else  {// if it does have successor then the late finish is the smallest late start of its successors
+
+
+                    var min = Double.POSITIVE_INFINITY.toInt()
+                    for (i in task.getDepend()) {
+                        Log.d("add_dependent", i.attribute.get(Task.NAME_COLUMN).toString())
+                        if (getLateStart(getById(i.ID)) < min) {
+                            min = getLateStart(getById(i.ID))
+                        }
+
                     }
-                }
-                LF = min
+                    LF = min
+
             }
-        }
+
         return LF
     }
     fun getEarlyFinish(task:Task):Int{
@@ -133,20 +148,26 @@ class CritCalc(task: Task, project2: Project){
         return LS
     }
     fun getEarlyStart(task: Task):Int{
-        if (task.getPred()!==null) {
+
             if (task.getPred().isEmpty()) { ///if it has no preds then Early start is 0
                 ES = 0
             } else if (!task.getPred().isEmpty()) { // if it does have preds then get the max early finish of its preds and thats the early start of this one
-                var max: Int =0
-                for (i in task.getPred()) {
-                    if (getEarlyFinish(i) > max) {
-                        max = getEarlyFinish(i)
-                        Log.e("getPred", max.toString())
+
+
+                    var max: Int = 0
+                    for (i in task.getPred()) {
+                        if (getEarlyFinish(getById(i.ID)) > max) {
+                            max = getEarlyFinish(getById(i.ID))
+                            Log.e("getPred", max.toString())
+                        }
                     }
-                }
-                ES = max
+                /*Log.e("PredTask of task "+task.attribute.get(Task.NAME_COLUMN), task.getPred()[0].attribute.get(Task.NAME_COLUMN).toString())
+                Log.e("PredTask of task "+task.attribute.get(Task.NAME_COLUMN), task.getPred()[0].getPredList())
+                Log.e("PredTask of task "+task.attribute.get(Task.NAME_COLUMN), getEarlyFinish(task.getPred()[0]).toString())*/
+                    ES = max
+
             }
-        }
+
         return ES
     }
    /* fun isCrit():Boolean{

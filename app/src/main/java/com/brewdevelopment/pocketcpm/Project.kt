@@ -34,11 +34,17 @@ class Project(){
 
         return taskList
     }
-    fun getTOC(): Int{
+    fun getTasks(): ArrayList<Task>{
+        return  taskList
+    }
+
+    fun getTOC(project: Project): Int{
         var max= 0
         for(i in taskList){
-            if(CritCalc(i, this).getEarlyFinish(i)>0){
-            max=CritCalc(i,this).getEarlyFinish(i)}
+            val CC= CritCalc(i, project)
+            if(max<CC.getEarlyFinish(i)) {
+                max = CC.getEarlyFinish(i)
+            }
         }
         return max
     }
