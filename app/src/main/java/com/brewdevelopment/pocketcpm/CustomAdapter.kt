@@ -11,7 +11,7 @@ import java.util.*
 
  class CustomAdapter(c: Context): BaseAdapter() {
     var list = ArrayList<my_items>()
-    val menuList = arrayOf("Tasks","Projects","Diagrams")
+    val menuList = arrayOf("Champions","Projects","Diagrams")
     val menuList2: Array<Int> = arrayOf(R.drawable.circle,R.drawable.circle,R.drawable.circle)
     val context = c
 
