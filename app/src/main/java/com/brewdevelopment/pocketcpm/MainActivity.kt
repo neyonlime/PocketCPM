@@ -85,13 +85,18 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         drawerList.onItemClickListener= AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id:Long ->
 
             if(position==0) {
-              //home
-                if(fab.isShown) fab.hide()
+                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.circle))
+                fab.show()
+                val fragment = Add_Champ_Frag.newInstance(dbAdapter.getChampionList(DBAdapter.ALL))
+                val fm = fragmentManager
+                val transaction = fm.beginTransaction()
+                transaction.replace(R.id.content_frame,fragment,Add_Champ_Frag.ADD_CHAMP)
+                transaction.commit()
                 drawerLayout.closeDrawers()
 
             }
             if(position==1) {
-                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_check))
+                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.circle))
                 fab.show()
                 isProj=true
                 val fragment = ProjectDisplayFragment.newInstance(dbAdapter.getProjects())
