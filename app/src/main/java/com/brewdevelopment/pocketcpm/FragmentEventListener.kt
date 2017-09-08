@@ -9,5 +9,5 @@ interface FragmentEventListener {
     fun onProjectSelect(obj: Project)
     fun onTaskSelect(obj: Task)
     fun onUpdate(obj: Any)
-
+    fun onDelete(obj: Any)
 }

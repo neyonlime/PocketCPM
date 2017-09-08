@@ -1,6 +1,7 @@
 package com.brewdevelopment.pocketcpm
 
 import android.content.ContentValues
+import android.content.Context
 import android.util.Log
 
 /**
@@ -52,7 +53,7 @@ class Task(){
         if(task.ID != EMPTY){
             pred.remove(task)
             attribute.put(PREDECESSOR_COLUMN, getPredList())
-            removePred(task)
+
         }
     }
 
@@ -120,5 +121,55 @@ class Task(){
 
     fun getChampion(index: Int): Champion{
         return champion
+    }
+    fun delete(context: Context, list: ArrayList<Task>){
+        val fragmentEvenListener = context as FragmentEventListener
+        if(pred.isEmpty() && depend.isEmpty()){
+            //delete
+            fragmentEvenListener.onDelete(this)
+        }else if(pred.isEmpty()){
+            //only has dependent
+            //this is a first degree task
+            Log.d("delete_task", "Pred is empty")
+            for(dependent in depend){
+                var temp = getById(dependent.ID, list)
+                temp.removePred(this)
+                fragmentEvenListener.onUpdate(dependent)
+            }
+            fragmentEvenListener.onDelete(this)
+        }else if (depend.isEmpty()){
+            //last task
+            Log.d("delete_task", "Dependent is empty")
+            for(predo in pred){
+                predo.removeDependent(this)
+                fragmentEvenListener.onUpdate(pred)
+            }
+            fragmentEvenListener.onDelete(this)
+        }
+        else{
+            //loop through the dependents
+            Log.d("delete_task", "Neither is empty")
+            for(predo in pred){
+                removeDependent(this)
+                predo.setDepend(depend)
+                fragmentEvenListener.onUpdate(predo)
+            }
+            for(dependent in depend){
+                removePred(this)
+                dependent.setPred(pred)
+                fragmentEvenListener.onUpdate(dependent)
+            }
+            fragmentEvenListener.onDelete(this)
+        }
+    }
+
+    private fun getById(id:Long, list: ArrayList<Task>): Task{
+        var x:Task= Task()
+        for(i in list){
+            if(i.ID== id){
+                x=i
+            }
+        }
+        return x
     }
 }

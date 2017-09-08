@@ -23,6 +23,6 @@
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="#4a73ef"
-        android:textSize="25dp" />
+        android:textSize="15dp" />
 
 </LinearLayout>

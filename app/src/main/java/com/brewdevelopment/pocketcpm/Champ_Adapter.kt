@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 /**
- * Created by Osama on 2017-08-28.
+ * Created by neyon on 2017-09-06.
  */
-class TaskAdapter(context: Context, var list: ArrayList<Task>) : RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
+class Champ_Adapter(context: Context, var list: ArrayList<Champion>) : RecyclerView.Adapter<Champ_Adapter.ViewHolder>() {
 
     class ViewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
         //val currentItem: Int=0
@@ -25,12 +25,14 @@ class TaskAdapter(context: Context, var list: ArrayList<Task>) : RecyclerView.Ad
     }
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        val temp: Task= list[position]
-        holder?.item_Title?.text= temp.attribute.get(Task.NAME_COLUMN) as String
+        val temp: Champion = list[position]
+        holder?.item_Title?.text= temp.name
         holder?.item_Desc?.visibility= View.GONE
+
     }
 
     override fun getItemCount(): Int {
         return list.size
     }
+
 }

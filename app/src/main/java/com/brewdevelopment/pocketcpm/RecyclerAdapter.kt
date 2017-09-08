@@ -2,7 +2,6 @@ package com.brewdevelopment.pocketcpm
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,7 +52,7 @@ class RecyclerAdapter( var context: Context,var list: ArrayList<Task>) : Recycle
                     }
                     R.id.task_delete -> {
                         //delete the selected task
-
+                        temp.delete(context, list)
                     }
                     else -> {}
                 }

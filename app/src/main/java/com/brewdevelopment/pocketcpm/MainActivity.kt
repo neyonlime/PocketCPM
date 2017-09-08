@@ -85,9 +85,16 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         drawerList.onItemClickListener= AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id:Long ->
 
             if(position==0) {
-              //home
-                if(fab.isShown) fab.hide()
+              //Champ
+                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.circle))
+                fab.hide()
+                val fragment = Add_Champ_Frag.newInstance(dbAdapter.getChampionList(DBAdapter.ALL))
+                val fm = fragmentManager
+                val transaction = fm.beginTransaction()
+                transaction.replace(R.id.content_frame,fragment,Add_Champ_Frag.ADD_CHAMP)
+                transaction.commit()
                 drawerLayout.closeDrawers()
+
 
             }
             if(position==1) {
@@ -199,7 +206,14 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
             }
         }
     }
-
+    override fun onDelete(obj: Any) {
+        when(obj){
+            is Task -> {
+                //delete a task from the database
+                dbAdapter.delete(obj)
+            }
+        }
+    }
     override fun onEdit(obj: Any) {
         when(obj){
             is Project -> {}
@@ -209,10 +223,14 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
                 //fill the task's champion list
                 //for if we ever want to add multiple champions for one task
-                var champion = dbAdapter.getChampionByID(obj.attribute.get(Task.CHAMPION_COLUMN).toString())
-                if(champion !== null){
-                    obj.setChampion(champion)
+                val championID= obj.attribute.get(Task.CHAMPION_COLUMN)
+                if(championID !== null){
+                    val champion = dbAdapter.getChampionByID(championID.toString())
+                    if (champion !== null){
+                        obj.setChampion(champion)
+                    }
                 }
+
 
                 var mFragment = AddTaskFragement.newInstance(obj, taskList, dbAdapter.getChampionList(DBAdapter.ALL))
                 val fm = fragmentManager
