@@ -11,6 +11,7 @@ import android.widget.TextView
 /**
  * Created by Osama on 2017-08-31.
  */
+
 class onClickTaskAdapter(context: Context, task: Task, project: Project) : RecyclerView.Adapter<onClickTaskAdapter.viewHolder>() {
     var list= ArrayList<mCrit>()
     val menuList = arrayOf("Early Start","Early Finish","Late Start", "Late Finish", "Slack Time", "Critical?")
@@ -152,8 +153,6 @@ class CritCalc(task: Task, project2: Project){
             if (task.getPred().isEmpty()) { ///if it has no preds then Early start is 0
                 ES = 0
             } else if (!task.getPred().isEmpty()) { // if it does have preds then get the max early finish of its preds and thats the early start of this one
-
-
                     var max: Int = 0
                     for (i in task.getPred()) {
                         if (getEarlyFinish(getById(i.ID)) > max) {
@@ -165,7 +164,6 @@ class CritCalc(task: Task, project2: Project){
                 Log.e("PredTask of task "+task.attribute.get(Task.NAME_COLUMN), task.getPred()[0].getPredList())
                 Log.e("PredTask of task "+task.attribute.get(Task.NAME_COLUMN), getEarlyFinish(task.getPred()[0]).toString())*/
                     ES = max
-
             }
 
         return ES

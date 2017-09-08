@@ -33,6 +33,4 @@ class TaskAdapter(context: Context, var list: ArrayList<Task>) : RecyclerView.Ad
     override fun getItemCount(): Int {
         return list.size
     }
-
-
 }

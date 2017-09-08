@@ -71,12 +71,7 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var predList = ArrayList<Task>()
 
-        if(editTask===null) {
-             predList = ArrayList<Task>()
-        }
-        else{
-            predList= fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(EDIT_TASK) as ArrayList <Task> //CHANGE
-        }
+
 
         var rootView = inflater?.inflate(R.layout.fragement_add_task,container, false)
         val taskName = rootView!!.findViewById(R.id.task_name_field) as EditText
@@ -87,16 +82,31 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
         recyclerView= rootView?.findViewById(R.id.recycler_view1) as RecyclerView
         recyclerView2=rootView?.findViewById(R.id.recycler_view2) as RecyclerView
         var list = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(ALL_LIST) as ArrayList <Task>
+
+
+        if(editTask===null) {
+            predList = ArrayList<Task>()
+        }
+        else{
+            Log.d("here", "in ELSE")
+            Log.d("champion_add", "${editTask!!.getChampion(0).name}")
+            predList = editTask!!.getPred()
+            cleanTaskList(list, predList)
+        }
+
+
+
+
+
         var mAdapter= TaskAdapter(activity,list)
         var mAdapter2= PredAdapter(activity,predList)
-      
+
         recyclerView2.adapter = PredAdapter(activity, predList)
         recyclerView2.layoutManager = LinearLayoutManager(activity)
         recyclerView2.invalidate()
         recyclerView.adapter = TaskAdapter(activity, list)
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.invalidate()
-
 
         selectedPredTask = Task() 
 
@@ -247,11 +257,11 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
         //set the selected champion to the champion object selected by the user
         selectedChampion = championList.get(position)
     }
@@ -264,7 +274,7 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
     private fun validateTask(task: Task): Boolean{
         //validate the task before saving
         return true
-        
+
     }
 
     override fun onAttach(context: Context?) {
@@ -272,5 +282,29 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
         if(!(context is FragmentEventListener)) throw AssertionError()  //if the call activity has implemented AddFragmentEventListener continue
         fragmentEventListener = context         // casts the calling activity to the implementation on AddFragmentEventsListener
 
+    }
+    private fun cleanTaskList(list: ArrayList<Task>, preds: ArrayList<Task>){
+        list.remove(editTask)           //remove the current task from the task list
+        list.removeAll(preds)
+        //remove the predecessors from the task list
+        for(pred in preds){
+            val position = findPosition(pred, list)
+            if(position != -1){
+                list.removeAt(position)
+            }
+        }
+        val position = findPosition(editTask!!, list)
+        if(position != -1){
+            list.removeAt(position)
+        }
+    }
+    private fun findPosition(task: Task, list: ArrayList<Task>): Int{
+        var position = -1
+        for(i in 0..list.size-1){
+            if(list.get(i).attribute.get(Task.NAME_COLUMN) == task.attribute.get(Task.NAME_COLUMN)){
+                position = i
+            }
+        }
+        return position
     }
 }

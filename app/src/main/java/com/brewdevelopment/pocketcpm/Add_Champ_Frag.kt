@@ -9,6 +9,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import java.io.Serializable
 
@@ -21,7 +23,7 @@ class Add_Champ_Frag(): Fragment() {
     lateinit var item: Champion
     private lateinit var task: Task
     private lateinit var project: Project
-    lateinit var champTxt: TextView
+    lateinit var champName: TextView
     lateinit var dTxt: TextView
     lateinit var clist: ArrayList<Champion>
     init{
@@ -59,7 +61,8 @@ class Add_Champ_Frag(): Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         clist=fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(Add_Champ_Frag.CHAMP_LIST) as ArrayList<Champion>
         val rootView = inflater?.inflate(R.layout.champ_view, container, false)
-        champTxt= rootView?.findViewById(R.id.Champ) as TextView
+        val addButton = rootView?.findViewById(R.id.champion_add_button) as Button
+        champName= rootView?.findViewById(R.id.champion_name_field) as EditText
         recyclerView= rootView?.findViewById(R.id.task_recycler_view) as RecyclerView
         recyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
@@ -72,6 +75,20 @@ class Add_Champ_Frag(): Fragment() {
 
         recyclerView.adapter= Champ_Adapter(activity,clist)
         recyclerView.layoutManager= LinearLayoutManager(activity)
+
+        //on click l;istener to handle adding a champion
+        addButton.setOnClickListener{
+            val nameField = champName.text
+            if(nameField.isNotEmpty()){
+                //build champion
+                var champion = Champion(nameField.toString())
+                fragmentEventListener.onAdd(champion)
+                clist.add(champion)
+                champName.setText("")
+            }
+            recyclerView.swapAdapter(Champ_Adapter(activity,clist), false)
+        }
+
         return rootView
     }
 }

@@ -406,6 +406,17 @@ class DBAdapter(dbName: String, context: Context){
         if(champion.ID != EMPTY){return champion}
         else{return null}
     }
+    fun delete(obj: Any) {
+        when (obj) {
+            is Task -> {
+                //delete the row from the task tazble
+                val selection = DBManager.Contract.TaskTable.ID + "=? "
+                val selectionArgs = arrayOf(obj.ID.toString())
+
+                db.delete(DBManager.Contract.TaskTable.TABLE_NAME, selection, selectionArgs)
+            }
+        }
+    }
 
     fun getChampionList(id: String): ArrayList<Champion>{
         when(id){
