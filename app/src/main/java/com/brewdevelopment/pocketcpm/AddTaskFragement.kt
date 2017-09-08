@@ -264,6 +264,7 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
     private fun validateTask(task: Task): Boolean{
         //validate the task before saving
         return true
+        
     }
 
     override fun onAttach(context: Context?) {
