@@ -82,13 +82,25 @@ class Add_Champ_Frag(): Fragment() {
             if(nameField.isNotEmpty()){
                 //build champion
                 var champion = Champion(nameField.toString())
-                fragmentEventListener.onAdd(champion)
-                clist.add(champion)
-                champName.setText("")
+                if(validateChampion(champion)){
+                    fragmentEventListener.onAdd(champion)
+                    clist.add(champion)
+                    champName.setText("")
+                }else{
+                    //champion not added as it was not valid
+                    champName.setText("")
+                }
             }
             recyclerView.swapAdapter(Champ_Adapter(activity,clist), false)
         }
 
         return rootView
+    }
+
+    private fun validateChampion(champion: Champion): Boolean{
+        if(champion.name.trim().isNotEmpty()){
+            return true
+        }
+        return false
     }
 }

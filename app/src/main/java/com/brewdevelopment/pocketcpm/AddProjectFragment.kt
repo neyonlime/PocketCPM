@@ -85,7 +85,7 @@ class AddProjectFragment(): Fragment(), DatePickerDialog.OnDateSetListener{
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
         var startDate = "" + dayOfMonth
-        startDate+= "/" + monthOfYear
+        startDate+= "/" + monthOfYear + 1
         startDate+= "/" + year
 
         startDateView.setText(startDate)
