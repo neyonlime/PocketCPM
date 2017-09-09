@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
             if(position==0) {
               //Champ
-                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
+                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.circle))
                 fab.hide()
                 val fragment = Add_Champ_Frag.newInstance(dbAdapter.getChampionList(DBAdapter.ALL))
                 val fm = fragmentManager
@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
             }
             if(position==1) {
-                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
+                fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.circle))
                 fab.show()
                 isProj=true
                 var projects: ArrayList<Project> = dbAdapter.getProjects()

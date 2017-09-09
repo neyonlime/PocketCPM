@@ -34,7 +34,7 @@ class ProjAdapter ( c: Context, var list: ArrayList<Project>) : RecyclerView.Ada
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val temp: Project = list[position]
         holder?.item_Title?.text = temp.name
-        holder?.item_Desc?.text= temp.getTOC(temp).toString()
+        holder?.item_Desc?.text= CritCalc(Task(), temp).getTOC(temp).toString()
 
     }
 
