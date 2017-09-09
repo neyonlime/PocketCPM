@@ -6,7 +6,8 @@ package com.brewdevelopment.pocketcpm
 interface FragmentEventListener {
     fun onAdd(obj:Any)
     fun onEdit(obj:Any)       //needs to have an id that is > -1
-    fun onProjectSelect(obj: Any)
-    fun onTaskSelect(obj: Any)
-
+    fun onProjectSelect(obj: Project)
+    fun onTaskSelect(obj: Task)
+    fun onUpdate(obj: Any)
+    fun onDelete(obj: Any)
 }

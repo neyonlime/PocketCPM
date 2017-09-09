@@ -3,9 +3,9 @@ package com.brewdevelopment.pocketcpm
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.os.AsyncTask
 import android.provider.BaseColumns
 import android.util.Log
 import java.sql.SQLException
@@ -15,58 +15,34 @@ import java.sql.SQLException
  */
 class DBAdapter(dbName: String, context: Context){
 
+    private var db: SQLiteDatabase
     companion object {
-        private lateinit var db: SQLiteDatabase
+
+        val ALL = "all"
+        val RETRIEVE_RELATION = "relation"
+        val RETRIEVE = "retrieve"
         private lateinit var mDBManager: com.brewdevelopment.pocketcpm.DBAdapter.DBManager
 
         val READ = "read"               //only for reading
         val WRITE= "write"              //for reading and writing
+        private val EMPTY: Long = -1
 
         //debugging
         val PROJECT_ADDED = "project_add"
     }
     
     init {
-        mDBManager = DBManager(context, "pocketcpm")        //instance of database manager
+        mDBManager = DBManager(context, "pocketcpm.db")        //instance of database manager
+        db = mDBManager.writableDatabase
     }
 
     //used to open the database
+
     @Throws(SQLException::class)
-    fun open(request: String){
+    fun open(){
         //open the data base
-        if(!db.isOpen && db !== null){
-            OpenDatabaseTask().execute(request)
-        }else if(db.isReadOnly&&request == WRITE && db.isOpen){
-            db.close()
-            OpenDatabaseTask().execute(request)
-        }
-    }
-
-
-    //ASYNC TASK
-    private class OpenDatabaseTask: AsyncTask<String, Boolean, Boolean>() {
-        override fun doInBackground(vararg params: String?): Boolean {
-            for(request in params){
-                if(request == com.brewdevelopment.pocketcpm.DBAdapter.WRITE){
-                    //get readable database
-                    db = mDBManager.writableDatabase
-                    if(db.isOpen){
-                        return true // was opened
-                    }
-
-                }else if(request == com.brewdevelopment.pocketcpm.DBAdapter.READ){
-                    //get writeable database
-                    db = mDBManager.readableDatabase
-                    if(db.isOpen){
-                       return true //was opened
-                    }
-                }
-            }
-            return false    //was not opened
-        }
-
-        override fun onPostExecute(result: Boolean?) {
-            super.onPostExecute(result)
+        if(!db.isOpen){
+            db = mDBManager.writableDatabase
         }
     }
 
@@ -87,8 +63,29 @@ class DBAdapter(dbName: String, context: Context){
         when(obj){
             is Project -> {
                 //save a project
-                open(WRITE)             //opens the database
+                //open(WRITE)             //opens the database
                 checkDBState()          //checks that the database is open and ready for print
+
+                if(obj.ID != EMPTY){
+                    //METHOD 1:
+                    //if project already exists
+                    //get the current version of the project
+                    //and compare with the version that has been passed in
+                    //and construct a projection
+
+                    //METHOD 2:
+                    //just update the existing version with all the info of the new version
+                    //whether it is different or not
+
+                    //METHOD 2...
+                    update(obj)
+
+                    Log.d("add_project", "project: ${obj.ID}, tasks: ${obj.getTaskList()}")
+
+                    return
+                }
+
+
                 var values = ContentValues()
                 var taskList = ""
                 for(task in obj.taskList){
@@ -96,45 +93,102 @@ class DBAdapter(dbName: String, context: Context){
                     Log.i(PROJECT_ADDED, taskList)
                 }
 
-                taskList = taskList.substring(1)
+                if(taskList.length > 0){
+                    taskList = taskList.substring(1)
+                }
 
                 values.put(DBManager.Contract.ProjectTable.NAME_COLUMN, obj.name)
+                values.put(DBManager.Contract.ProjectTable.START_COLUMN, obj.start)
                 values.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
-                values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTotalTime())
+                values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTOC(obj))
                 obj.ID = db.insert(DBManager.Contract.ProjectTable.TABLE_NAME, null, values)
 
+                Log.d("add_project", "project: ID:${obj.ID}, project_start: start:${obj.start}, project_tasks: ${taskList}")
             }
             is Task -> {
                 //save task
-                open(WRITE)
+                //open(WRITE)
                 checkDBState()
+
+                Log.d("save_task", "task saved!")
+
                 var values = obj.attribute
                 obj.ID = db.insert(DBManager.Contract.TaskTable.TABLE_NAME, null,values)
 
             }
             is Champion -> {
                 //save champion
-                open(WRITE)
+                //open(WRITE)
                 checkDBState()
-                var taskList = ""
-                for(task in obj.assignedTasks){
-                    taskList += "," + task.ID               //id1,id2,id3, ...
+
+                if(obj.ID != EMPTY){
+                    //exists in system and needs to be updated
+                    update(obj)
+                    return
                 }
-                taskList = taskList.substring(1)            //gets rid of the first comma
 
                 var values = ContentValues()
                 values.put(DBManager.Contract.ChampionTable.NAME_COLUMN, obj.name)
-                values.put(DBManager.Contract.ChampionTable.TASKS_COLUMN, taskList)
+                values.put(DBManager.Contract.ChampionTable.TASKS_COLUMN, obj.getTaskList())
 
                 obj.ID = db.insert(DBManager.Contract.ChampionTable.TABLE_NAME,null,values)
+                Log.d("add_champion", "adding champion ${obj.ID}, name:${obj.name}")
             }
             else -> {}
         }
     }
 
+    //closes the database
+    fun close(){
+        if(db !== null && db.isOpen) db.close()
+    }
+
+    //Appends a task to the respective project
+    fun saveTask(project: Project, task: Task){
+        //open(WRITE)
+        checkDBState()
+
+        if(task.ID != EMPTY){
+            //update the task information
+            //the id is already added to a project so that doesnt ned to be updated unless the task is deleted
+            Log.d("add_task", "DBAdapter/saveTask()/updating: Task: ${task.attribute.get(Task.NAME_COLUMN)} to Project: ${project.name}, ${project.ID}")
+            update(task)
+            return
+        }
+
+        Log.d("add_task", "DBAdapter/saveTask()/adding: Task: ${task.attribute.get(Task.NAME_COLUMN)} to Project: ${project.name}, ${project.ID}")
+
+        //save task to TaskTable
+        var taskValues = task.attribute
+        task.ID = db.insert(DBManager.Contract.TaskTable.TABLE_NAME,null,taskValues)
+
+        Log.d("add_task", "DBAdapter/saveTask()/task: ${task.ID} added! size: ${DatabaseUtils.queryNumEntries(db, DBManager.Contract.TaskTable.TABLE_NAME)}")
+
+        //save the task to the project table
+        var taskList = ""
+        for(task in project.taskList){
+            taskList+=","+task.ID
+            Log.i(PROJECT_ADDED, taskList)
+        }
+
+        if(taskList.isNotEmpty()){
+            taskList = taskList.substring(1)
+        }
+
+        Log.d("add_task", "DBAdapter/saveTask()/project tasks: ${taskList}||Size: ${project.taskList.size}")
+
+        var projectValues = ContentValues()
+        projectValues.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
+
+        var selection = DBManager.Contract.ProjectTable.ID + " LIKE ?"
+        var selectionArgs = arrayOf(""+project.ID)
+
+        var count = db.update(DBManager.Contract.ProjectTable.TABLE_NAME, projectValues, selection, selectionArgs)
+    }
+
     //Accessors
     fun getProjects(): ArrayList<Project> {
-        open(READ)
+        //open(READ)
 
         var projections = arrayOf(DBManager.Contract.ProjectTable.ID, DBManager.Contract.ProjectTable.NAME_COLUMN)
         checkDBState()
@@ -155,12 +209,12 @@ class DBAdapter(dbName: String, context: Context){
     }
 
     fun getTaskList(id: Long): ArrayList<Task> {
-        open(READ)
+        //open(READ)
 
         var projections = arrayOf(DBManager.Contract.ProjectTable.ID, DBManager.Contract.ProjectTable.TASK_LIST_COLUMN)
         checkDBState()
-        var selection = DBManager.Contract.ProjectTable.ID
-        val selectionArgs = arrayOf(id as String)
+        var selection = DBManager.Contract.ProjectTable.ID + " = ?"
+        val selectionArgs = arrayOf(id.toString())
 
         var sortOrder = DBManager.Contract.ProjectTable.ID + " DESC"
 
@@ -174,42 +228,281 @@ class DBAdapter(dbName: String, context: Context){
         cursor.close()
         var ids = taskIds.split(',')       //array of the ids (String)
 
+        Log.d("add_task", "DBAdapter/getTasklist()/Size of taskList: ${ids.size}")
+
         var taskList = ArrayList<Task>()
         for(id in ids){
-            taskList.add(getTaskById(id))
+            var temp = getTaskById(id)
+            if(temp !== null){
+                taskList.add(temp)
+            }
         }
 
         return taskList
     }
 
-    fun getTaskById(id: String): Task{
+    //gets a project form the database given the id
+    fun getProjectByID(ID: Long): Project{
+        //search database for the current project and return it
+        var projections = arrayOf(DBManager.Contract.ProjectTable.ID, DBManager.Contract.ProjectTable.NAME_COLUMN, DBManager.Contract.ProjectTable.START_COLUMN, DBManager.Contract.ProjectTable.TASK_LIST_COLUMN)
+        var selection = DBManager.Contract.ProjectTable.ID + " = ?"
+        var selectionArgs = arrayOf(ID.toString())
+
+        var sortOrder = DBManager.Contract.ProjectTable.ID + " DESC"
+
+        var cursor: Cursor = db.query(DBManager.Contract.ProjectTable.TABLE_NAME, projections, selection, selectionArgs, null, null, sortOrder)
+
+        var project = Project()
+        while(cursor.moveToNext()){
+            var name = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.ProjectTable.NAME_COLUMN))
+            var ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.ProjectTable.ID))
+            var start = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.ProjectTable.START_COLUMN))
+            project.taskList = getTaskList(project.ID)
+            project.name = name
+            project.ID = ID
+            project.start = start
+        }
+        return project
+    }
+
+    //gets a task from the database givin the ID
+    fun getTaskById(id: String): Task?{
         checkDBState()
 
         var projections = arrayOf(DBManager.Contract.TaskTable.ID, DBManager.Contract.TaskTable.NAME_COLUMN,
-                                    DBManager.Contract.TaskTable.CHAMPION_COLUMN, DBManager.Contract.TaskTable.START_COLUMN,
-                                    DBManager.Contract.TaskTable.END_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
-                                    DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
+                DBManager.Contract.TaskTable.DESCRIPTION_COLUMN, DBManager.Contract.TaskTable.CHAMPION_COLUMN,
+                DBManager.Contract.TaskTable.DURATION_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
+                DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
 
-        var selection = DBManager.Contract.TaskTable.ID
+        var selection = DBManager.Contract.TaskTable.ID + " = ?"
         var selectionArgs = arrayOf(id)
 
-        var sortOrder = DBManager.Contract.TaskTable.TABLE_NAME + " DESC"
+        var sortOrder = DBManager.Contract.TaskTable.NAME_COLUMN + " DESC"
 
 
         var cursor: Cursor = db.query(DBManager.Contract.TaskTable.TABLE_NAME, projections, selection, selectionArgs, null, null, sortOrder)
 
         var task = Task()
+
         while(cursor.moveToNext()){
             task.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.ID))
             task.attribute.put(Task.NAME_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.NAME_COLUMN)))
+            task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
             task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
-            task.attribute.put(Task.START_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.START_COLUMN)))
-            task.attribute.put(Task.END_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.END_COLUMN)))
-            task.attribute.put(Task.PREDECESSOR_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN)))
-            task.attribute.put(Task.DEPENDENT_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN)))
+            task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
+            val idList =  cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.PREDECESSOR_COLUMN))
+            val idListDependent = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DEPENDENT_COLUMN))
+
+            if(idList !== null){
+                task.setPred(getPredecessors(idList))
+            }
+            if(idListDependent !== null){
+                task.setDepend(getDependents(idListDependent))
+            }
         }
 
-        return task
+        if(task.ID != EMPTY){
+            Log.d("add_dependent", "returning task: ${task.ID} || predecessor: ${task.getPredList()} || dependent: ${task.getDependList()}")
+            return task
+        }else{
+            return null
+        }
+    }
+
+    fun getPredecessors(list: String): ArrayList<Task>{
+        //get the array from the list
+        val preds = list.split(',')
+        var predList = ArrayList<Task>()
+        if(preds.size > 0){
+            for(predID in preds){
+                //find a task based on the ID
+                val projections = arrayOf(DBManager.Contract.TaskTable.ID, DBManager.Contract.TaskTable.NAME_COLUMN,
+                        DBManager.Contract.TaskTable.DESCRIPTION_COLUMN, DBManager.Contract.TaskTable.CHAMPION_COLUMN,
+                        DBManager.Contract.TaskTable.DURATION_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
+                        DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
+
+                val selection = DBManager.Contract.TaskTable.ID + " = ?"
+                val selectionArgs = arrayOf(predID)
+
+                val sortOrder = DBManager.Contract.TaskTable.NAME_COLUMN + " DESC"
+
+
+                val cursor: Cursor = db.query(DBManager.Contract.TaskTable.TABLE_NAME, projections, selection, selectionArgs, null, null, sortOrder)
+
+                val task = Task()
+                while(cursor.moveToNext()){
+                    task.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.ID))
+                    task.attribute.put(Task.NAME_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.NAME_COLUMN)))
+                    task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
+                    task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
+                    task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
+                }
+                if(task.ID != EMPTY){
+                    predList.add(task)
+                }
+            }
+        }
+        return predList
+    }
+
+    fun getDependents(list: String): ArrayList<Task>{
+        val depends = list.split(',')
+        var dependList = ArrayList<Task>()
+        if(depends.size > 0){
+            for(dependID in depends){
+                //find a task based on the ID
+                val projections = arrayOf(DBManager.Contract.TaskTable.ID, DBManager.Contract.TaskTable.NAME_COLUMN,
+                        DBManager.Contract.TaskTable.DESCRIPTION_COLUMN, DBManager.Contract.TaskTable.CHAMPION_COLUMN,
+                        DBManager.Contract.TaskTable.DURATION_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
+                        DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
+
+                val selection = DBManager.Contract.TaskTable.ID + " = ?"
+                val selectionArgs = arrayOf(dependID)
+
+                val sortOrder = DBManager.Contract.TaskTable.NAME_COLUMN + " DESC"
+
+
+                val cursor: Cursor = db.query(DBManager.Contract.TaskTable.TABLE_NAME, projections, selection, selectionArgs, null, null, sortOrder)
+
+                val task = Task()
+                while(cursor.moveToNext()){
+                    task.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.ID))
+                    task.attribute.put(Task.NAME_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.NAME_COLUMN)))
+                    task.attribute.put(Task.DESCRIPTION_COLUMN, cursor.getString((cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DESCRIPTION_COLUMN))))
+                    task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
+                    task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
+                }
+                if(task.ID != EMPTY){
+                    dependList.add(task)
+                }
+            }
+        }
+        return dependList
+    }
+
+
+
+
+    //gets a champion from the database given the id
+    fun getChampionByID(ID: String): Champion?{
+        var projection = arrayOf(DBManager.Contract.ChampionTable.ID,DBManager.Contract.ChampionTable.NAME_COLUMN, DBManager.Contract.ChampionTable.TASKS_COLUMN)
+
+        var selection = "${DBManager.Contract.ChampionTable.ID}=?"
+        var selectionArgs = arrayOf(ID)
+
+        var cursor: Cursor  = db.query(DBManager.Contract.ChampionTable.TABLE_NAME, projection, selection, selectionArgs, null, null, null)
+        var champion = Champion()
+        while(cursor.moveToNext()){
+            champion.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.ChampionTable.ID))
+            champion.name = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.ChampionTable.NAME_COLUMN))
+            var  taskList = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.ChampionTable.TASKS_COLUMN)).split(',')
+            for(id in taskList){
+                var temp = getTaskById(id)
+                if(temp !== null){
+                    champion.assignedTasks.add(temp)
+                }
+            }
+        }
+        if(champion.ID != EMPTY){return champion}
+        else{return null}
+    }
+    fun delete(obj: Any) {
+        when (obj) {
+            is Task -> {
+                //delete the row from the task tazble
+                val selection = DBManager.Contract.TaskTable.ID + "=? "
+                val selectionArgs = arrayOf(obj.ID.toString())
+
+                db.delete(DBManager.Contract.TaskTable.TABLE_NAME, selection, selectionArgs)
+            }
+        }
+    }
+
+    fun getChampionList(id: String): ArrayList<Champion>{
+        when(id){
+            ALL -> {
+                var projection = arrayOf(DBManager.Contract.ChampionTable.ID)
+                var cursor: Cursor = db.query(DBManager.Contract.ChampionTable.TABLE_NAME, projection, null, null,null, null, null)
+                var championList = ArrayList<Champion>()
+                while(cursor.moveToNext()){
+                    championList.add(getChampionByID("${cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.ChampionTable.ID))}")!!)
+                }
+                return championList
+            }
+        }
+        return ArrayList()
+    }
+
+    //helper
+    //updates the instance of an element in the database with a new object
+    //containg the same idea but some different information
+    fun update (obj: Any){
+        //map out the new values
+        when(obj){
+            is Project -> {
+                var values = ContentValues()
+                values.put(DBManager.Contract.ProjectTable.NAME_COLUMN, obj.name)
+                values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTOC(obj))
+
+                var taskList = ""
+                for(task in obj.taskList){
+                    taskList+=","+task.ID
+                }
+
+                if(taskList.length > 1){
+                    taskList = taskList.substring(1)
+                }
+                values.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
+
+                var selection = "${DBManager.Contract.ProjectTable.NAME_COLUMN}=? and " +
+                        "${DBManager.Contract.ProjectTable.TASK_LIST_COLUMN}=? and " +
+                        "${DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN}=?"
+                var selectionArgs = arrayOf(DBManager.Contract.ProjectTable.NAME_COLUMN,
+                                            DBManager.Contract.ProjectTable.TASK_LIST_COLUMN,
+                                            DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN)
+
+                //updates the current version of the project will the attributes of the passed in project
+                var count = db.update(DBManager.Contract.ProjectTable.TABLE_NAME, values, selection, selectionArgs)
+            }
+            is Task -> {
+                var values = obj.attribute      //sets the attributes of the task that is going to be safe
+                var selection = "${DBManager.Contract.TaskTable.NAME_COLUMN}=? and ${DBManager.Contract.TaskTable.DESCRIPTION_COLUMN}=? and " +
+                        "${DBManager.Contract.TaskTable.CHAMPION_COLUMN}=? and " +
+                        "${DBManager.Contract.TaskTable.DURATION_COLUMN}=? and " +
+                        "${DBManager.Contract.TaskTable.PREDECESSOR_COLUMN}=? and ${DBManager.Contract.TaskTable.DEPENDENT_COLUMN}=?"
+
+                var selectionArgs = arrayOf(DBManager.Contract.TaskTable.NAME_COLUMN, DBManager.Contract.TaskTable.DESCRIPTION_COLUMN,
+                                            DBManager.Contract.TaskTable.CHAMPION_COLUMN, DBManager.Contract.TaskTable.DURATION_COLUMN, DBManager.Contract.TaskTable.PREDECESSOR_COLUMN,
+                                            DBManager.Contract.TaskTable.DEPENDENT_COLUMN)
+                var count = db.update(DBManager.Contract.TaskTable.TABLE_NAME, values, "${DBManager.Contract.TaskTable.ID}=?", arrayOf(obj.ID.toString())) //update the task
+
+                //Log.d("edit_task", "updated Task: ${obj.ID} with attributes: name: ${obj.attribute.get(Task.NAME_COLUMN)} || name in database: ${getTaskById(obj.ID.toString())!!.attribute.get(Task.NAME_COLUMN)}")
+            }
+            is Champion -> {
+                var values = ContentValues()
+                values.put(DBManager.Contract.ChampionTable.NAME_COLUMN, obj.name)
+
+
+
+                //build the task list
+                var taskList=""
+                for(task in obj.assignedTasks){
+                    taskList += "," + task.ID
+                }
+                if(taskList.length > 1){
+                    taskList = taskList.substring(1)
+                }
+
+                values.put(DBManager.Contract.ChampionTable.TASKS_COLUMN, taskList)
+
+                Log.d("add_champion", "updating champion ${obj.ID}|| newName: ${obj.name}, taskList: ${taskList}")
+
+                var selection = "${DBManager.Contract.ChampionTable.ID} =?"
+                var selectionArgs = arrayOf(obj.ID.toString())
+
+                var count = db.update(DBManager.Contract.ChampionTable.TABLE_NAME, values, selection, selectionArgs)
+            }
+        }
     }
 
 
@@ -223,17 +516,18 @@ class DBAdapter(dbName: String, context: Context){
                 val TABLE_NAME = "projects"
                 val ID: String = "_id"
                 val NAME_COLUMN = "name"
-                val TASK_LIST_COLUMN = "task list"
-                val TOTAL_TIME_COLUMN = "total time"
+                val START_COLUMN = "start"
+                val TASK_LIST_COLUMN = "tasklist"
+                val TOTAL_TIME_COLUMN = "totaltime"
             }
 
             object TaskTable{
                 val TABLE_NAME = "tasks"
                 val ID: String = "_id"
                 val NAME_COLUMN = "name"
+                val DESCRIPTION_COLUMN = "description"
                 val CHAMPION_COLUMN = "champion"
-                val START_COLUMN = "start"
-                val END_COLUMN = "end"
+                val DURATION_COLUMN = "duration"
                 val PREDECESSOR_COLUMN = "predecessor"
                 val DEPENDENT_COLUMN = "dependent"
             }
@@ -266,23 +560,24 @@ class DBAdapter(dbName: String, context: Context){
         fun createTable(db: SQLiteDatabase?, table: String){
             when (table){
                 ProjectTable.TABLE_NAME -> {
-                    val CREATE_SQL_ENTERIES = "CREATE TABLE if not exist ${ProjectTable.TABLE_NAME} (" +
-                            "${ProjectTable.ID} INTEGER PRIMARY KEY, ${ProjectTable.NAME_COLUMN} TEXT, " +
+                    val CREATE_SQL_ENTERIES = "CREATE TABLE IF  NOT EXISTS ${ProjectTable.TABLE_NAME}(" +
+                            "${ProjectTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ${ProjectTable.NAME_COLUMN} TEXT, ${ProjectTable.START_COLUMN} TEXT, " +
                             "${ProjectTable.TASK_LIST_COLUMN} TEXT, ${ProjectTable.TOTAL_TIME_COLUMN} FLOAT)"
                     db!!.execSQL(CREATE_SQL_ENTERIES)
                 }
                 TaskTable.TABLE_NAME -> {
-                    val CREATE_SQL_ENTERIES = "CREATE TABLE if not exist ${TaskTable.TABLE_NAME} (" +
-                            "${TaskTable.ID} INTEGER PRIMARY KEY, ${TaskTable.NAME_COLUMN} TEXT, " +
-                            "${TaskTable.CHAMPION_COLUMN} TEXT, ${TaskTable.START_COLUMN} TEXT," +
-                            "${TaskTable.END_COLUMN} TEXT, ${TaskTable.PREDECESSOR_COLUMN} TEXT " +
+                    val CREATE_SQL_ENTERIES = "CREATE TABLE IF  NOT EXISTS ${TaskTable.TABLE_NAME}(" +
+                            "${TaskTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ${TaskTable.NAME_COLUMN} TEXT," +
+                            "${TaskTable.DESCRIPTION_COLUMN} TEXT," +
+                            "${TaskTable.CHAMPION_COLUMN} TEXT, ${TaskTable.DURATION_COLUMN} TEXT, " +
+                            "${TaskTable.PREDECESSOR_COLUMN} TEXT," +
                             "${TaskTable.DEPENDENT_COLUMN} TEXT)"
                     db!!.execSQL(CREATE_SQL_ENTERIES)
                 }
 
                 ChampionTable.TABLE_NAME -> {
-                    val CREATE_SQL_ENTERIES = "CREATE TABLE if not exist ${ChampionTable.TABLE_NAME} (" +
-                            "${ChampionTable.ID} INTEGER PRIMARY KEY, ${ChampionTable.NAME_COLUMN} TEXT, " +
+                    val CREATE_SQL_ENTERIES = "CREATE TABLE IF  NOT EXISTS ${ChampionTable.TABLE_NAME} (" +
+                            "${ChampionTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ${ChampionTable.NAME_COLUMN} TEXT, " +
                             "${ChampionTable.TASKS_COLUMN} TEXT)"
                     db!!.execSQL(CREATE_SQL_ENTERIES)
                 }
