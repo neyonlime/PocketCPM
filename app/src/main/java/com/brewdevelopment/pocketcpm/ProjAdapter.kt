@@ -21,7 +21,7 @@ class ProjAdapter ( c: Context, var list: ArrayList<Project>) : RecyclerView.Ada
 
     override fun onCreateViewHolder(parent: ViewGroup?, i: Int): ViewHolder {
         var v:View?=null
-        if(list.size<1){
+        if(list.size < 1){
              v=null
         }
         else {

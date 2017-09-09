@@ -101,7 +101,11 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
                 fab.show()
                 isProj=true
-                val fragment = ProjectDisplayFragment.newInstance(dbAdapter.getProjects())
+                var projects: ArrayList<Project> = dbAdapter.getProjects()
+                for(project in projects){
+                    project.taskList = dbAdapter.getTaskList(project.ID)
+                }
+                val fragment = ProjectDisplayFragment.newInstance(projects)
                 val fm = fragmentManager
                 val transaction = fm.beginTransaction()               
                 transaction.replace(R.id.content_frame,fragment,ProjectDisplayFragment.PROJECT_KEY)
@@ -143,8 +147,6 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         selectedProject = obj
         val projName= obj.name
         toolbar.title=projName
-        selectedProject.taskList = dbAdapter.getTaskList(selectedProject.ID)
-
         //Log.d("get_tasks", "MainActivity/${dbAdapter.getTaskList(selectedProject.ID).size}")
 
         val fragment= TaskDisplayFragment.newInstance(selectedProject.taskList)
