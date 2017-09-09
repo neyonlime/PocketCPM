@@ -6,15 +6,32 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="?attr/actionBarSize"
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            xmlns:app="http://schemas.android.com/apk/res-auto">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="?attr/actionBarSize"
 
-            android:id="@+id/content_frame"></FrameLayout>
+                android:id="@+id/content_frame"></FrameLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/floating_action_button"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                android:src="@drawable/circle"
+                app:layout_anchor="@id/content_frame"
+                app:layout_anchorGravity="bottom|right|end"/>
+        </android.support.design.widget.CoordinatorLayout>
+
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
+            android:paddingTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"

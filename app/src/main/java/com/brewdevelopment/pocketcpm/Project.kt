@@ -4,27 +4,48 @@ package com.brewdevelopment.pocketcpm
  * Created by neyonlime on 2017-08-15.
  */
 
-class Project(var name: String){
+class Project(){
+
+    lateinit var name: String
     var ID: Long = -1       //if id == -1 then the project has not been added to the database
     var taskList: ArrayList<Task>
+    var start: String
 
-    constructor(name: String, list: ArrayList<Task> ):this(name){
-        taskList = list
+
+    constructor(name: String): this(){
+        this.name = name
     }
 
     init {
         taskList = ArrayList()
+        start = ""
     }
 
 
-
-    //Helper
-    fun getTotalTime(): Float{
-        var totalTime: Float = 0f
-        for(task in taskList){
-            totalTime+= task.getDuration()
+    fun getTaskList(): String{
+        var taskList = ""
+        for(task in this.taskList){
+            taskList+="," + task.ID
         }
-        return totalTime
+
+        if(taskList.length > 0){
+            taskList = taskList.substring(1)
+        }
+
+        return taskList
+    }
+    fun getTasks(): ArrayList<Task>{
+        return  taskList
     }
 
+    fun getTOC(project: Project): Int{
+        var max= 0
+        for(i in taskList){
+            val CC= CritCalc(i, project)
+            if(max<CC.getEarlyFinish(i)) {
+                max = CC.getEarlyFinish(i)
+            }
+        }
+        return max
+    }
 }
