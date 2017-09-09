@@ -49,6 +49,7 @@ class RecyclerAdapter( var context: Context,var list: ArrayList<Task>) : Recycle
                     R.id.task_edit -> {
                         //edit the selected task
                         fragmentEventlistener.onEdit(temp)
+
                     }
                     R.id.task_delete -> {
                         //delete the selected task

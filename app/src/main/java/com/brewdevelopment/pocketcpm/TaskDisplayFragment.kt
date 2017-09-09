@@ -19,6 +19,7 @@ class TaskDisplayFragment(): Fragment() {
     lateinit var fragmentEventListener: FragmentEventListener
     lateinit var task: Task
 
+
     companion object {
 
         val TASK_KEY: String = "task"
@@ -34,6 +35,7 @@ class TaskDisplayFragment(): Fragment() {
             //makes call to the super's constructor &  can do processes before call
         }
     }
+
 
     override fun onAttach(context: Context?) {
 
@@ -58,6 +60,7 @@ class TaskDisplayFragment(): Fragment() {
                     }
                 })
         )
+
         recyclerView.adapter=RecyclerAdapter(activity, list)
         recyclerView.layoutManager= LinearLayoutManager(activity)
 
