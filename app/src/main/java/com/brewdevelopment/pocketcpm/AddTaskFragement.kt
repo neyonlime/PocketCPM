@@ -29,7 +29,7 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
     lateinit private var selectedPredTask: Task             //predecessor task
     lateinit var fragmentEventListener: FragmentEventListener
     private var editTask: Task? = null           // the task that is going to be edited
-    private lateinit var selectedChampion: Champion
+    private var selectedChampion: Champion? = null
     private lateinit var championList: ArrayList<Champion>
 
 
@@ -88,8 +88,6 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
             predList = ArrayList<Task>()
         }
         else{
-            Log.d("here", "in ELSE")
-            Log.d("champion_add", "${editTask!!.getChampion(0).name}")
             predList = editTask!!.getPred()
             cleanTaskList(list, predList)
         }
@@ -114,17 +112,19 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
         recyclerView2.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
-                        Pred = PredAdapter(activity, predList).list[position]
-                        list.add(Pred)
-                        predList.remove(Pred)
-                        mAdapter2.notifyDataSetChanged()
-                        recyclerView.swapAdapter(mAdapter, false)
-                        recyclerView2.swapAdapter(mAdapter2, false)
-                        mAdapter.notifyDataSetChanged()
-                        mAdapter2.notifyItemRemoved(position)
-                        mAdapter2.notifyItemRangeChanged(position, predList.size)
-                        recyclerView.invalidate()
-                        Log.e("@@@@@", "" + position)
+                        if(editTask === null){
+                            Pred = PredAdapter(activity, predList).list[position]
+                            list.add(Pred)
+                            predList.remove(Pred)
+                            mAdapter2.notifyDataSetChanged()
+                            recyclerView.swapAdapter(mAdapter, false)
+                            recyclerView2.swapAdapter(mAdapter2, false)
+                            mAdapter.notifyDataSetChanged()
+                            mAdapter2.notifyItemRemoved(position)
+                            mAdapter2.notifyItemRangeChanged(position, predList.size)
+                            recyclerView.invalidate()
+                            Log.e("@@@@@", "" + position)
+                        }
                     }
                 })
         )
@@ -132,15 +132,17 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
         recyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
-                        task1 = TaskAdapter(activity, list).list[position]
-                        predList.add(task1)
-                        list.remove(task1)
-                        recyclerView.swapAdapter(mAdapter, false)
-                        recyclerView2.swapAdapter(mAdapter2, false)
-                        mAdapter.notifyItemRemoved(position)
-                        mAdapter.notifyItemRangeChanged(position, list.size)
-                        recyclerView2.invalidate()
-                        Log.e("@@@@@", "" + position)
+                        if(editTask === null){
+                            task1 = TaskAdapter(activity, list).list[position]
+                            predList.add(task1)
+                            list.remove(task1)
+                            recyclerView.swapAdapter(mAdapter, false)
+                            recyclerView2.swapAdapter(mAdapter2, false)
+                            mAdapter.notifyItemRemoved(position)
+                            mAdapter.notifyItemRangeChanged(position, list.size)
+                            recyclerView2.invalidate()
+                            Log.e("@@@@@", "" + position)
+                        }
                     }
                 })
         )
@@ -148,7 +150,6 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
 
 
         //get the tasks from bundle
-        selectedChampion = Champion()
         taskButton = rootView!!.findViewById(R.id.task_button) as Button
 
 
@@ -170,6 +171,8 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
 
             taskName.setText("${editTask!!.attribute.get(Task.NAME_COLUMN)}")
             championDropdown.prompt = "Champion"
+
+
             var position = getChampionPosition(editTask!!.getChampion(0))
             if(position != -1){championDropdown.setSelection(position)}
             duration.setText("${editTask!!.attribute.get(Task.DURATION_COLUMN)}")
@@ -191,22 +194,21 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
             if(editTask !== null){
                 //edit
                 editTask!!.attribute.put(Task.NAME_COLUMN, taskName.text.toString())
-                editTask!!.setPred(predList)
                 editTask!!.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
                 editTask!!.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())
 
                 if(validateTask(editTask!!)){
-                    fragmentEventListener.onUpdate(editTask!!)
 
-                    var champion: Champion = selectedChampion            //getting current champion
+                    var champion: Champion? = selectedChampion            //getting current champion
                     //update the champion
-                    if(champion.ID !=  EMPTY){
-                        editTask!!.setChampion(champion)
-                    }
+                    if(champion !== null){
+                        if(champion.ID !=  EMPTY){
+                            editTask!!.setChampion(champion)
+                        }
 
-                    if(validateChampion(champion)){
                         fragmentEventListener.onUpdate(champion)
                     }
+                    fragmentEventListener.onUpdate(editTask!!)
                 }
             }else if(editTask === null){
                 var task = Task()
@@ -222,12 +224,13 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
                 }
                 task.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
                 task.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())
-                var champion = selectedChampion
-                if(champion.ID != EMPTY ){
-                    task.setChampion(champion)
-                }
+
 
                 if(validateTask(task)) {
+                    val champion = selectedChampion
+                    if(champion!== null && champion.ID != EMPTY ){
+                        task.setChampion(champion)
+                    }
                     //all information about the task is valid
                     //then save the task to database
                     fragmentEventListener.onUpdate(task)
@@ -248,7 +251,7 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
     }
     
     fun getChampionPosition(champion: Champion): Int{
-        for(i in 0..championList.size){
+        for(i in 0..championList.size-1){
             if(champion.ID == championList.get(i).ID){
                 return i
             }

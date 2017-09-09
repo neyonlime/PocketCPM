@@ -116,7 +116,10 @@ class Task(){
     }
 
     fun setChampion(champion: Champion){
-        this.champion = champion
+        if(champion.ID != EMPTY){
+            this.champion = champion
+            attribute.put(CHAMPION_COLUMN, champion.ID)
+        }
     }
 
     fun getChampion(index: Int): Champion{
