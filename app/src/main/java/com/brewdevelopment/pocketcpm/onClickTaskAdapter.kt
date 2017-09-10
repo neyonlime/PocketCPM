@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 
 /**
@@ -58,6 +59,7 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
     }
     class viewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
         //val currentItem: Int=0
+        val item_pic= itemView?.findViewById(R.id.options_button) as ImageView
         val item_Title= itemView?.findViewById(R.id.Title) as TextView
         val item_Desc= itemView?.findViewById(R.id.Desc) as TextView
     }
@@ -69,9 +71,11 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
     }
 
     override fun onBindViewHolder(holder: viewHolder?, position: Int) {
+        holder?.item_pic?.visibility= View.GONE
         val temp: mCrit= list[position]
         holder?.item_Title?.text= temp.topic
         holder?.item_Desc?.text= temp.Val
+
     }
 
     override fun getItemCount(): Int {
