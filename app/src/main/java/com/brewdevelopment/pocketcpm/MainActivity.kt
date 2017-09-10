@@ -109,7 +109,6 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 val fm = fragmentManager
                 val transaction = fm.beginTransaction()               
                 transaction.replace(R.id.content_frame,fragment,ProjectDisplayFragment.PROJECT_KEY)
-        
                 transaction.commit()
                 drawerLayout.closeDrawers()
             }
@@ -213,6 +212,11 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
             is Task -> {
                 //delete a task from the database
                 dbAdapter.delete(obj)
+                val fragment= TaskDisplayFragment.newInstance(dbAdapter.getTaskList(selectedProject.ID))
+                val fm = fragmentManager
+                val transaction = fm.beginTransaction()
+                transaction.replace(R.id.content_frame,fragment,TaskDisplayFragment.TASK_KEY)
+                transaction.commit()
             }
 
             is Project -> {
@@ -220,13 +224,13 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
             }
         }
     }
+
     override fun onEdit(obj: Any) {
         when(obj){
             is Project -> {}
             is Task -> {
                 //open the fragement to edit the task
                 var taskList = dbAdapter.getTaskList(selectedProject.ID)
-
                 //fill the task's champion list
                 //for if we ever want to add multiple champions for one task
                 val championID= obj.attribute.get(Task.CHAMPION_COLUMN)
@@ -236,8 +240,6 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                         obj.setChampion(champion)
                     }
                 }
-
-
                 var mFragment = AddTaskFragement.newInstance(obj, taskList, dbAdapter.getChampionList(DBAdapter.ALL))
                 val fm = fragmentManager
                 val transaction = fm.beginTransaction()

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/Card_view"
-    card_view:cardBackgroundColor="#329ab7"
+    card_view:cardBackgroundColor="#1B9135"
     card_view:cardCornerRadius="12dp"
     card_view:cardElevation="3dp"
 
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_gravity="center_vertical"
-            android:text="Task"
+            android:text="Champion"
             android:textSize="30sp" />
 
         <TextView
@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="This is the Description"
+            android:text="Duration of 0 Days"
             android:layout_marginStart="12dp"
             android:layout_alignBaseline="@+id/Title"
             android:layout_alignBottom="@+id/Title"
