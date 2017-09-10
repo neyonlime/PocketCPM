@@ -25,7 +25,7 @@ class ProjAdapter ( c: Context, var list: ArrayList<Project>) : RecyclerView.Ada
              v=null
         }
         else {
-             v = LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent, false)
+             v = LayoutInflater.from(parent?.context).inflate(R.layout.proj_card, parent, false)
         }
         val viewHolder: ViewHolder = ViewHolder(v)
         return viewHolder
@@ -34,7 +34,7 @@ class ProjAdapter ( c: Context, var list: ArrayList<Project>) : RecyclerView.Ada
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val temp: Project = list[position]
         holder?.item_Title?.text = temp.name
-        holder?.item_Desc?.text= CritCalc(Task(), temp).getTOC(temp).toString()
+        holder?.item_Desc?.text= "Duration of "+CritCalc(Task(), temp).getTOC(temp).toString()+ " Days"
 
     }
 
