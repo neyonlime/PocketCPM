@@ -299,6 +299,14 @@ class DBAdapter(dbName: String, context: Context){
             if(idListDependent !== null){
                 task.setDepend(getDependents(idListDependent))
             }
+
+            //get the champion object
+            if(task.attribute.get(Task.CHAMPION_COLUMN) !== null){
+                val champion = getChampionByID(task.attribute.get(Task.CHAMPION_COLUMN).toString())
+                if(champion !== null){
+                    task.setChampion(champion)
+                }
+            }
         }
 
         if(task.ID != EMPTY){

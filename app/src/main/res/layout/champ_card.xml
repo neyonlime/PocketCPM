@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/Card_view"
-    card_view:cardBackgroundColor="#1B9135"
+    card_view:cardBackgroundColor="@color/colorGreenLight"
     card_view:cardCornerRadius="12dp"
     card_view:cardElevation="3dp"
 

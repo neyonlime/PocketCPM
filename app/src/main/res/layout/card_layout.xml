@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/Card_view"
-    card_view:cardBackgroundColor="#329ab7"
+    card_view:cardBackgroundColor="@color/colorRedLight"
     card_view:cardCornerRadius="12dp"
     card_view:cardElevation="3dp"
 
@@ -28,7 +28,9 @@
             android:layout_alignParentTop="true"
             android:layout_gravity="center_vertical"
             android:text="Task"
-            android:textSize="30sp" />
+            android:layout_marginStart="8dp"
+            android:textSize="30sp"
+            android:textColor="@color/colorFontSecondary"/>
 
         <TextView
             android:id="@+id/Desc"
