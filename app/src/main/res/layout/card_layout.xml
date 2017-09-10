@@ -28,7 +28,7 @@
             android:layout_alignParentTop="true"
             android:layout_gravity="center_vertical"
             android:text="Task"
-            android:textSize="30dp" />
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/Desc"
@@ -54,7 +54,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:visibility="visible"
             android:layout_alignParentTop="true"
             android:src="@drawable/ic_dots_vertical" />
     </RelativeLayout>

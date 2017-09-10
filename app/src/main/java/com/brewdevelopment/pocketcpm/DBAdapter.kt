@@ -299,6 +299,14 @@ class DBAdapter(dbName: String, context: Context){
             if(idListDependent !== null){
                 task.setDepend(getDependents(idListDependent))
             }
+
+            //get the champion object
+            if(task.attribute.get(Task.CHAMPION_COLUMN) !== null){
+                val champion = getChampionByID(task.attribute.get(Task.CHAMPION_COLUMN).toString())
+                if(champion !== null){
+                    task.setChampion(champion)
+                }
+            }
         }
 
         if(task.ID != EMPTY){
@@ -414,6 +422,13 @@ class DBAdapter(dbName: String, context: Context){
                 val selectionArgs = arrayOf(obj.ID.toString())
 
                 db.delete(DBManager.Contract.TaskTable.TABLE_NAME, selection, selectionArgs)
+            }
+
+            is Project -> {
+                val selection = DBManager.Contract.ProjectTable.ID + "=? "
+                val selectionArgs = arrayOf(obj.ID.toString())
+
+                db.delete(DBManager.Contract.ProjectTable.TABLE_NAME, selection, selectionArgs)
             }
         }
     }

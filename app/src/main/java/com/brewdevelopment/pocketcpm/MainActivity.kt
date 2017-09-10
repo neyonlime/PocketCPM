@@ -218,6 +218,10 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 transaction.replace(R.id.content_frame,fragment,TaskDisplayFragment.TASK_KEY)
                 transaction.commit()
             }
+
+            is Project -> {
+                dbAdapter.delete(obj)
+            }
         }
     }
 

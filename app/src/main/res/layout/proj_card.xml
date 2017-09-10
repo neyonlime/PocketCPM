@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/Card_view"
-    card_view:cardBackgroundColor="#C03324"
+    card_view:cardBackgroundColor="@color/colorRed"
     card_view:cardCornerRadius="12dp"
     card_view:cardElevation="3dp"
 
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:padding="8dp">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/Title"
@@ -27,7 +27,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_gravity="center_vertical"
-            android:text="project"
+            android:text="Project"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/colorFontSecondary"
             android:textSize="30sp" />
 
         <TextView
@@ -36,18 +38,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="Duration of 0 Days"
-            android:layout_marginStart="12dp"
+            android:textColor="@color/colorFont"
+            android:layout_marginStart="16dp"
             android:layout_alignBaseline="@+id/Title"
             android:layout_alignBottom="@+id/Title"
-            android:layout_toEndOf="@+id/Title" />
-
-        <ImageView
-            android:id="@+id/Pic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="16dp" />
+            android:layout_toEndOf="@+id/Title"
+            android:textSize="14sp" />
 
         <ImageView
             android:id="@+id/options_button"
