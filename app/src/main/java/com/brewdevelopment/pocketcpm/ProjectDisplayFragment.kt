@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import java.io.Serializable
 
 /**
@@ -43,6 +44,7 @@ class ProjectDisplayFragment(): Fragment() {
         val rootView = inflater?.inflate(R.layout.project_list, container, false)
         recyclerView= rootView?.findViewById(R.id.project_recycler_view) as RecyclerView
         var list = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(PROJECT_LIST) as ArrayList <Project>
+        val options = rootView.findViewById(R.id.options_button)
 
         recyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
@@ -53,6 +55,7 @@ class ProjectDisplayFragment(): Fragment() {
                     }
                 })
         )
+
 
         recyclerView.adapter = ProjAdapter(activity, list)
         recyclerView.layoutManager= LinearLayoutManager(activity)

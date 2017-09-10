@@ -415,6 +415,13 @@ class DBAdapter(dbName: String, context: Context){
 
                 db.delete(DBManager.Contract.TaskTable.TABLE_NAME, selection, selectionArgs)
             }
+
+            is Project -> {
+                val selection = DBManager.Contract.ProjectTable.ID + "=? "
+                val selectionArgs = arrayOf(obj.ID.toString())
+
+                db.delete(DBManager.Contract.ProjectTable.TABLE_NAME, selection, selectionArgs)
+            }
         }
     }
 

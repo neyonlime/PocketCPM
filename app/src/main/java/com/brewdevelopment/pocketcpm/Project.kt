@@ -1,5 +1,7 @@
 package com.brewdevelopment.pocketcpm
 
+import android.content.Context
+
 /**
  * Created by neyonlime on 2017-08-15.
  */
@@ -47,5 +49,15 @@ class Project(){
             }
         }
         return max
+    }
+
+    fun delete(context: Context){
+        //delete all the tasks from the database
+        val fragmentEventListener = context as FragmentEventListener
+        for(task in taskList){
+            task.delete(context, taskList)
+        }
+        fragmentEventListener.onDelete(this)
+
     }
 }

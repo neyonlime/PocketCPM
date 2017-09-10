@@ -214,6 +214,10 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 //delete a task from the database
                 dbAdapter.delete(obj)
             }
+
+            is Project -> {
+                dbAdapter.delete(obj)
+            }
         }
     }
     override fun onEdit(obj: Any) {
