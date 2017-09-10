@@ -19,7 +19,7 @@ class Champ_Adapter(context: Context, var list: ArrayList<Champion>) : RecyclerV
     }
 
     override  fun onCreateViewHolder(parent: ViewGroup?, i: Int): ViewHolder {
-        val v: View? = LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent, false)
+        val v: View? = LayoutInflater.from(parent?.context).inflate(R.layout.champ_card, parent, false)
         val viewHolder: ViewHolder= ViewHolder(v)
         return viewHolder
     }

@@ -52,7 +52,6 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
         menuList2.add(lateF)
         menuList2.add(slack)
         menuList2.add(crit)
-
         for(i in 0..5){
             list.add(mCrit(menuList[i],menuList2[i]))
         }
@@ -61,7 +60,6 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
         //val currentItem: Int=0
         val item_Title= itemView?.findViewById(R.id.Title) as TextView
         val item_Desc= itemView?.findViewById(R.id.Desc) as TextView
-
     }
 
     override  fun onCreateViewHolder(parent: ViewGroup?, i: Int): viewHolder {
@@ -74,19 +72,15 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
         val temp: mCrit= list[position]
         holder?.item_Title?.text= temp.topic
         holder?.item_Desc?.text= temp.Val
-
     }
 
     override fun getItemCount(): Int {
         return list.size
-
     }
 }
 class mCrit(topic:String?, Val:String?) {
-
     var topic: String?
     var  Val: String?
-
     init{
         this.topic=topic
         this.Val=Val
@@ -100,8 +94,6 @@ class CritCalc(task: Task, project2: Project){
     var task: Task
     var project2: Project
     lateinit var list: ArrayList<Task>
-
-
     init{
         this.project2= project2
         this.task=task
@@ -116,28 +108,25 @@ class CritCalc(task: Task, project2: Project){
         }
         return x
     }
+    fun getTOC(project: Project):Int{
+        return project.getTOC(project)
+    }
     fun getLateFinish(task:Task):Int{
-
             if (task.getDepend().isEmpty()) {// if no successors then the late finish is the time of completion of project
                 LF = project2.getTOC(project2)
-
                 Log.d("add_dependent", "${LF}")
+            }
 
-            }else  {// if it does have successor then the late finish is the smallest late start of its successors
-
-
+            else  {// if it does have successor then the late finish is the smallest late start of its successors
                     var min = Double.POSITIVE_INFINITY.toInt()
                     for (i in task.getDepend()) {
                         Log.d("add_dependent", i.attribute.get(Task.NAME_COLUMN).toString())
                         if (getLateStart(getById(i.ID)) < min) {
                             min = getLateStart(getById(i.ID))
                         }
-
                     }
                     LF = min
-
             }
-
         return LF
     }
     fun getEarlyFinish(task:Task):Int{
@@ -149,7 +138,6 @@ class CritCalc(task: Task, project2: Project){
         return LS
     }
     fun getEarlyStart(task: Task):Int{
-
             if (task.getPred().isEmpty()) { ///if it has no preds then Early start is 0
                 ES = 0
             } else if (!task.getPred().isEmpty()) { // if it does have preds then get the max early finish of its preds and thats the early start of this one
@@ -165,10 +153,9 @@ class CritCalc(task: Task, project2: Project){
                 Log.e("PredTask of task "+task.attribute.get(Task.NAME_COLUMN), getEarlyFinish(task.getPred()[0]).toString())*/
                     ES = max
             }
-
         return ES
     }
-   /* fun isCrit():Boolean{
+         /* fun isCrit():Boolean{
         var v: Boolean= false
         if(CritCalc(task,Project(":(")).getLateFinish()-CritCalc(task,project2).getEarlyFinish()==0){
             v=true

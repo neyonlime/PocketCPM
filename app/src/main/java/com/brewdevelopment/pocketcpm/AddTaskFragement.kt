@@ -128,7 +128,7 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
                     }
                 })
         )
-        //her*esas
+        //her*esas//
         recyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
