@@ -12,7 +12,7 @@ import java.util.*
  class CustomAdapter(c: Context): BaseAdapter() {
     var list = ArrayList<my_items>()
     val menuList = arrayOf("Champions","Projects","Diagrams")
-    val menuList2: Array<Int> = arrayOf(R.drawable.circle,R.drawable.circle,R.drawable.circle)
+    val menuList2: Array<Int> = arrayOf(R.drawable.ic_account_multiple,R.drawable.ic_file_multiple,R.drawable.ic_sitemap)
     val context = c
 
      //this init function holds a ghetto for loop AKA while loop to fill the array list with the objects

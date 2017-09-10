@@ -9,9 +9,10 @@
     <ImageView
         android:id="@+id/NavIM"
         android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_height="37dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="25dp"
+        android:layout_weight="0.01"
         app:srcCompat="@drawable/collapse_arrow1600" />
 
     <TextView
@@ -19,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="38dp"
-        android:layout_weight="1"
+        android:layout_weight="0.5"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="#4a73ef"
