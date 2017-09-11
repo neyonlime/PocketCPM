@@ -46,15 +46,15 @@
     <ListView
         android:id="@+id/left_drawer"
         android:layout_width="240dp"
-        android:paddingTop="20dp"
+        android:paddingTop="32dp"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
 
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#111"
+        android:background="@color/colorMenuBackground"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="2dp" />
+        android:divider="@color/colorBlue"
+        android:dividerHeight="2dp"/>
 
 </android.support.v4.widget.DrawerLayout>

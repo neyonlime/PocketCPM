@@ -4,15 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:layout_marginBottom="16dp">
 
     <ImageView
         android:id="@+id/NavIM"
-        android:layout_width="80dp"
-        android:layout_height="37dp"
-        android:layout_marginLeft="20dp"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
         android:layout_marginTop="25dp"
-        android:layout_weight="0.01"
+        android:layout_weight="0.5"
         app:srcCompat="@drawable/collapse_arrow1600" />
 
     <TextView
@@ -23,7 +23,8 @@
         android:layout_weight="0.5"
         android:text="TextView"
         android:textAlignment="center"
-        android:textColor="#4a73ef"
-        android:textSize="15dp" />
+        android:textColor="@color/colorFont"
+        android:textSize="22sp"
+        android:layout_marginBottom="10dp"/>
 
 </LinearLayout>
