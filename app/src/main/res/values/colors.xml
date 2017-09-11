@@ -11,8 +11,10 @@
     <color name="colorGreenDark">#005F15</color>
     <color name="colorFont">#D1D4D2</color>
     <color name="colorFontSecondary">#FFFDFC</color>
-    <color name="colorPrimary">#458996</color>
+    <color name="colorPrimary">#2E7086</color>
     <color name="colorMenuBackground">#5A9FB6</color>
-    <color name="colorPrimaryDark">#458996</color>
-    <color name="colorAccent">#F47A6D</color>
+    <color name="colorPrimaryDark">#13617B</color>
+    <color name="colorAccent">#13617B</color>
+    <color name="colorBackground">#86BFD2</color>
+
 </resources>
