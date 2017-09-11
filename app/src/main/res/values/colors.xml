@@ -12,6 +12,7 @@
     <color name="colorFont">#D1D4D2</color>
     <color name="colorFontSecondary">#FFFDFC</color>
     <color name="colorPrimary">#458996</color>
+    <color name="colorMenuBackground">#5A9FB6</color>
     <color name="colorPrimaryDark">#458996</color>
     <color name="colorAccent">#F47A6D</color>
 </resources>
