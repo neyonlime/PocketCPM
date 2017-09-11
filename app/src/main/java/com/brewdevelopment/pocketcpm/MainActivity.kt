@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
             if(position==0) {
               //Champ
+                toolbar.title= "Champions"
                 fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
                 fab.hide()
                 val fragment = Add_Champ_Frag.newInstance(dbAdapter.getChampionList(DBAdapter.ALL))
@@ -98,6 +99,8 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
             }
             if(position==1) {
+                //projects
+                toolbar.title= "Projects"
                 fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
                 fab.show()
                 isProj=true

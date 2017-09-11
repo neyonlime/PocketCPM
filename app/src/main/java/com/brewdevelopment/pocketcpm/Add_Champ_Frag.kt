@@ -29,7 +29,6 @@ class Add_Champ_Frag(): Fragment() {
     init{
         task= Task()
         project=Project()
-
     }
     constructor(task: Task, project: Project):this(){
         this.task = task
