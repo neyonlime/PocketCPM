@@ -7,6 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Created by Osama on 2017-08-31.
@@ -31,14 +34,35 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
     var SK : Int= 0
     var dur: Int =0
     var max: Int =0
+    lateinit var  startString: String
+    lateinit var format:SimpleDateFormat
+    lateinit var startDate: Date
     init{
         this.task=task
         this.project= project
         val CC=CritCalc(task,project)
-        earlyS= CC.getEarlyStart(task).toString()
-        earlyF= CC.getEarlyFinish(task).toString()
-        lateF= CC.getLateFinish(task).toString()
-        lateS= CC.getLateStart(task).toString()
+        startString= project.start
+        format = SimpleDateFormat("dd/MM/yyy")
+        val cES = Calendar.getInstance()
+        val cEF = Calendar.getInstance()
+        val cLS = Calendar.getInstance()
+        val cLF = Calendar.getInstance()
+        try {
+            cES.time = format.parse(startString)
+            cLS.time = format.parse(startString)
+            cLF.time = format.parse(startString)
+            cEF.time = format.parse(startString)
+        } catch (e: ParseException) {
+            e.printStackTrace()
+        }
+        cES.add(Calendar.DAY_OF_MONTH,CC.getEarlyStart(task))
+        earlyS= format.format(cES.time)
+        cEF.add(Calendar.DAY_OF_MONTH,CC.getEarlyFinish(task))
+        earlyF= format.format(cEF.time)
+        cLF.add(Calendar.DAY_OF_MONTH,CC.getLateFinish(task))
+        lateF= format.format(cLF.time)
+        cLS.add(Calendar.DAY_OF_MONTH,CC.getLateStart(task))
+        lateS= format.format(cLS.time)
         slack=(CC.getLateFinish(task)-CC.getEarlyFinish(task)).toString()+" Days"
         if(CC.getLateFinish(task)-CC.getEarlyFinish(task)==0){
             crit= "Yes"

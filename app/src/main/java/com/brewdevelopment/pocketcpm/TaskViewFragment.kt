@@ -22,6 +22,8 @@ class TaskViewFragment(): Fragment() {
     private lateinit var project: Project
     lateinit var champTxt: TextView
     lateinit var dTxt: TextView
+    lateinit var ctxt: TextView
+    lateinit var desctext: TextView
 init{
     task= Task()
     project=Project()
@@ -56,12 +58,16 @@ init{
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val rootView = inflater?.inflate(R.layout.task_on_click_view, container, false)
         champTxt= rootView?.findViewById(R.id.Champ) as TextView
+        ctxt= rootView?.findViewById(R.id.Champion) as TextView
         dTxt= rootView?.findViewById(R.id.Desc) as TextView
+        desctext= rootView?.findViewById(R.id.Description) as TextView
+        dTxt.text="Description:"
+        champTxt.text="Champion:"
         if(task.attribute.get(Task.DESCRIPTION_COLUMN)!==null) {
-            dTxt.text = "Task Description: "+task.attribute.get(Task.DESCRIPTION_COLUMN).toString()
+            desctext.text = task.attribute.get(Task.DESCRIPTION_COLUMN).toString()
         }
         if(task.attribute.get(Task.CHAMPION_COLUMN)!==null) {
-            champTxt.text = "Champion Name: "+task.getChampion(task.attribute.get(Task.CHAMPION_COLUMN).toString().toInt()).name
+            ctxt.text = task.getChampion(task.attribute.get(Task.CHAMPION_COLUMN).toString().toInt()).name
         }
         recyclerView= rootView?.findViewById(R.id.task_recycler_view) as RecyclerView
         recyclerView.addOnItemTouchListener(
