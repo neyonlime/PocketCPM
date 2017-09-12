@@ -486,7 +486,7 @@ class DBAdapter(dbName: String, context: Context){
                 var selection = "${DBManager.Contract.ProjectTable.ID} =? "
                 var selectionArgs = arrayOf(obj.ID.toString())
 
-                //updates the current version of the project will the attributes of the passed in project
+                //updates the current version of the project will the attributes of the passed in projectl
                 var count = db.update(DBManager.Contract.ProjectTable.TABLE_NAME, values, selection, selectionArgs)
             }
             is Task -> {
