@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
        //val menuList2: Array<Int> = arrayOf(R.drawable.download,R.drawable.sasukepart1,R.drawable.download)
         drawerLayout = findViewById(R.id.drawer_layout) as DrawerLayout     //casting is done using the as keyword
         drawerList = findViewById(R.id.left_drawer) as ListView
-
         dbAdapter = DBAdapter("data", this)
         projectList = ArrayList()
 
