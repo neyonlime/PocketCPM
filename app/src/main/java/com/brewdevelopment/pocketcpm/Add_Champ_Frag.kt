@@ -24,19 +24,21 @@ class Add_Champ_Frag(): Fragment() {
     private lateinit var task: Task
     private lateinit var project: Project
     lateinit var champName: TextView
+    var editChamp: Champion? = null
     lateinit var dTxt: TextView
     lateinit var clist: ArrayList<Champion>
     init{
         task= Task()
         project=Project()
     }
-    constructor(task: Task, project: Project):this(){
+    constructor(champion: Champion):this(){
         this.task = task
-        this.project=project
+        this.editChamp = champion
     }
 
     companion object {
         val ADD_CHAMP= "add champ"
+        val EDIT_CHAMP = "editChamp"
         val CHAMP_LIST = "champlist"
         fun newInstance(list: ArrayList<Champion>): Add_Champ_Frag {//get appropriate arguments that are needed to construct the fragment
             //process and bundle up fragments before adding it to the fragement
@@ -47,6 +49,14 @@ class Add_Champ_Frag(): Fragment() {
             fragment.arguments = args       //no getters or setters thus, setArgument -> .arguments
             return fragment
             //makes call to the super's constructor &  can do processes before call
+        }
+        fun newInstance(champion: Champion, list: ArrayList<Champion>): Add_Champ_Frag{
+            var args = Bundle()
+            args.putSerializable(CHAMP_LIST, list as Serializable)
+            var fragment = Add_Champ_Frag(champion)
+            fragment.arguments = args
+            return fragment
+
         }
     }
 
@@ -75,25 +85,57 @@ class Add_Champ_Frag(): Fragment() {
         recyclerView.adapter= Champ_Adapter(activity,clist)
         recyclerView.layoutManager= LinearLayoutManager(activity)
 
+        if(editChamp !== null){
+            addButton.setText("Edit")
+            champName.setText(editChamp!!.name)
+        }
+
         //on click l;istener to handle adding a champion
         addButton.setOnClickListener{
-            val nameField = champName.text
-            if(nameField.isNotEmpty()){
-                //build champion
-                var champion = Champion(nameField.toString())
-                if(validateChampion(champion)){
-                    fragmentEventListener.onAdd(champion)
-                    clist.add(champion)
-                    champName.setText("")
-                }else{
-                    //champion not added as it was not valid
-                    champName.setText("")
+            if(editChamp === null){
+                val nameField = champName.text
+                if(nameField.isNotEmpty()){
+                    //build champion
+                    var champion = Champion(nameField.toString())
+                    if(validateChampion(champion)){
+                        fragmentEventListener.onAdd(champion)
+                        clist.add(champion)
+                        champName.setText("")
+                    }else{
+                        //champion not added as it was not valid
+                        champName.setText("")
+                    }
                 }
+                recyclerView.swapAdapter(Champ_Adapter(activity,clist), false)
+            }else{
+                editChamp!!.name = champName.text.toString()
+                if(editChamp!!.name.isNotEmpty()){
+                    if(validateChampion(editChamp!!)){
+                        val position = getPosition(editChamp!!, clist)
+                        if(position != -1){
+                            clist.get(position).name = editChamp!!.name
+                        }
+                        fragmentEventListener.onUpdate(editChamp!!)
+                        champName.setText("")
+                    }else{
+                        champName.setText("")
+                    }
+                }
+                recyclerView.swapAdapter(Champ_Adapter(activity,clist), false)
             }
-            recyclerView.swapAdapter(Champ_Adapter(activity,clist), false)
+
         }
 
         return rootView
+    }
+
+    private fun getPosition(champion: Champion, list: ArrayList<Champion>): Int{
+        for(i in 0..list.size-1){
+            if(champion.ID == list.get(i).ID){
+                return i
+            }
+        }
+        return -1
     }
 
     private fun validateChampion(champion: Champion): Boolean{

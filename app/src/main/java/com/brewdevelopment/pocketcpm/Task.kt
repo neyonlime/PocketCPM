@@ -118,6 +118,7 @@ class Task(){
     fun setChampion(champion: Champion){
         if(champion.ID != EMPTY){
             this.champion = champion
+            champion.assignedTasks.add(this)
             attribute.put(CHAMPION_COLUMN, champion.ID)
         }
     }

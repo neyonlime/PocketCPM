@@ -230,6 +230,16 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 transaction.replace(R.id.content_frame, fragment, ProjectDisplayFragment.PROJECT_KEY)
                 transaction.commit()
             }
+
+            is Champion -> {
+                dbAdapter.delete(obj)
+                val mFragment = Add_Champ_Frag.newInstance(dbAdapter.getChampionList(DBAdapter.ALL))
+                val fm = fragmentManager
+                val transaction = fm.beginTransaction()
+                transaction.replace(R.id.content_frame, mFragment, Add_Champ_Frag.EDIT_CHAMP)
+                transaction.commit()
+            }
+
         }
     }
 
@@ -260,6 +270,14 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 val transaction = fm.beginTransaction()
                 transaction.replace(R.id.content_frame, mFragment, AddTaskFragement.EDIT_TASK)
                 fab.hide()
+                transaction.commit()
+            }
+
+            is Champion -> {
+                val mFragment = Add_Champ_Frag.newInstance(obj,dbAdapter.getChampionList(DBAdapter.ALL))
+                val fm = fragmentManager
+                val transaction = fm.beginTransaction()
+                transaction.replace(R.id.content_frame, mFragment, Add_Champ_Frag.EDIT_CHAMP)
                 transaction.commit()
             }
         }
