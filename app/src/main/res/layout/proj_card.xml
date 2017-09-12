@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="Duration of 0 Days"
-            android:textColor="@color/colorFont"
+            android:textColor="@color/colorFontSecondary"
             android:layout_marginStart="16dp"
             android:layout_alignBaseline="@+id/Title"
             android:layout_alignBottom="@+id/Title"

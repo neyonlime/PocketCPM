@@ -190,7 +190,7 @@ class DBAdapter(dbName: String, context: Context){
     fun getProjects(): ArrayList<Project> {
         //open(READ)
 
-        var projections = arrayOf(DBManager.Contract.ProjectTable.ID, DBManager.Contract.ProjectTable.NAME_COLUMN)
+        var projections = arrayOf(DBManager.Contract.ProjectTable.ID, DBManager.Contract.ProjectTable.NAME_COLUMN, DBManager.Contract.ProjectTable.START_COLUMN)
         checkDBState()
 
         var sortOrder = DBManager.Contract.ProjectTable.NAME_COLUMN+ " DESC"
@@ -202,6 +202,7 @@ class DBAdapter(dbName: String, context: Context){
             var project = Project(name)
 
             project.ID = cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.ProjectTable.ID))
+            project.start = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.ProjectTable.START_COLUMN))
             projects.add(project)
         }
         cursor.close()
@@ -457,6 +458,7 @@ class DBAdapter(dbName: String, context: Context){
             is Project -> {
                 var values = ContentValues()
                 values.put(DBManager.Contract.ProjectTable.NAME_COLUMN, obj.name)
+                values.put(DBManager.Contract.ProjectTable.START_COLUMN, obj.start)
                 values.put(DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN, obj.getTOC(obj))
 
                 var taskList = ""
@@ -469,12 +471,8 @@ class DBAdapter(dbName: String, context: Context){
                 }
                 values.put(DBManager.Contract.ProjectTable.TASK_LIST_COLUMN, taskList)
 
-                var selection = "${DBManager.Contract.ProjectTable.NAME_COLUMN}=? and " +
-                        "${DBManager.Contract.ProjectTable.TASK_LIST_COLUMN}=? and " +
-                        "${DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN}=?"
-                var selectionArgs = arrayOf(DBManager.Contract.ProjectTable.NAME_COLUMN,
-                                            DBManager.Contract.ProjectTable.TASK_LIST_COLUMN,
-                                            DBManager.Contract.ProjectTable.TOTAL_TIME_COLUMN)
+                var selection = "${DBManager.Contract.ProjectTable.ID} =? "
+                var selectionArgs = arrayOf(obj.ID.toString())
 
                 //updates the current version of the project will the attributes of the passed in project
                 var count = db.update(DBManager.Contract.ProjectTable.TABLE_NAME, values, selection, selectionArgs)

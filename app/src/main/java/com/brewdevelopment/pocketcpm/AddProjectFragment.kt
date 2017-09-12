@@ -56,6 +56,11 @@ class AddProjectFragment(): Fragment(), DatePickerDialog.OnDateSetListener{
         val button = rootView!!.findViewById(R.id.project_save_button) as Button
         startDateView = rootView!!.findViewById(R.id.start_date_field) as EditText
 
+        if(project !== null){
+            startDateView.setText(project!!.start)
+            nameField.setText(project!!.name)
+        }
+
         startDateView.setOnClickListener{
             val now = Calendar.getInstance()
             val dpd = DatePickerDialog.newInstance(
@@ -68,19 +73,40 @@ class AddProjectFragment(): Fragment(), DatePickerDialog.OnDateSetListener{
         }
 
         button.setOnClickListener{
-            var project = Project("" + nameField.text)
-            project.start = startDateView.text.toString()
-            nameField.setText("")
-            fragmentEventListener.onAdd(project)
+            if(project === null){
+                var project = Project("" + nameField.text)
+                project.start = startDateView.text.toString()
+                if(validateProject(project)){
+                    nameField.setText("")
+                    fragmentEventListener.onAdd(project)
+                }else {
+                    //send error message
+
+                }
+            }
+            else if(project !== null){
+                //edit instance
+                project!!.name = "${nameField.text}"
+                project!!.start = startDateView.text.toString()
+                if(validateProject(project!!)){
+                    nameField.setText("")
+                    startDateView.setText("")
+                    fragmentEventListener.onUpdate(project!!)
+                }else{
+                    //send error message
+
+                }
+            }
         }
 
-        if(project !== null){
-            //edit instance
-            nameField.setText(project!!.name)
-        }
+
 
         //add instance
         return rootView
+    }
+
+    private fun validateProject(project: Project): Boolean{
+        return project.name.trim() != "" && project.start.trim() != ""
     }
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
