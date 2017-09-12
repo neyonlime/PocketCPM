@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 
 /**
@@ -40,7 +39,7 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
         earlyF= CC.getEarlyFinish(task).toString()
         lateF= CC.getLateFinish(task).toString()
         lateS= CC.getLateStart(task).toString()
-        slack=(CC.getLateFinish(task)-CC.getEarlyFinish(task)).toString()
+        slack=(CC.getLateFinish(task)-CC.getEarlyFinish(task)).toString()+" Days"
         if(CC.getLateFinish(task)-CC.getEarlyFinish(task)==0){
             crit= "Yes"
         }
@@ -59,19 +58,19 @@ class onClickTaskAdapter(context: Context, task: Task, project: Project) : Recyc
     }
     class viewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
         //val currentItem: Int=0
-        val item_pic= itemView?.findViewById(R.id.options_button) as ImageView
+
         val item_Title= itemView?.findViewById(R.id.Title) as TextView
         val item_Desc= itemView?.findViewById(R.id.Desc) as TextView
     }
 
     override  fun onCreateViewHolder(parent: ViewGroup?, i: Int): viewHolder {
-        val v: View? = LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent, false)
+        val v: View? = LayoutInflater.from(parent?.context).inflate(R.layout.info_card, parent, false)
         val viewHolder: viewHolder= viewHolder(v)
         return viewHolder
     }
 
     override fun onBindViewHolder(holder: viewHolder?, position: Int) {
-        holder?.item_pic?.visibility= View.GONE
+
         val temp: mCrit= list[position]
         holder?.item_Title?.text= temp.topic
         holder?.item_Desc?.text= temp.Val

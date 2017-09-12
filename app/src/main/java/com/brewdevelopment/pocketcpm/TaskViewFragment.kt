@@ -58,10 +58,10 @@ init{
         champTxt= rootView?.findViewById(R.id.Champ) as TextView
         dTxt= rootView?.findViewById(R.id.Desc) as TextView
         if(task.attribute.get(Task.DESCRIPTION_COLUMN)!==null) {
-            champTxt.text = task.attribute.get(Task.DESCRIPTION_COLUMN).toString()
+            dTxt.text = "Task Description: "+task.attribute.get(Task.DESCRIPTION_COLUMN).toString()
         }
         if(task.attribute.get(Task.CHAMPION_COLUMN)!==null) {
-            dTxt.text = task.getChampion(task.attribute.get(Task.CHAMPION_COLUMN).toString().toInt()).name
+            champTxt.text = "Champion Name: "+task.getChampion(task.attribute.get(Task.CHAMPION_COLUMN).toString().toInt()).name
         }
         recyclerView= rootView?.findViewById(R.id.task_recycler_view) as RecyclerView
         recyclerView.addOnItemTouchListener(
