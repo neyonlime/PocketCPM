@@ -230,6 +230,7 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
                     if(champion!== null && champion.ID != EMPTY ){
                         task.setChampion(champion)
                     }
+                    fragmentEventListener.onUpdate(champion!!)
                     //all information about the task is valid
                     //then save the task to database
                     fragmentEventListener.onUpdate(task)

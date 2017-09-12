@@ -1,5 +1,7 @@
 package com.brewdevelopment.pocketcpm
 
+import android.content.Context
+
 /**
  * Created by neyonlimell on 2017-08-15.
  */
@@ -22,6 +24,11 @@ class Champion(){
         }
 
         return taskList
+    }
+
+    fun delete(context: Context){
+        val fragmentEventListener = context as FragmentEventListener
+        fragmentEventListener.onDelete(this)
     }
 
 }

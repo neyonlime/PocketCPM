@@ -310,6 +310,7 @@ class DBAdapter(dbName: String, context: Context){
             }
         }
 
+        cursor.close()
         if(task.ID != EMPTY){
             Log.d("add_dependent", "returning task: ${task.ID} || predecessor: ${task.getPredList()} || dependent: ${task.getDependList()}")
             return task
@@ -349,6 +350,7 @@ class DBAdapter(dbName: String, context: Context){
                 if(task.ID != EMPTY){
                     predList.add(task)
                 }
+                cursor.close()
             }
         }
         return predList
@@ -384,6 +386,7 @@ class DBAdapter(dbName: String, context: Context){
                 if(task.ID != EMPTY){
                     dependList.add(task)
                 }
+                cursor.close()
             }
         }
         return dependList
@@ -412,6 +415,7 @@ class DBAdapter(dbName: String, context: Context){
                 }
             }
         }
+        cursor.close()
         if(champion.ID != EMPTY){return champion}
         else{return null}
     }
@@ -431,6 +435,13 @@ class DBAdapter(dbName: String, context: Context){
 
                 db.delete(DBManager.Contract.ProjectTable.TABLE_NAME, selection, selectionArgs)
             }
+
+            is Champion -> {
+                val selection = DBManager.Contract.ChampionTable.ID + "=?"
+                val selectioArgs = arrayOf(obj.ID.toString())
+
+                db.delete(DBManager.Contract.ChampionTable.TABLE_NAME, selection, selectioArgs)
+            }
         }
     }
 
@@ -443,6 +454,7 @@ class DBAdapter(dbName: String, context: Context){
                 while(cursor.moveToNext()){
                     championList.add(getChampionByID("${cursor.getLong(cursor.getColumnIndexOrThrow(DBManager.Contract.ChampionTable.ID))}")!!)
                 }
+                cursor.close()
                 return championList
             }
         }
