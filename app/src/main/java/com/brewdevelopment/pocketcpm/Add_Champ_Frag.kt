@@ -75,7 +75,7 @@ class Add_Champ_Frag(): Fragment() {
         recyclerView.adapter= Champ_Adapter(activity,clist)
         recyclerView.layoutManager= LinearLayoutManager(activity)
 
-        //on click l;istener to handle adding a champion
+        //on click listener to handle adding a champion
         addButton.setOnClickListener{
             val nameField = champName.text
             if(nameField.isNotEmpty()){
