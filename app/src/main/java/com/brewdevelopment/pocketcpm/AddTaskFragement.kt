@@ -177,7 +177,7 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
             if(position != -1){championDropdown.setSelection(position)}
             duration.setText("${editTask!!.attribute.get(Task.DURATION_COLUMN)}")
             description.setText("${editTask!!.attribute.get(Task.DESCRIPTION_COLUMN)}")
-            taskButton.setText("Save Changes")
+            taskButton.setText("Edit")
 
             //load the predecessors into the recycler views
 
@@ -209,24 +209,23 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
                         fragmentEventListener.onUpdate(champion)
                     }
                     fragmentEventListener.onUpdate(editTask!!)
+                }else{
+                    //the task is not valid, re inform the user
+                    Log.e("not_valid", "task NOT valid")
                 }
             }else if(editTask === null){
                 var task = Task()
                 task.attribute.put(Task.NAME_COLUMN, taskName.text.toString())
-                for(i in predList){
-                    Log.e("Pred", i.attribute.get(Task.NAME_COLUMN).toString())
-                }
-                fragmentEventListener.onAdd(task)
-                task.setPred(predList)
-                for(task in predList){
-                    //update the predecessor tasks to rewrite their dependents
-                    fragmentEventListener.onUpdate(task)
-                }
                 task.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
                 task.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())
 
-
                 if(validateTask(task)) {
+                    fragmentEventListener.onAdd(task)
+                    task.setPred(predList)
+                    for(task in predList){
+                        //update the predecessor tasks to rewrite their dependents
+                        fragmentEventListener.onUpdate(task)
+                    }
                     val champion = selectedChampion
                     if(champion!== null && champion.ID != EMPTY ){
                         task.setChampion(champion)
@@ -234,16 +233,19 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
                     //all information about the task is valid
                     //then save the task to database
                     fragmentEventListener.onUpdate(task)
-
+                    list.add(task)
+                    list.addAll(predList)
+                    predList.clear()
+                    taskName.text.clear()
+                    description.text.clear()
+                    duration.text.clear()
+                    recyclerView.swapAdapter(mAdapter, false)
+                    recyclerView2.swapAdapter(mAdapter2, false)
+                }else{
+                    //task is not valid infrom the user
+                    Log.e("not_valid", "task NOT valid")
                 }
-                list.add(task)
-                list.addAll(predList)
-                predList.clear()
-                taskName.text.clear()
-                description.text.clear()
-                duration.text.clear()
-                recyclerView.swapAdapter(mAdapter, false)
-                recyclerView2.swapAdapter(mAdapter2, false)
+
             }
 
         }
@@ -269,15 +271,10 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
         selectedChampion = championList.get(position)
     }
 
-    private fun validateChampion(champion: Champion): Boolean {
-        //validate the champion object
-        return true
-    }
-
     private fun validateTask(task: Task): Boolean{
         //validate the task before saving
-        return true
-
+        //task is valid if it contains a name and a duration
+        return task.attribute.get(Task.NAME_COLUMN).toString().trim() != "" && task.attribute.get(Task.DURATION_COLUMN).toString().trim() != ""
     }
 
     override fun onAttach(context: Context?) {

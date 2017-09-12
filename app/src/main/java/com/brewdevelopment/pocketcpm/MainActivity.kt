@@ -224,13 +224,25 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
 
             is Project -> {
                 dbAdapter.delete(obj)
+                val fragment = ProjectDisplayFragment.newInstance(dbAdapter.getProjects())
+                val fm = fragmentManager
+                val transaction = fm.beginTransaction()
+                transaction.replace(R.id.content_frame, fragment, ProjectDisplayFragment.PROJECT_KEY)
+                transaction.commit()
             }
         }
     }
 
     override fun onEdit(obj: Any) {
         when(obj){
-            is Project -> {}
+            is Project -> {
+                val mFragment = AddProjectFragment.newEditInstance(obj)
+                val fm = fragmentManager
+                val transaction = fm.beginTransaction()
+                transaction.replace(R.id.content_frame, mFragment, AddProjectFragment.EDIT_PROJECT)
+                fab.hide()
+                transaction.commit()
+            }
             is Task -> {
                 //open the fragement to edit the task
                 var taskList = dbAdapter.getTaskList(selectedProject.ID)

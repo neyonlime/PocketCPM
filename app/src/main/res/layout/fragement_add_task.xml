@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/colorBackground">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,14 +22,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:layout_marginEnd="4dp">
+                android:layout_marginEnd="4dp"
+                android:textColorHint="@color/colorBlueDark">
 
                 <EditText
                     android:id="@+id/task_name_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="@string/task_name_field_label" />
+                    android:textColor="@color/colorFontSecondary"
+                    android:textColorHighlight="@color/colorFontSecondary"
+                    android:hint="@string/task_name_field_label"/>
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -36,7 +40,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:layout_marginStart="4dp">
+                android:layout_marginStart="4dp"
+                android:textColorHint="@color/colorBlueDark">
 
                 <EditText
                     android:id="@+id/duration_field"
@@ -44,7 +49,9 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="number"
-                    android:hint="@string/task_duration_field_label"/>
+                    android:textColor="@color/colorFontSecondary"
+                    android:hint="@string/task_duration_field_label"
+                    android:textColorHint="@color/colorRedLight"/>
             </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
@@ -67,7 +74,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/task_champion_field_label"
                     android:layout_marginBottom="8dp"
-                    android:textSize="16sp"/>
+                    android:textSize="14sp"
+                    android:textColor="@color/colorBlueDark"/>
                 <Spinner
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
@@ -84,13 +92,15 @@
             android:id="@+id/task_description_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:textColorHint="@color/colorBlueDark">
 
             <EditText
                 android:id="@+id/description_field"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="130"
+                android:textColor="@color/colorFontSecondary"
                 android:hint="@string/task_description_field_label" />
         </android.support.design.widget.TextInputLayout>
 
@@ -104,7 +114,7 @@
             <Button
                 android:id="@+id/task_button"
                 android:layout_width="100dp"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:elevation="4dp"
                 android:text="@string/task_add_button_label" />
           
