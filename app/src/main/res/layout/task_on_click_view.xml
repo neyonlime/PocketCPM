@@ -15,24 +15,62 @@
         android:gravity="center_vertical"
         >
 
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            >
         <TextView
-            android:id="@+id/Desc"
-            android:layout_width="wrap_content"
+            android:id="@+id/Champ"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="21sp"
             android:textAlignment="center"
             android:layout_weight="0.5"
             android:text="TextView"
             android:textColor="@color/colorFontSecondary"
             />
 
+            <TextView
+                android:id="@+id/Champion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:text="TextView"
+                android:textAlignment="center"
+                android:textColor="@color/colorBlueDark"
+                android:textSize="21sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            >
         <TextView
-            android:id="@+id/Champ"
-            android:layout_width="wrap_content"
+            android:id="@+id/Desc"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="21sp"
             android:layout_weight="0.5"
             android:textAlignment="center"
             android:text="TextView"
             android:textColor="@color/colorFontSecondary"/>
+            <TextView
+                android:id="@+id/Description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="21sp"
+                android:layout_weight="1.5"
+                android:textAlignment="center"
+                android:text="TextView"
+                android:textColor="@color/colorBlueDark"/>
+        </LinearLayout>
     </LinearLayout>
 
     <RelativeLayout
