@@ -32,18 +32,14 @@ class RecyclerAdapter( var context: Context,var list: ArrayList<Task>) : Recycle
     override fun onBindViewHolder(holder: viewHolder?, position: Int) {
         val temp: Task= list[position]
         holder?.item_Title?.text= temp.attribute.get(Task.NAME_COLUMN) as String
-        holder?.item_Desc?.text= temp.attribute.get(Task.DESCRIPTION_COLUMN) as String
-
-
+        holder?.item_Desc?.visibility=View.GONE
         var fragmentEventlistener = context as FragmentEventListener
-
         //onClick listener for the options menu
         holder?.options!!.setOnClickListener{
             //Log.d("edit_task", "edit task Clicked")
             val menu: PopupMenu = PopupMenu(context, holder.options)
             menu.menuInflater.inflate(R.menu.task_options, menu.menu)
             menu.show()
-
             menu.setOnMenuItemClickListener{
                 when(it.itemId) {
                     R.id.task_edit -> {
@@ -61,10 +57,8 @@ class RecyclerAdapter( var context: Context,var list: ArrayList<Task>) : Recycle
             }
         }
     }
-
     override fun getItemCount(): Int {
         return list.size
 
     }
-
 }
