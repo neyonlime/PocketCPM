@@ -131,6 +131,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 drawerLayout.closeDrawers()
             }
             if(position==2) {
+                Toast.makeText(this, "'Diagrams' are not available for BETA!", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -183,6 +184,11 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         val fragment = fragmentManager.findFragmentById(R.id.content_frame)
         if(fragment !== null && fragment.tag == ProjectDisplayFragment.PROJECT_KEY || fragment.tag == TaskDisplayFragment.TASK_KEY) {
             fab.show()
+            if(fragment.tag == ProjectDisplayFragment.PROJECT_KEY){
+                toolbar.title = "Projects"
+            }else if(fragment.tag == TaskDisplayFragment.TASK_KEY){
+                toolbar.title = selectedProject.name
+            }
         }
         if(fragment.tag == ProjectDisplayFragment.PROJECT_KEY){
             Log.e("###", "Project display")
