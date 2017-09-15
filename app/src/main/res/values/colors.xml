@@ -14,7 +14,7 @@
     <color name="colorPrimary">#2E7086</color>
     <color name="colorMenuBackground">#5A9FB6</color>
     <color name="colorPrimaryDark">#13617B</color>
-    <color name="colorAccent">#D75844</color>
+    <color name="colorAccent">#ffc400</color>
     <color name="colorBackground">#86BFD2</color>
 
 </resources>

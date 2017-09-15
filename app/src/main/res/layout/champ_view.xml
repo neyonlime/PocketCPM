@@ -40,7 +40,9 @@
             android:layout_height="50dp"
             android:text="Add Champion"
             android:id="@+id/champion_add_button"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/colorPrimary"/>
 
 
     </LinearLayout>

@@ -2,6 +2,8 @@ package com.brewdevelopment.pocketcpm
 
 
 
+import android.app.Fragment
+import android.app.FragmentManager
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
@@ -9,6 +11,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
@@ -37,7 +40,11 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         //setting up the toolbar
         selectedProject= Project()
         toolbar = findViewById(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolbar)        //setting the toolbar and providing functionality to the toolbar
+        toolbar.setNavigationIcon(R.drawable.ic_menu)
+        toolbar.setTitleMargin(0, 0, 0, 0)
+        toolbar.setPaddingRelative(0,0,0,0)
+
+        setSupportActionBar(toolbar)//setting the toolbar and providing functionality to the toolbar
         menuList = arrayOf("Dashboard","Projects","Diagrams")
        //val menuList2: Array<Int> = arrayOf(R.drawable.download,R.drawable.sasukepart1,R.drawable.download)
         drawerLayout = findViewById(R.id.drawer_layout) as DrawerLayout     //casting is done using the as keyword
@@ -61,6 +68,11 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                     val transaction = fm.beginTransaction()
                     transaction.replace(R.id.content_frame, mFragment,AddProjectFragment.ADD_PROJECT)
                     fab.hide()
+
+                    //clearBackstack
+                    fragmentManager.popBackStack()
+
+
                     transaction.commit()
                 }
 
@@ -71,6 +83,8 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                     val transaction = fm.beginTransaction()
                     transaction.replace(R.id.content_frame, mFragment, AddTaskFragement.ADD_TASK)
                     fab.hide()
+                    //clear backstack
+                    fragmentManager.popBackStack()
                     transaction.commit()
 
                 }
@@ -91,11 +105,11 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 val fragment = Add_Champ_Frag.newInstance(dbAdapter.getChampionList(DBAdapter.ALL))
                 val fm = fragmentManager
                 val transaction = fm.beginTransaction()
+                transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, 0, 0)
                 transaction.replace(R.id.content_frame,fragment,Add_Champ_Frag.ADD_CHAMP)
+                fragmentManager.popBackStack()
                 transaction.commit()
                 drawerLayout.closeDrawers()
-
-
             }
             if(position==1) {
                 //projects
@@ -109,26 +123,71 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 }
                 val fragment = ProjectDisplayFragment.newInstance(projects)
                 val fm = fragmentManager
-                val transaction = fm.beginTransaction()               
+                val transaction = fm.beginTransaction()
+                transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, 0, 0)
                 transaction.replace(R.id.content_frame,fragment,ProjectDisplayFragment.PROJECT_KEY)
                 transaction.commit()
                 drawerLayout.closeDrawers()
             }
             if(position==2) {
-
             }
         }
 
+        toolbar.setNavigationOnClickListener {
+            drawerLayout.openDrawer(Gravity.START)
+        }
+
+        //setup the initial layout
+        //should be a project list view
+        //projects
+        toolbar.title= "Projects"
+        fab.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_plus))
+        fab.show()
+        isProj=true
+        var projects: ArrayList<Project> = dbAdapter.getProjects()
+        for(project in projects){
+            project.taskList = dbAdapter.getTaskList(project.ID)
+        }
+        val fragment = ProjectDisplayFragment.newInstance(projects)
+        val fm = fragmentManager
+        val transaction = fm.beginTransaction()
+        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, 0, 0)
+        transaction.replace(R.id.content_frame,fragment,ProjectDisplayFragment.PROJECT_KEY)
+        transaction.commit()
     }
 
     override fun onPause() {
         Toast.makeText(this, "onPause", Toast.LENGTH_SHORT)
+        this.finish()
+        Log.e("@@@", "onPause")
+        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT)
+        var isOpen = true
+        try {
+            dbAdapter.checkDBState()
+
+        }catch (e: Exception){
+            //database is closed
+            isOpen = false
+        }
+        if(isOpen){
+
+            dbAdapter.close()
+        }
         super.onPause()
-        dbAdapter.close()
+        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT)
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
+        val fragment = fragmentManager.findFragmentById(R.id.content_frame)
+        if(fragment !== null && fragment.tag == ProjectDisplayFragment.PROJECT_KEY || fragment.tag == TaskDisplayFragment.TASK_KEY) {
+            fab.show()
+        }
+        if(fragment.tag == ProjectDisplayFragment.PROJECT_KEY){
+            Log.e("###", "Project display")
+            fragmentManager.popBackStack(ProjectDisplayFragment.PROJECT_KEY, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        }
+
     }
 
     override fun onResume() {
@@ -138,9 +197,12 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        Log.e("@@@", "onDestroy")
         dbAdapter.close()
+        this.finish()
+        super.onDestroy()
     }
+
 
     //Fragement communication interface
     override fun onProjectSelect(obj: Project) {
@@ -153,7 +215,9 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         val fragment= TaskDisplayFragment.newInstance(selectedProject.taskList)
         val fm = fragmentManager
         val transaction = fm.beginTransaction()
+        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_back, R.anim.slide_out_back)
         transaction.replace(R.id.content_frame,fragment,TaskDisplayFragment.TASK_KEY)
+        transaction.addToBackStack(TaskDisplayFragment.TASK_KEY)
         transaction.commit()
     }
 
@@ -166,7 +230,9 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
         val fragment= TaskViewFragment.newInstance(selectedTask, selectedProject)
         val fm = fragmentManager
         val transaction = fm.beginTransaction()
-        transaction.replace(R.id.content_frame,fragment)
+        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_back, R.anim.slide_out_back)
+        transaction.replace(R.id.content_frame,fragment, TaskViewFragment.TASK)
+        transaction.addToBackStack(TaskViewFragment.TASK)
         transaction.commit()
     }
 
@@ -181,6 +247,7 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 val fragment = AddTaskFragement.newInstance(dbAdapter.getTaskList(selectedProject.ID), dbAdapter.getChampionList(DBAdapter.ALL))
                 val fm = fragmentManager
                 val transaction = fm.beginTransaction()
+                transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, 0, 0)
                 transaction.replace(R.id.content_frame, fragment, AddTaskFragement.ADD_TASK)
                 transaction.commit()
             }

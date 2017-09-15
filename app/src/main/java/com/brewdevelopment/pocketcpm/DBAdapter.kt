@@ -233,7 +233,7 @@ class DBAdapter(dbName: String, context: Context){
 
         var taskList = ArrayList<Task>()
         for(id in ids){
-            var temp = getTaskById(id)
+            var temp = getTaskById(id, true)
             if(temp !== null){
                 taskList.add(temp)
             }
@@ -267,7 +267,7 @@ class DBAdapter(dbName: String, context: Context){
     }
 
     //gets a task from the database givin the ID
-    fun getTaskById(id: String): Task?{
+    fun getTaskById(id: String, champion: Boolean): Task?{
         checkDBState()
 
         var projections = arrayOf(DBManager.Contract.TaskTable.ID, DBManager.Contract.TaskTable.NAME_COLUMN,
@@ -302,14 +302,14 @@ class DBAdapter(dbName: String, context: Context){
             }
 
             //get the champion object
-            if(task.attribute.get(Task.CHAMPION_COLUMN) !== null){
+            if(task.attribute.get(Task.CHAMPION_COLUMN) !== null && champion){
                 val champion = getChampionByID(task.attribute.get(Task.CHAMPION_COLUMN).toString())
                 if(champion !== null){
+                    Log.e("champion_delete", "Null")
                     task.setChampion(champion)
                 }
             }
         }
-
         cursor.close()
         if(task.ID != EMPTY){
             Log.d("add_dependent", "returning task: ${task.ID} || predecessor: ${task.getPredList()} || dependent: ${task.getDependList()}")
@@ -347,10 +347,10 @@ class DBAdapter(dbName: String, context: Context){
                     task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
                     task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
                 }
+                cursor.close()
                 if(task.ID != EMPTY){
                     predList.add(task)
                 }
-                cursor.close()
             }
         }
         return predList
@@ -383,10 +383,11 @@ class DBAdapter(dbName: String, context: Context){
                     task.attribute.put(Task.CHAMPION_COLUMN,cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.CHAMPION_COLUMN)))
                     task.attribute.put(Task.DURATION_COLUMN, cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.TaskTable.DURATION_COLUMN)))
                 }
+                cursor.close()
                 if(task.ID != EMPTY){
                     dependList.add(task)
                 }
-                cursor.close()
+
             }
         }
         return dependList
@@ -409,7 +410,7 @@ class DBAdapter(dbName: String, context: Context){
             champion.name = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.ChampionTable.NAME_COLUMN))
             var  taskList = cursor.getString(cursor.getColumnIndexOrThrow(DBManager.Contract.ChampionTable.TASKS_COLUMN)).split(',')
             for(id in taskList){
-                var temp = getTaskById(id)
+                var temp = getTaskById(id, false)
                 if(temp !== null){
                     champion.assignedTasks.add(temp)
                 }

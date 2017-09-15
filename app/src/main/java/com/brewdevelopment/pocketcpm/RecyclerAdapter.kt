@@ -19,7 +19,6 @@ class RecyclerAdapter( var context: Context,var list: ArrayList<Task>) : Recycle
     class viewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
         val currentItem: Int=0
         val item_Title= itemView?.findViewById(R.id.Title) as TextView
-        val item_Desc= itemView?.findViewById(R.id.Desc) as TextView
         val options = itemView?.findViewById(R.id.options_button) as ImageView
     }
 
@@ -32,7 +31,6 @@ class RecyclerAdapter( var context: Context,var list: ArrayList<Task>) : Recycle
     override fun onBindViewHolder(holder: viewHolder?, position: Int) {
         val temp: Task= list[position]
         holder?.item_Title?.text= temp.attribute.get(Task.NAME_COLUMN) as String
-        holder?.item_Desc?.text= temp.attribute.get(Task.DESCRIPTION_COLUMN) as String
 
 
         var fragmentEventlistener = context as FragmentEventListener

@@ -16,7 +16,6 @@ class PredAdapter(context: Context, var list: ArrayList<Task>) : RecyclerView.Ad
     class ViewHolder(itemView: View?): RecyclerView.ViewHolder(itemView){
         //val currentItem: Int=0
         val item_Title= itemView?.findViewById(R.id.Title) as TextView
-        val item_Desc= itemView?.findViewById(R.id.Desc) as TextView
         val item_pic= itemView?.findViewById(R.id.options_button) as ImageView
     }
 
@@ -31,7 +30,6 @@ class PredAdapter(context: Context, var list: ArrayList<Task>) : RecyclerView.Ad
         holder?.item_pic?.visibility=View.GONE
         val temp: Task= list[position]
         holder?.item_Title?.text= temp.attribute.get(Task.NAME_COLUMN) as String
-        holder?.item_Desc?.visibility= View.GONE
 
     }
 
