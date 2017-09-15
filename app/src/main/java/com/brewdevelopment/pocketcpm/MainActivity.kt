@@ -21,6 +21,7 @@ import android.widget.Toast
 class MainActivity : AppCompatActivity(), FragmentEventListener {
 
 
+
     //val DB1: DBAdapter= DBAdapter("Data",this)
     var isProj: Boolean= true
     private lateinit var menuList: Array<String>
@@ -348,6 +349,11 @@ class MainActivity : AppCompatActivity(), FragmentEventListener {
                 transaction.commit()
             }
         }
+    }
+
+    override fun onRefreshChampion() {
+        val fragment = Add_Champ_Frag.newInstance(dbAdapter.getChampionList(DBAdapter.ALL))
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment ,Add_Champ_Frag.ADD_CHAMP).commit()
     }
 
 }

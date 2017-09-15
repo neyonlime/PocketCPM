@@ -121,7 +121,7 @@ class Add_Champ_Frag(): Fragment() {
                         champName.setText("")
                     }
                 }
-                recyclerView.swapAdapter(Champ_Adapter(activity,clist), false)
+                fragmentEventListener.onRefreshChampion()
             }
 
         }
