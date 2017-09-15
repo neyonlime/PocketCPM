@@ -76,12 +76,12 @@ class AddProjectFragment(): Fragment(), DatePickerDialog.OnDateSetListener{
 
         button.setOnClickListener{
             if(project === null){
-                var name = nameField.text.toString()
+                var name = nameField.text.toString().trim()
                 if(name.length>1){
                     name = name.toUpperCase().substring(0,1) + name.substring(1)
                 }
                 var project = Project("" + name)
-                project.start = startDateView.text.toString()
+                project.start = startDateView.text.toString().trim()
                 if(validateProject(project)){
                     nameField.setText("")
                     fragmentEventListener.onAdd(project)
@@ -92,8 +92,8 @@ class AddProjectFragment(): Fragment(), DatePickerDialog.OnDateSetListener{
             }
             else if(project !== null){
                 //edit instance
-                project!!.name = "${nameField.text}"
-                project!!.start = startDateView.text.toString()
+                project!!.name = "${nameField.text.trim()}"
+                project!!.start = startDateView.text.toString().trim()
                 if(validateProject(project!!)){
                     nameField.setText("")
                     startDateView.setText("")
