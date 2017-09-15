@@ -38,9 +38,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:maxLength="15"
+                    android:maxLength="30"
                     android:maxHeight="10dp"
-                    android:maxLines="1"
+                    android:maxLines="2"
                     android:textColor="@color/colorFontSecondary"
                     android:textColorHighlight="@color/colorFontSecondary"
                     android:hint="@string/task_name_field_label"/>

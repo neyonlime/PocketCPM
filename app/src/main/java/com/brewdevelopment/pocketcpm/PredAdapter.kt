@@ -20,7 +20,7 @@ class PredAdapter(context: Context, var list: ArrayList<Task>) : RecyclerView.Ad
     }
 
     override  fun onCreateViewHolder(parent: ViewGroup?, i: Int): ViewHolder {
-        val v: View? = LayoutInflater.from(parent?.context).inflate(R.layout.card_layout, parent, false)
+        val v: View? = LayoutInflater.from(parent?.context).inflate(R.layout.task_cards, parent, false)
         val viewHolder: ViewHolder= ViewHolder(v)
         return viewHolder
 

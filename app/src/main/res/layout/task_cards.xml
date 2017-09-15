@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/Card_view"
+    card_view:cardBackgroundColor="@color/colorRedLight"
+    card_view:cardCornerRadius="12dp"
+    card_view:cardElevation="3dp"
+
+    android:layout_marginBottom="8dp"
+    card_view:contentPadding="4dp"
+    android:foreground="?selectableItemBackground"
+
+    android:clickable="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="Task"
+            android:textAlignment="center"
+            android:layout_centerInParent="true"
+            android:textColor="@color/colorFontSecondary"
+            android:textSize="15sp" />
+
+
+        <ImageView
+            android:id="@+id/options_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/ic_dots_vertical" />
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
