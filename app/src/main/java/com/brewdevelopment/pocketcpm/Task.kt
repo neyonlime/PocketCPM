@@ -8,7 +8,7 @@ import android.util.Log
  * Created by neyon on 2017-07-20.
  * OBJECT/ a task is something that the user wishes to complete, the have relationships between eachother
  */
-class Task(){
+class Task() {
     private var pred: ArrayList<Task>    //the task preceding the current
     private var depend: ArrayList<Task>   //the task depending on the current
     private var champion: Champion

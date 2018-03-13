@@ -96,7 +96,7 @@ class Add_Champ_Frag(): Fragment() {
                 val nameField = champName.text
                 if(nameField.isNotEmpty()){
                     //build champion
-                    var champion = Champion(nameField.toString())
+                    var champion = Champion(nameField.toString().trim())
                     if(validateChampion(champion)){
                         fragmentEventListener.onAdd(champion)
                         clist.add(champion)
@@ -108,7 +108,7 @@ class Add_Champ_Frag(): Fragment() {
                 }
                 recyclerView.swapAdapter(Champ_Adapter(activity,clist), false)
             }else{
-                editChamp!!.name = champName.text.toString()
+                editChamp!!.name = champName.text.toString().trim()
                 if(editChamp!!.name.isNotEmpty()){
                     if(validateChampion(editChamp!!)){
                         val position = getPosition(editChamp!!, clist)
@@ -121,7 +121,7 @@ class Add_Champ_Frag(): Fragment() {
                         champName.setText("")
                     }
                 }
-                recyclerView.swapAdapter(Champ_Adapter(activity,clist), false)
+                fragmentEventListener.onRefreshChampion()
             }
 
         }

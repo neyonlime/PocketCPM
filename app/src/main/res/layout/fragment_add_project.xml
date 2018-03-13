@@ -13,14 +13,18 @@
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:paddingBottom="250dp">
-        <EditText
-            android:id="@+id/project_name_field"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorFontSecondary"
-            android:ems="10"
-            android:textColorHint="@color/colorFontSecondary"
-            android:hint="@string/task_name_field_label" />
+
+
+
+            <EditText
+                android:id="@+id/project_name_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorFontSecondary"
+                android:ems="10"
+                android:textColorHint="@color/colorFontSecondary"
+                android:hint="@string/task_name_field_label" />
+
 
         <EditText
             android:id="@+id/start_date_field"
@@ -33,13 +37,16 @@
             android:textColorHint="@color/colorFontSecondary"
             android:inputType="date"/>
 
+
         <Button
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:layout_marginTop="16dp"
             android:text="Save"
             android:layout_gravity="center_horizontal"
-            android:id="@+id/project_save_button"/>
+            android:id="@+id/project_save_button"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/colorPrimary"/>
     </LinearLayout>
 
 </FrameLayout>

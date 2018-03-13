@@ -12,6 +12,24 @@
     tools:context=".MainActivity"
     android:background="@color/colorBackground">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/info_text"
+        android:text="Enter projects using the '+' button!"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary"
+        android:layout_alignParentTop="true"/>
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:alpha="0.1"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:id="@+id/logo"
+        android:src="@mipmap/ic_logo_large"/>
+
     <android.support.design.widget.CoordinatorLayout
         xmlns:android= "http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"

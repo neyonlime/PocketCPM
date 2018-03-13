@@ -10,4 +10,5 @@ interface FragmentEventListener {
     fun onTaskSelect(obj: Task)
     fun onUpdate(obj: Any)
     fun onDelete(obj: Any)
+    fun onRefreshChampion()
 }

@@ -35,7 +35,7 @@ init{
     }
 
     companion object {
-        val TASK= "task"
+        val TASK= "task_view"
         fun newInstance(task1:Task, proj:Project): TaskViewFragment {//get appropriate arguments that are needed to construct the fragment
             //process and bundle up fragments before adding it to the fragement
             //the arguments will be bundles which will then be passed using setArguments(), to the fragment
@@ -65,9 +65,18 @@ init{
         champTxt.text="Champion:"
         if(task.attribute.get(Task.DESCRIPTION_COLUMN)!==null) {
             desctext.text = task.attribute.get(Task.DESCRIPTION_COLUMN).toString()
+        }else{
+            desctext.setText("No description provided!")
         }
         if(task.attribute.get(Task.CHAMPION_COLUMN)!==null) {
-            ctxt.text = task.getChampion(task.attribute.get(Task.CHAMPION_COLUMN).toString().toInt()).name
+            try{
+                ctxt.text = task.getChampion(task.attribute.get(Task.CHAMPION_COLUMN).toString().toInt()).name
+            }catch (e: kotlin.UninitializedPropertyAccessException){
+                Log.e("exception", "kotlin.UninitializedPropertyAccessException")
+                ctxt.setText("No champion assigned!")
+            }
+        }else{
+            ctxt.setText("No champion assigned!")
         }
         recyclerView= rootView?.findViewById(R.id.task_recycler_view) as RecyclerView
         recyclerView.addOnItemTouchListener(

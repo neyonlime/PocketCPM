@@ -6,13 +6,13 @@
     <string name="title_notifications">Notifications</string>
     <string name="task_name_field_label">Name</string>
     <string name="task_description_field_label">Description</string>
-    <string name="task_start_date_field_label">Start date</string>
+    <string name="task_start_date_field_label">Start date (DD/MM/YY)</string>
     <string name="task_end_date_field_label">End date</string>
     <string name="task_champion_field_label">Champion</string>
     <string name="task_predecessor_field_label">Predecessor</string>
     <string name="task_add_button_label">Add</string>
     <string name="task_edit_button_label">Edit</string>
-    <string name="task_duration_field_label">Duration</string>
+    <string name="task_duration_field_label">Duration (Days)</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->

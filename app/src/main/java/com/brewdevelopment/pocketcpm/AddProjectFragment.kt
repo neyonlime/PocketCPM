@@ -9,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -74,8 +76,12 @@ class AddProjectFragment(): Fragment(), DatePickerDialog.OnDateSetListener{
 
         button.setOnClickListener{
             if(project === null){
-                var project = Project("" + nameField.text)
-                project.start = startDateView.text.toString()
+                var name = nameField.text.toString().trim()
+                if(name.length>1){
+                    name = name.toUpperCase().substring(0,1) + name.substring(1)
+                }
+                var project = Project("" + name)
+                project.start = startDateView.text.toString().trim()
                 if(validateProject(project)){
                     nameField.setText("")
                     fragmentEventListener.onAdd(project)
@@ -86,8 +92,8 @@ class AddProjectFragment(): Fragment(), DatePickerDialog.OnDateSetListener{
             }
             else if(project !== null){
                 //edit instance
-                project!!.name = "${nameField.text}"
-                project!!.start = startDateView.text.toString()
+                project!!.name = "${nameField.text.trim()}"
+                project!!.start = startDateView.text.toString().trim()
                 if(validateProject(project!!)){
                     nameField.setText("")
                     startDateView.setText("")
@@ -107,6 +113,21 @@ class AddProjectFragment(): Fragment(), DatePickerDialog.OnDateSetListener{
 
     private fun validateProject(project: Project): Boolean{
         return project.name.trim() != "" && project.start.trim() != ""
+    }
+
+    private fun checkFormat(date: String): Boolean{
+        if(date !== null){
+            return false
+        }else {
+            val sdf = SimpleDateFormat("dd/MM/yyyy")
+            sdf.isLenient = false
+            try {
+                 var date: Date = sdf.parse(date)
+            }catch (e: Exception){
+                return false
+            }
+            return true
+        }
     }
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {

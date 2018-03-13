@@ -31,6 +31,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:maxLength="20"
+                android:maxLines="1"
                 android:hint="@string/task_name_field_label"
                 android:textColor="@color/colorFontSecondary"/>
         </android.support.design.widget.TextInputLayout>
@@ -40,7 +42,9 @@
             android:layout_height="50dp"
             android:text="Add Champion"
             android:id="@+id/champion_add_button"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/colorPrimary"/>
 
 
     </LinearLayout>

@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import java.io.Serializable
 
 /**
@@ -40,10 +41,13 @@ class ProjectDisplayFragment(): Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
+
         val rootView = inflater?.inflate(R.layout.project_list, container, false)
         recyclerView= rootView?.findViewById(R.id.project_recycler_view) as RecyclerView
         var list = fragmentManager.findFragmentById(R.id.content_frame).arguments.getSerializable(PROJECT_LIST) as ArrayList <Project>
         val options = rootView.findViewById(R.id.options_button)
+        val logo = rootView.findViewById(R.id.logo) as ImageView
+        val info = rootView.findViewById(R.id.info_text) as TextView
 
         recyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
@@ -55,9 +59,13 @@ class ProjectDisplayFragment(): Fragment() {
                 })
         )
 
-
         recyclerView.adapter = ProjAdapter(activity, list)
         recyclerView.layoutManager= LinearLayoutManager(activity)
+
+        if(list.isNotEmpty()){
+            logo.visibility = View.GONE
+            info.visibility = View.GONE
+        }
         return rootView
     }
 }

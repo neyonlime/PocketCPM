@@ -193,9 +193,9 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
 
             if(editTask !== null){
                 //edit
-                editTask!!.attribute.put(Task.NAME_COLUMN, taskName.text.toString())
+                editTask!!.attribute.put(Task.NAME_COLUMN, taskName.text.toString().trim())
                 editTask!!.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
-                editTask!!.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())
+                editTask!!.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString().trim())
 
                 if(validateTask(editTask!!)){
 
@@ -215,9 +215,9 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
                 }
             }else if(editTask === null){
                 var task = Task()
-                task.attribute.put(Task.NAME_COLUMN, taskName.text.toString())
+                task.attribute.put(Task.NAME_COLUMN, taskName.text.toString().trim())
                 task.attribute.put(Task.DURATION_COLUMN, "${duration.text}")
-                task.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString())
+                task.attribute.put(Task.DESCRIPTION_COLUMN, description.text.toString().trim())
 
                 if(validateTask(task)) {
                     fragmentEventListener.onAdd(task)
@@ -229,8 +229,8 @@ class AddTaskFragement() : Fragment(), AdapterView.OnItemSelectedListener  {
                     val champion = selectedChampion
                     if(champion!== null && champion.ID != EMPTY ){
                         task.setChampion(champion)
+                        fragmentEventListener.onUpdate(champion!!)
                     }
-                    fragmentEventListener.onUpdate(champion!!)
                     //all information about the task is valid
                     //then save the task to database
                     fragmentEventListener.onUpdate(task)
